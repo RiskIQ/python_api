@@ -1,0 +1,6 @@
+# Python
+*.pyc
+# Editor
+*\.sw[a-z]
+# Setuptools 'develop' target
+libriskiq.egg-info/
