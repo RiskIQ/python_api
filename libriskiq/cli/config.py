@@ -4,21 +4,32 @@ from optparse import OptionParser
 import sys
 
 def main():
-    parser = OptionParser()
-    parser.add_option('-k', '--key', dest='key', default='', help="API Key")
-    parser.add_option('-s', '--secret', dest='secret', default='', help="API Secret")
+    usage = """%prog -t TOKEN -k KEY\n       %prog -p"""
+    parser = OptionParser(usage)
+    parser.add_option('-t', '--token', dest='token', default='', help='API token')
+    parser.add_option('-k', '--key', dest='key', default='', help='API private key')
+    parser.add_option('-p', '--print', action='store_true', dest='show_config',
+                      default=False, help='Show current API configuration')
     options, args = parser.parse_args()
+    if options.show_config:
+        config = Config()
+        show_config(config)
+        sys.exit(0)
     config_options = {}
-    if options.key:
-        config_options['api_key'] = options.key
-    if options.secret:
-        config_options['api_secret'] = options.secret
+    if not options.token or not options.key:
+        parser.error("provide API token and secret key to configure client")
+    config_options['api_token'] = options.token
+    config_options['api_private_key'] = options.key
+
     config = Config(**config_options)
-    print parser.print_help()
-    print "\n\nCurrent Configuration:\n"
+    show_config(config)
+    sys.exit(0)
+
+def show_config(config):
+    print "\nCurrent Configuration:\n"
     for k, v in sorted(config.config.items()):
         print "%15s: %s" % (k, v)
-    sys.exit(0)
 
 if __name__ == '__main__':
     main()
+

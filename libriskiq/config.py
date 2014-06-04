@@ -1,21 +1,26 @@
 #!/usr/bin/env python
 __author__ = 'jpleger'
-import json
 import os
+import sys
+import json
 CONFIG_PATH = os.path.expanduser('~/.config/riskiq')
 CONFIG_FILE = os.path.join(CONFIG_PATH, 'api_config.json')
 CONFIG_DEFAULTS = {
     'api_server': 'ws.riskiq.net',
     'api_version': 'v1',
-    'api_key': '',
-    'api_secret': '',
+    'api_token': '',
+    'api_private_key': '',
 }
 
 
 class Config(object):
     def __init__(self, **kwargs):
         self.config = CONFIG_DEFAULTS
-        self.load_config(**kwargs)
+        try:
+            self.load_config(**kwargs)
+        except ValueError as e:
+            print >> sys.stderr, "ERROR:", e.message
+            sys.exit(1)
 
     def write_config(self):
         json.dump(self.config, open(CONFIG_FILE, 'w'), indent=4, separators=(',', ': '))
@@ -34,8 +39,8 @@ class Config(object):
             self.config.update(kwargs)
         if virgin_config or kwargs:
             self.write_config()
-        if not self.config['api_key'] or not self.config['api_secret']:
-            raise ValueError('API Key or Secret Invalid... Please edit %s' % CONFIG_FILE)
+        if not self.config['api_token'] or not self.config['api_private_key']:
+            raise ValueError("API token or private key missing. Run 'riq-config' to configure.")
         return True
 
     @property

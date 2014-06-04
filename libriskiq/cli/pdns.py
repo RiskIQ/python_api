@@ -20,7 +20,7 @@ def main():
         parser.print_help()
         sys.exit(-1)
     config = Config()
-    client = Client(key=config.get('api_key'), secret=config.get('api_secret'),
+    client = Client(token=config.get('api_token'), key=config.get('api_private_key'),
                     server=config.get('api_server'), version=config.get('api_version'))
     qtype = None
     if options.query:

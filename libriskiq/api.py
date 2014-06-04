@@ -14,9 +14,9 @@ class Client(object):
     """
     RiskIQ API Client
     """
-    def __init__(self, key, secret, server='ws.riskiq.net', version='v1'):
+    def __init__(self, token, key, server='ws.riskiq.net', version='v1'):
         self.api_base = 'https://%s/%s' % (server, version)
-        self.auth = (key, secret)
+        self.auth = (token, key)
         self.headers = {'Accept': 'Application/JSON', 'Content-Type': 'Application/JSON'}
         self.time_format = '%Y-%m-%d'
 
