@@ -13,6 +13,7 @@ setup(
         'console_scripts': [
             'riq-pdns = libriskiq.cli.pdns:main',
             'riq-config = libriskiq.cli.config:main',
+            'riq-blacklist = libriskiq.cli.blacklist:main',
         ]
     }
 )

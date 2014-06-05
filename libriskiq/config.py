@@ -39,7 +39,7 @@ class Config(object):
             self.config.update(kwargs)
         if virgin_config or kwargs:
             self.write_config()
-        if not self.config['api_token'] or not self.config['api_private_key']:
+        if 'api_token' not in self.config or not 'api_private_key' in self.config:
             raise ValueError("API token or private key missing. Run 'riq-config' to configure.")
         return True
 

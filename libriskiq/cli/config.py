@@ -3,6 +3,7 @@ from libriskiq.output import GenericOutput
 from optparse import OptionParser
 import sys
 
+
 def main():
     usage = """%prog -t TOKEN -k KEY\n       %prog -p"""
     parser = OptionParser(usage)
@@ -24,6 +25,7 @@ def main():
     config = Config(**config_options)
     show_config(config)
     sys.exit(0)
+
 
 def show_config(config):
     print "\nCurrent Configuration:\n"
