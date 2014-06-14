@@ -7,8 +7,9 @@ import sys
 
 
 def main():
-    # Todo: Date options
-    parser = OptionParser()
+    # TODO: Date options
+    usage = "%prog [options] INDICATOR [...]"
+    parser = OptionParser(usage)
     # parser.add_option('-g', '--global-incidents', dest='global_incidents', action='store_true', default=False,
     #                   help='Global Incident List')
     # parser.add_option('-i', '--incidents', dest='incidents', action='store_true', default=False,
@@ -19,8 +20,9 @@ def main():
     parser.add_option('-j', '--json', dest='json', action="store_true", default=False, help="Output as JSON")
     options, args = parser.parse_args()
     config = Config()
-    client = Client(key=config.get('api_key'), secret=config.get('api_secret'),
+    client = Client(token=config.get('api_token'), key=config.get('api_private_key'),
                     server=config.get('api_server'), version=config.get('api_version'))
+
     # TODO: Global Blacklist Downloads
     if not args:
         parser.print_help()
