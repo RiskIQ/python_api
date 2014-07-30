@@ -15,8 +15,11 @@ services. The library currently provides support for the following services:
 
 The following command line scripts are installed with the library:
 
-- **`riq-config`**: utility to set API configuration options for the library (API token and private key).
+- **`riq-config`**: utility to set API configuration options for the library
+  (API token and private key).
 - **`riq-pdns`**: client to issue queries to the RiskIQ Passive DNS database service.
+- **`riq-blacklist`**: client to issue queries for domains and URLs to identify
+  listings in the RiskIQ blacklist.
 
 ## Installation
 
