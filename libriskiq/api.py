@@ -87,7 +87,11 @@ class Client(object):
         :param url: URL to query blacklist on.
         :return: Blacklist Dict
         """
-        return self._request('blacklist', 'lookup', url=url)
+        result = self._request('blacklist', 'lookup', url=url)
+        if result:
+            if not 'description' in result:
+                result['description'] = ''
+        return result
 
     def get_blacklist_incident(self, url):
         """
