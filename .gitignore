@@ -8,3 +8,4 @@ build/
 dist/
 setuptools-*
 venv/
+libriskiq.egg-info/
