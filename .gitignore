@@ -3,4 +3,9 @@
 # Editor
 *\.sw[a-z]
 # Setuptools 'develop' target
+riskiq.egg-info/
+build/
+dist/
+setuptools-*
+venv/
 libriskiq.egg-info/

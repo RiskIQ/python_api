@@ -1,9 +1,8 @@
 import sys
 from optparse import OptionParser
-from libriskiq.api import Client
-from libriskiq.config import Config
-from libriskiq.output import BlacklistIncident, BlacklistEntry
-
+from riskiq.api import Client
+from riskiq.config import Config
+from riskiq.output import BlacklistIncident, BlacklistEntry
 
 def main():
     # TODO: Implement date range options

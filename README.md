@@ -1,8 +1,8 @@
-# libriskiq
+# riskiq
 
 *Python client API for RiskIQ services*
 
-**libriskiq** provides a Python client library implementation into RiskIQ API
+**riskiq** provides a Python client library implementation into RiskIQ API
 services. The library currently provides support for the following services:
 
 - Passive DNS queries
