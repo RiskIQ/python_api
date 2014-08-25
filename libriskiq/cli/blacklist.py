@@ -1,13 +1,12 @@
-#!/usr/bin/env python
+import sys
+from optparse import OptionParser
 from libriskiq.api import Client
 from libriskiq.config import Config
 from libriskiq.output import BlacklistIncident, BlacklistEntry
-from optparse import OptionParser
-import sys
 
 
 def main():
-    # TODO: Date options
+    # TODO: Implement date range options
     usage = "%prog [options] INDICATOR [...]"
     parser = OptionParser(usage)
     # parser.add_option('-g', '--global-incidents', dest='global_incidents', action='store_true', default=False,
@@ -18,6 +17,8 @@ def main():
     # parser.add_option('-M', '--malware-confidence', dest='malware_confidence', action='store', default=None,
     #                   help='Malware Confidence (L, M, H)')
     parser.add_option('-j', '--json', dest='json', action="store_true", default=False, help="Output as JSON")
+    parser.add_option('-l', '--oneline', dest='oneline', action="store_true", default=False, help="Output in one single line (print blacklist match info one line per entry)")
+    parser.add_option('-s', '--short', dest='short', action="store_true", default=False, help="Output in short format (print matching input indicator only)")
     options, args = parser.parse_args()
     config = Config()
     client = Client(token=config.get('api_token'), key=config.get('api_private_key'),
@@ -36,9 +37,12 @@ def main():
     results = BlacklistEntry(results)
     if options.json:
         print results.json
-        sys.exit(0)
-    print results.text
-    sys.exit(0)
+    elif options.short:
+        print results.short
+    elif options.oneline:
+        print results.oneline
+    else:
+        print results.text
 
 if __name__ == '__main__':
     main()

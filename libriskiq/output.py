@@ -1,6 +1,6 @@
-#!/usr/bin/env python
 __author__ = 'RiskIQ Research'
 __version__ = '0.1-ALPHA'
+
 import json
 
 
@@ -45,6 +45,7 @@ class GenericOutput(object):
     def text(self):
         return str(self._results)
 
+    # XXX Duplicate method name?
     @property
     def count(self):
         return len(self._results)
@@ -100,3 +101,34 @@ class BlacklistEntry(GenericOutput):
             attributes = [i.capitalize() for i in ['malware', 'phishing', 'spam'] if record[i]]
             r.append('Flags: %s' % ", ".join(attributes))
         return "\n".join(r)
+
+    @property
+    def short(self):
+        """Report blacklisted hosts by simply printing hostname"""
+        r = list()
+        for record in self._results:
+            r.append(record['hostname'])
+        return "\n".join(r)
+
+    @property
+    def oneline(self):
+        """Report blacklisted hosts with listing data on a single line"""
+        r = list()
+        for record in self._results:
+            entry_set = []
+            # Set a descriptive filler word when the description for an entry is
+            # empty in order to avoid a confusing empty void in the output
+            record['description'] = record['description'] if record['description'] else 'NODESC'
+            for entry in record['entries']:
+                entry_text = entry['type']
+                if 'id' in entry:
+                    entry_text += "/" + str(entry['id'])
+                if 'detectedAt' in entry:
+                    entry_text += "/" + entry['detectedAt']
+                if 'description' in entry and record['description'] == '':
+                    entry_text += "/" + entry['description']
+                entry_set.append(entry_text)
+            record_line = "{record[url]} | {record[description]} | {entry_blob}".format(record=record, entry_blob=', '.join(entry_set))
+            r.append(record_line)
+        return "\n".join(r)
+

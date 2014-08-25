@@ -21,11 +21,13 @@ The following command line scripts are installed with the library:
 - **`riq-blacklist`**: client to issue queries for domains and URLs to identify
   listings in the RiskIQ blacklist.
 
+See the *Use* section for information on usage.
+
 ## Installation
 
     $ python setup.py install
 
-The package depends on the [Requests](http://docs.python-requests.org/) library.
+The package depends on the Python [Requests](http://docs.python-requests.org/) library.
 If Requests is not installed, it will be installed as a result of the above command.
 
 ## Setup
@@ -39,4 +41,11 @@ At any time, the current API configuration parameters can be queried using the s
     $ riq-config -p
 
 Configuration parameters are stored in `$HOME/.config/riskiq/api_config.json`.
+
+## Use
+
+See the output of *`command --help`* for the installed command-line scripts to see supported
+options.
+
+*riq-blacklist* may be given a domain name or URL as an argument to be checked against the blacklist.
 
