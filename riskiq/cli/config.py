@@ -1,5 +1,5 @@
-from libriskiq.config import Config
-from libriskiq.output import GenericOutput
+from riskiq.config import Config
+from riskiq.output import GenericOutput
 from optparse import OptionParser
 import sys
 

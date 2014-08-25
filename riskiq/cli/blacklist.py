@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-from libriskiq.api import Client
-from libriskiq.config import Config
-from libriskiq.output import BlacklistIncident, BlacklistEntry
+from riskiq.api import Client
+from riskiq.config import Config
+from riskiq.output import BlacklistIncident, BlacklistEntry
 from optparse import OptionParser
 import sys
 
