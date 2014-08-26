@@ -111,8 +111,17 @@ class Client(object):
             end = datetime.strftime(datetime.now(), self.time_format)
         return start, end
 
-    def get_affiliate_campaign_summary(self, url, start, end):
-        pass
+    def get_affiliate_campaign_summary(self, days=1, start=None, end=None):
+        """
+        Return the affiliate campaign summary report for the given date range.
+        :param days: How many days to include from today(for generating 30 day time windows, etc.)
+        :param start: Override start date.
+        :param end: Override end date
+        :return: data containing the number of results and the objects
+        """
+        start, end = self._date_range(days, start, end)
+        return self._get('affiliate', 'campaignSummary', 
+            startDateInclusive=start, endDateExclusive=end)
 
     def get_blacklist_lookup(self, url):
         """
