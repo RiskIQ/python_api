@@ -568,3 +568,10 @@ class Client(object):
         """
         return self._get('project', '%d/keywords' % project_id)
 
+    def get_proxy_ip(self, ip):
+        """
+        Lookup a proxy by IP
+        :param ip: ip address of proxy
+        :return: proxy
+        """
+        return self._get('proxy', 'ip/%s' % ip)
