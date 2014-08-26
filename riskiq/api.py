@@ -87,7 +87,7 @@ class Client(object):
         response = requests.post(api_url, auth=self.auth, headers=self.headers, verify=True, data=data, params=params)
         return self._json(response)
 
-    def date(self, day):
+    def _date(self, day):
         """
         Generates a date string in the required format from a datetime object.
         :param day: Datetime object
@@ -95,7 +95,7 @@ class Client(object):
         """
         return datetime.strftime(day, self.time_format)
 
-    def date_range(self, days=1, start=None, end=None):
+    def _date_range(self, days=1, start=None, end=None):
         """
         Generate a start date and an end date based off of how many days. 
         For use with inclusive dates.
@@ -141,7 +141,7 @@ class Client(object):
         :param end: Date to end, use time_format.
         :return:
         """
-        start, end = self.date_range(days, start, end)
+        start, end = self._date_range(days, start, end)
         return self._get('zlist', 'urls', start=start, end=end)
 
     def get_pdns_data_by_name(self, name, rrtype=None, maxresults=1000):
