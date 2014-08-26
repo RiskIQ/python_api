@@ -275,6 +275,21 @@ class Client(object):
         }
         return self._get('blacklist', 'exploitBinary', **kwargs)
 
+    def get_crawl_volume_daily_summary(self, days=1, start=None, end=None):
+        """
+        Query for the crawl volume daily summary report for the date range
+        :param days: How many days to include from today(for generating 30 day time windows, etc.)
+        :param start: Override start date.
+        :param end: Override end date
+        :return: crawl volume daily summary
+        """
+        start, end = self._date_range(days, start, end)
+        kwargs = {
+            'startDateInclusive': start,
+            'endDateInclusive': end,
+        }
+        return self._get('crawlVolume', 'dailySummary', **kwargs)
+
     def get_zlist_urls(self, days=1, start=None, end=None):
         """
         Get the current zlist urls.
