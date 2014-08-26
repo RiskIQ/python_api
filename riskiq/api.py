@@ -271,7 +271,7 @@ class Client(object):
             kwargs['confidence'] = confidence
         return self._get('blacklist', 'malware', **kwargs)
 
-    def get_blacklist_exploit_binary(self, days=1, start=None, end=None):
+    def __get_blacklist_exploit_binary(self, days=1, start=None, end=None):
         """
         Query for all PE format binaries on webpages used for exploitation
         :param days: How many days to include from today(for generating 30 day time windows, etc.)
@@ -279,6 +279,7 @@ class Client(object):
         :param end: Override end date
         :return: all binaries
         """
+        raise NotImplementedError('Not implemented server-side')
         start, end = date_range(days, start, end)
         kwargs = {
             'startDateInclusive': start,
@@ -300,17 +301,6 @@ class Client(object):
             'endDateInclusive': end,
         }
         return self._get('crawlVolume', 'dailySummary', **kwargs)
-
-    def get_zlist_urls(self, days=1, start=None, end=None):
-        """
-        Get the current zlist urls.
-        :param days: How many days you want to grab(if this is set, start and end are ignored)
-        :param start: Which date to start from, use time_format.
-        :param end: Date to end, use time_format.
-        :return:
-        """
-        start, end = date_range(days, start, end)
-        return self._get('zlist', 'urls', start=start, end=end)
 
     def get_dns_data_by_name(self, name, rrtype=None, maxresults=1000):
         """
@@ -385,7 +375,7 @@ class Client(object):
         """
         List landing pages by crawl date - maximum of 100
         :param whois: Bool, whether to include whois information
-        :param days: How many days you want to grab(if this is set, start and end are ignored)
+        :param days: How many days you want to grab
         :param start: Which date to start from, use time_format.
         :param end: Date to end, use time_format.
         :return: landing page data
@@ -404,7 +394,7 @@ class Client(object):
         """
         List landing pages by known profile creation date - maximum of 100
         :param whois: Bool, whether to include whois information
-        :param days: How many days you want to grab(if this is set, start and end are ignored)
+        :param days: How many days you want to grab
         :param start: Which date to start from, use time_format.
         :param end: Date to end, use time_format.
         :return: landing page data
@@ -433,7 +423,7 @@ class Client(object):
         """
         List landing pages with malicious binary incidents.
         :param whois: Bool, whether to include whois information
-        :param days: How many days you want to grab(if this is set, start and end are ignored)
+        :param days: How many days you want to grab
         :param start: Which date to start from, use time_format.
         :param end: Date to end, use time_format.
         :return: landing page data
@@ -449,3 +439,139 @@ class Client(object):
         List all projects that landing pages may be submitted to.
         """
         return self._get('landingPage', 'projects')
+
+    def get_android(self, package_name):
+        """
+        Retrieve an android application by package name.
+        If the app is not found, 404 NOT FOUND is returned.
+        :param package_name: name of android package
+        :return: the requested app
+        """
+        return self._get('mobile/android', package_name)
+
+    def get_android_lookup(self, url):
+        """
+        Retrieve an android app by store URL.
+        The store URL should be of the form
+        https://play.google.com/store/apps/details?id=[package name]
+        :param url: The store URL
+        :return: app details
+        """
+        return self._get('mobile/android', 'lookup', url=url)
+
+    def get_mobile_incident(self, incident_id):
+        """
+        Retrieve an mobile app incident by ID.
+        If the incident is not found, 404 NOT FOUND is returned.
+        :param incident_id: Long int ID
+        :return: mobile incident
+        """
+        return self._get('mobile/incident', '%d' % incident_id)
+
+    def get_mobile_incident_list(self, days=1, start=None, end=None):
+        """
+        List app incidents by their incident creation date.
+        :param days: How many days you want to grab
+        :param start: Which date to start from, use time_format.
+        :param end: Date to end, use time_format.
+        :return: mobile incidents
+        """
+        start, end = date_range(days, start, end)
+        return self._get('mobile/incident', 'list', 
+            startDateInclusive=start, endDateExclusive=end)
+
+    def get_page(self, crawl_guid, page_guid):
+        """
+        retrieve a page and return it
+        :param crawl_guid: crawl GUID
+        :param page_guid: page GUID
+        :return: requested page
+        """
+        return self._get('page', '%s/%s' % (crawl_guid, page_guid))
+
+    def get_page_dom(self, crawl_guid, page_guid):
+        """
+        retrieve a page and return its DOM
+        :param crawl_guid: crawl GUID
+        :param page_guid: page GUID
+        :return: requested page
+        """
+        return self._get('page', '%s/%s/dom' % (crawl_guid, page_guid))
+
+    def get_page_response(self, crawl_guid, page_guid):
+        """
+        retrieve a page and return it
+        :param crawl_guid: crawl GUID
+        :param page_guid: page GUID
+        :return: requested page
+        """
+        return self._get('page', '%s/%s/response' % (crawl_guid, page_guid))
+
+    def get_page_child_dom(self, crawl_guid, page_guid, child_guid):
+        """
+        retrieve a page and return its DOM
+        :param crawl_guid: crawl GUID
+        :param page_guid: page GUID
+        :param child_guid: child GUID
+        :return: requested page
+        """
+        return self._get('page', '%s/%s/%s/dom' % 
+            (crawl_guid, page_guid, child_guid)
+        )
+
+    def get_page_child_dom_text(self, crawl_guid, page_guid, child_guid):
+        """
+        retrieve a page and return its DOM text
+        :param crawl_guid: crawl GUID
+        :param page_guid: page GUID
+        :param child_guid: child GUID
+        :return: requested page
+        """
+        return self._get('page', '%s/%s/%s/domText' % 
+            (crawl_guid, page_guid, child_guid)
+        )
+
+    def get_page_child_response(self, crawl_guid, page_guid, child_guid):
+        """
+        retrieve a page and return its response
+        :param crawl_guid: crawl GUID
+        :param page_guid: page GUID
+        :param child_guid: child GUID
+        :return: requested page
+        """
+        return self._get('page', '%s/%s/%s/response' % 
+            (crawl_guid, page_guid, child_guid)
+        )
+    
+    def get_project_list(self):
+        """
+        List all projects.
+        """
+        return self._get('project', 'list')
+
+    def get_project_keywords(self, project_id):
+        """
+        List all keywords associated to specified project.
+        :param project_id: Integer ID of the project
+        :return: Keywords of project
+        """
+        return self._get('project', '%d/keywords' % project_id)
+
+    def get_proxy_ip(self, ip):
+        """
+        Lookup a proxy by IP
+        :param ip: ip address of proxy
+        :return: proxy
+        """
+        return self._get('proxy', 'ip/%s' % ip)
+
+    def get_zlist_urls(self, days=1, start=None, end=None):
+        """
+        Get the current zlist urls.
+        :param days: How many days you want to grab
+        :param start: Which date to start from, use time_format.
+        :param end: Date to end, use time_format.
+        :return: all URLs
+        """
+        start, end = date_range(days, start, end)
+        return self._get('zlist', 'urls', start=start, end=end)
