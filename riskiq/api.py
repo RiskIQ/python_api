@@ -148,7 +148,7 @@ class Client(object):
     def get_binary_list(self, virus_total_only=None,
             client_workspace_only=None, days=1, start=None, end=None):
         """
-        Return the affiliate campaign summary report for the given date range.
+        Return a list of all binaries in date range
         :param virus_total_only: Bool, only include those flagged by VT
         :param client_workspace_only: Bool, only include those found in crawls
         :param days: How many days to include from today(for generating 30 day time windows, etc.)
@@ -169,7 +169,7 @@ class Client(object):
 
     def get_binary_data(self, md5_hash):
         """
-        Return the affiliate campaign summary report for the given date range.
+        Query for the binary encoded base64 with the given md5 hash
         :param md5_hash: md5 hash of the binary data
         :return: object containing a dict with 'data' key encoded in base64
         """
@@ -197,11 +197,14 @@ class Client(object):
     def get_blacklist_incident_list(self, all_workspace_crawls=None, 
         days=1, start=None, end=None):
         """
-        Query blacklist incidents by url.
+        Query blacklist incidents
         :param url: list of blacklist incidents within timeframe
         :param all_workspace_crawls:False by default, filtered to crawls that 
             are either landing pages, site scanning, or matching a brand 
             classifier
+        :param days: How many days to include from today(for generating 30 day time windows, etc.)
+        :param start: Override start date.
+        :param end: Override end date
         :return: Blacklist list
         """
         start, end = self._date_range(days, start, end)
@@ -216,9 +219,12 @@ class Client(object):
     def get_blacklist_list(self, blacklist_filter=None, 
         days=1, start=None, end=None):
         """
-        Query blacklist incidents by url.
+        Query blacklisted resources
         :param blacklist_filter: None, or one of
             'blackhole', 'sakura', 'exploitKit'
+        :param days: How many days to include from today(for generating 30 day time windows, etc.)
+        :param start: Override start date.
+        :param end: Override end date
         :return: all blacklisted resources
         """
         start, end = self._date_range(days, start, end)
@@ -238,6 +244,9 @@ class Client(object):
             'blackhole', 'sakura', 'exploitKit'
         :param confidence: to restrict the result set by malicious probability
             'H', 'M', 'L' (high, medium, low)
+        :param days: How many days to include from today(for generating 30 day time windows, etc.)
+        :param start: Override start date.
+        :param end: Override end date
         :return: all blacklisted resources
         """
         start, end = self._date_range(days, start, end)
@@ -250,6 +259,21 @@ class Client(object):
         if confidence is not None:
             kwargs['confidence'] = confidence
         return self._get('blacklist', 'malware', **kwargs)
+
+    def get_blacklist_exploit_binary(self, days=1, start=None, end=None):
+        """
+        Query for all PE format binaries on webpages used for exploitation
+        :param days: How many days to include from today(for generating 30 day time windows, etc.)
+        :param start: Override start date.
+        :param end: Override end date
+        :return: all binaries
+        """
+        start, end = self._date_range(days, start, end)
+        kwargs = {
+            'startDateInclusive': start,
+            'endDateExclusive': end,
+        }
+        return self._get('blacklist', 'exploitBinary', **kwargs)
 
     def get_zlist_urls(self, days=1, start=None, end=None):
         """
