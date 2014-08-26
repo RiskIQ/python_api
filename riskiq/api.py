@@ -10,36 +10,38 @@ from datetime import timedelta, datetime
 import requests
 
 # Acceptable string time format for all requests
-TIME_FORMAT = '%Y-%m-%d'
+TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+TIME_FORMAT_DAY = '%Y-%m-%d 00:00:00'
 
-def format_date(day):
+def format_date(dt, day=False):
     """
     Generates a date string in the required format from a datetime object.
-    :param day: Datetime object
+    :param dt: Datetime object
+    :param day: Bool, whether to take the floor of the day
+        (1 means beginning of today since midnight)
     :return: string in acceptable date format
     """
-    return datetime.strftime(day, TIME_FORMAT)
+    fmt = TIME_FORMAT
+    if day:
+        fmt = TIME_FORMAT_DAY
+    return datetime.strftime(dt, fmt)
 
-def date_range(days=1, start=None, end=None, exclusive=True):
+def date_range(days=1, start=None, end=None):
     """
     Generate a start date and an end date based off of how many days. 
     :param days: How many days to include from today(for generating 30 day time windows, etc.)
     :param start: Override start date.
     :param end: Override end date
-    :param exclusive: Whether end date is exclusive (usually)
     :return: (start, end) tuple of strings in acceptable date format
     """
     if not any([days, start, end]):
         return None, None
     if start is None:
-        start = format_date(datetime.now() - timedelta(days=days))
+        start = format_date(datetime.now() - timedelta(days=days-1), day=True)
     elif isinstance(start, datetime):
         start = format_date(start)
     if end is None:
-        if exclusive:
-            end = format_date(datetime.now() + timedelta(days=1))
-        else:
-            end = format_date(datetime.now())
+        end = format_date(datetime.now())
     elif isinstance(end, datetime):
         end = format_date(end)
     return start, end
