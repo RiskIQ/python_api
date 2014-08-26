@@ -123,6 +123,28 @@ class Client(object):
         return self._get('affiliate', 'campaignSummary', 
             startDateInclusive=start, endDateExclusive=end)
 
+    def get_affiliate_incident_list(self, known_profile=None, 
+        max_results=None, days=1, start=None, end=None):
+        """
+        Return the affiliate campaign summary report for the given date range.
+        :param known_profile: Boolean, only return incidents that match a known profile
+        :param max_results: maximum number of results to return
+        :param days: How many days to include from today(for generating 30 day time windows, etc.)
+        :param start: Override start date.
+        :param end: Override end date
+        :return: data containing the number of results and the objects
+        """
+        start, end = self._date_range(days, start, end)
+        kwargs = {
+            'startDateInclusive': start,
+            'endDateExclusive': end,
+        }
+        if known_profile is not None:
+            kwargs['knownProfile'] = known_profile
+        if max_results is not None:
+            kwargs['maxResults'] = max_results
+        return self._get('affiliate/incident', 'list', **kwargs)
+
     def get_blacklist_lookup(self, url):
         """
         Query blacklist on url.
