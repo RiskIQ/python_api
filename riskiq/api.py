@@ -17,69 +17,102 @@ class Client(object):
     def __init__(self, token, key, server='ws.riskiq.net', version='v1'):
         self.api_base = 'https://%s/%s' % (server, version)
         self.auth = (token, key)
-        self.headers = {'Accept': 'Application/JSON', 'Content-Type': 'Application/JSON'}
+        self.headers = {
+            'Accept': 'Application/JSON',
+            'Content-Type': 'Application/JSON',
+        }
         self.time_format = '%Y-%m-%d'
 
-    def _get_endpoint(self, endpoint, action, *urlparams, **params):
+    def _endpoint(self, endpoint, action, *urlparams, **params):
+        """
+        Return the URL for the action
+        :param endpoint: The controller
+        :param action: The action provided by the controller
+        :param urlparams: Additional endpoints(for endpoints that take part of the url as option)
+        :param params: Parameters to pass to url, typically query string
+        :return: Full URL for the requested action
+        """
         api_url = "/".join((self.api_base, endpoint, action))
         if urlparams:
             api_url += "/".join(urlparams)
         return api_url
-
-    def _request(self, endpoint, action, *urlparams, **params):
+    
+    def _json(self, response):
         """
-        Request API Endpoint, this is for GET methods.
-
-        :param endpoint: Endpoint
-        :param action: Endpoint Action
-        :param urlparams: Additional endpoints(for endpoints that take part of the url as option)
-        :param params: Parameters to pass to url, typically query string
-        :return:
+        JSON response from server
+        :param response: Response from the server
+        :throws ValueError: from requests' response.json() error
+        :return: response deserialized from JSON
         """
-        api_url = self._get_endpoint(endpoint, action, *urlparams, **params)
-        response = requests.get(api_url, auth=self.auth, headers=self.headers, verify=True, params=params)
         if response.status_code == 204:
             return None
         try:
             return response.json()
-        except:
-            raise ValueError('Error Parsing JSON, request: %s, response code: %s, response: %s' %
-                             (response.request.url, response.status_code, response.content))
+        except ValueError as e:
+            raise ValueError(
+                'Exception: %s\n'
+                'request: %s, response code: %s, response: %s' % (
+                    str(e), response.request.url, response.status_code,
+                    response.content,
+                )
+            )
 
-    def _submit(self, endpoint, action, data, *urlparams, **params):
+    def _get(self, endpoint, action, *urlparams, **params):
         """
-        Submit to API Endpoint, this is for POST methods.
+        Request API Endpoint - for GET methods.
 
         :param endpoint: Endpoint
         :param action: Endpoint Action
         :param urlparams: Additional endpoints(for endpoints that take part of the url as option)
         :param params: Parameters to pass to url, typically query string
-        :return:
+        :return: response deserialized from JSON
         """
-        api_url = self._get_endpoint(endpoint, action, *urlparams, **params)
+        api_url = self._endpoint(endpoint, action, *urlparams, **params)
+        response = requests.get(api_url, auth=self.auth, headers=self.headers,
+            verify=True, params=params)
+        return self._json(response)
+
+    def _post(self, endpoint, action, data, *urlparams, **params):
+        """
+        Submit to API Endpoint - for POST methods.
+
+        :param endpoint: Endpoint
+        :param action: Endpoint Action
+        :param urlparams: Additional endpoints(for endpoints that take part of the url as option)
+        :param params: Parameters to pass to url, typically query string
+        :return: response deserialized from JSON
+        """
+        api_url = self._endpoint(endpoint, action, *urlparams, **params)
         data = json.dumps(data)
         response = requests.post(api_url, auth=self.auth, headers=self.headers, verify=True, data=data, params=params)
-        if response.status_code == 204:
-            return None
-        try:
-            return response.json()
-        except:
-            raise ValueError('Error Parsing JSON, request: %s, response code: %s, response: %s' %
-                            (response.request.url, response.status_code, response.content))
+        return self._json(response)
 
-    def _generate_date_range(self, days=1, start=None, end=None):
+    def date(self, day):
         """
-        Generate a start date and an end date based off of how many days. For use with inclusive dates.
+        Generates a date string in the required format from a datetime object.
+        :param day: Datetime object
+        :return: string in acceptable date format
+        """
+        return datetime.strftime(day, self.time_format)
+
+    def date_range(self, days=1, start=None, end=None):
+        """
+        Generate a start date and an end date based off of how many days. 
+        For use with inclusive dates.
         :param days: How many days to include from today(for generating 30 day time windows, etc.)
         :param start: Override start date.
         :param end: Override end date
-        :return: start, end
+        :return: (start, end) tuple of strings in acceptable date format
         """
-        if not start or days > 1:
-            start = datetime.strftime(datetime.now() - timedelta(days=days), self.time_format)
-        if not end or days > 1:
+        if start is None or days > 1:
+            start = datetime.strftime(datetime.now() - timedelta(days=days), 
+                self.time_format)
+        if end is None or days > 1:
             end = datetime.strftime(datetime.now(), self.time_format)
         return start, end
+
+    def get_affiliate_campaign_summary(self, url, start, end):
+        pass
 
     def get_blacklist_lookup(self, url):
         """
@@ -87,10 +120,9 @@ class Client(object):
         :param url: URL to query blacklist on.
         :return: Blacklist Dict
         """
-        result = self._request('blacklist', 'lookup', url=url)
-        if result:
-            if not 'description' in result:
-                result['description'] = ''
+        result = self._get('blacklist', 'lookup', url=url)
+        if result and 'description' not in result:
+            result['description'] = ''
         return result
 
     def get_blacklist_incident(self, url):
@@ -99,7 +131,7 @@ class Client(object):
         :param url: URL to query blacklist on.
         :return: Blacklist Dict
         """
-        return self._request('blacklist', 'incident', url=url)
+        return self._get('blacklist', 'incident', url=url)
 
     def get_zlist_urls(self, days=1, start=None, end=None):
         """
@@ -109,8 +141,8 @@ class Client(object):
         :param end: Date to end, use time_format.
         :return:
         """
-        start, end = self._generate_date_range(days, start, end)
-        return self._request('zlist', 'urls', start=start, end=end)
+        start, end = self.date_range(days, start, end)
+        return self._get('zlist', 'urls', start=start, end=end)
 
     def get_pdns_data_by_name(self, name, rrtype=None, maxresults=1000):
         """
@@ -120,7 +152,8 @@ class Client(object):
         :param maxresults: Max Results to Return(default 1,000)
         :return: return a JSON object of the data
         """
-        return self._request('dns', 'name', name=name, rrType=rrtype, maxResults=maxresults)
+        return self._get('dns', 'name', name=name, rrType=rrtype,
+            maxResults=maxresults)
 
     def get_pdns_data_by_ip(self, ip, rrtype=None, maxresults=1000):
         """
@@ -130,7 +163,8 @@ class Client(object):
         :param maxresults: Max Results to Return(default 1,000)
         :return: return a JSON object of the data
         """
-        return self._request('dns', 'data', ip=ip, rrType=rrtype, maxResults=maxresults)
+        return self._get('dns', 'data', ip=ip, rrType=rrtype,
+            maxResults=maxresults)
 
     def get_pdns_ptr_by_ip(self, ip, rrtype=None, maxresults=1000):
         """
@@ -140,7 +174,8 @@ class Client(object):
         :param maxresults: Max Results to Return(default 1,000)
         :return: return a JSON object of the data
         """
-        return self._request('dns', 'name', ip=ip, rrType=rrtype, maxResults=maxresults)
+        return self._get('dns', 'name', ip=ip, rrType=rrtype,
+            maxResults=maxresults)
 
     def get_pdns_data_by_data(self, ip, rrtype=None, maxresults=1000):
         """
@@ -150,7 +185,7 @@ class Client(object):
         :param maxresults: Max Results to Return(default 1,000)
         :return: return a JSON object of the data
         """
-        return self._request('dns', 'data', name=ip, rrType=rrtype, maxResults=maxresults)
+        return self._get('dns', 'data', name=ip, rrType=rrtype, maxResults=maxresults)
 
     def submit_landing_page(self, url, project_name=None):
         """
@@ -162,4 +197,4 @@ class Client(object):
         data = {'url': url}
         if project_name:
             data['projectName'] = project_name
-        return self._submit('landingPage', '', data)
+        return self._post('landingPage', '', data)
