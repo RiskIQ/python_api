@@ -230,6 +230,27 @@ class Client(object):
             kwargs['filter'] = blacklist_filter
         return self._get('blacklist', 'list', **kwargs)
 
+    def get_blacklist_malware(self, blacklist_filter=None, confidence=None,
+        days=1, start=None, end=None):
+        """
+        Query blacklist incidents by url.
+        :param blacklist_filter: None, or one of
+            'blackhole', 'sakura', 'exploitKit'
+        :param confidence: to restrict the result set by malicious probability
+            'H', 'M', 'L' (high, medium, low)
+        :return: all blacklisted resources
+        """
+        start, end = self._date_range(days, start, end)
+        kwargs = {
+            'startDateInclusive': start,
+            'endDateExclusive': end,
+        }
+        if blacklist_filter is not None:
+            kwargs['filter'] = blacklist_filter
+        if confidence is not None:
+            kwargs['confidence'] = confidence
+        return self._get('blacklist', 'malware', **kwargs)
+
     def get_zlist_urls(self, days=1, start=None, end=None):
         """
         Get the current zlist urls.
