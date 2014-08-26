@@ -302,17 +302,6 @@ class Client(object):
         }
         return self._get('crawlVolume', 'dailySummary', **kwargs)
 
-    def get_zlist_urls(self, days=1, start=None, end=None):
-        """
-        Get the current zlist urls.
-        :param days: How many days you want to grab
-        :param start: Which date to start from, use time_format.
-        :param end: Date to end, use time_format.
-        :return:
-        """
-        start, end = date_range(days, start, end)
-        return self._get('zlist', 'urls', start=start, end=end)
-
     def get_dns_data_by_name(self, name, rrtype=None, maxresults=1000):
         """
         Get the passive dns results by hostname.
@@ -575,3 +564,14 @@ class Client(object):
         :return: proxy
         """
         return self._get('proxy', 'ip/%s' % ip)
+
+    def get_zlist_urls(self, days=1, start=None, end=None):
+        """
+        Get the current zlist urls.
+        :param days: How many days you want to grab
+        :param start: Which date to start from, use time_format.
+        :param end: Date to end, use time_format.
+        :return: all URLs
+        """
+        start, end = date_range(days, start, end)
+        return self._get('zlist', 'urls', start=start, end=end)
