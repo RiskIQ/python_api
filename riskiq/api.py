@@ -301,7 +301,7 @@ class Client(object):
         start, end = self._date_range(days, start, end)
         return self._get('zlist', 'urls', start=start, end=end)
 
-    def get_pdns_data_by_name(self, name, rrtype=None, maxresults=1000):
+    def get_dns_data_by_name(self, name, rrtype=None, maxresults=1000):
         """
         Get the passive dns results by hostname.
         :param name: hostname to query. Can also use wildcards, e.g. *.test.com
@@ -312,7 +312,7 @@ class Client(object):
         return self._get('dns', 'name', name=name, rrType=rrtype,
             maxResults=maxresults)
 
-    def get_pdns_data_by_ip(self, ip, rrtype=None, maxresults=1000):
+    def get_dns_data_by_ip(self, ip, rrtype=None, maxresults=1000):
         """
         Get the passive dns results by ip address, query data
         :param ip: IP address of query, can also include wildcard, e.g. 192.168.0.*
@@ -323,7 +323,7 @@ class Client(object):
         return self._get('dns', 'data', ip=ip, rrType=rrtype,
             maxResults=maxresults)
 
-    def get_pdns_ptr_by_ip(self, ip, rrtype=None, maxresults=1000):
+    def get_dns_ptr_by_ip(self, ip, rrtype=None, maxresults=1000):
         """
         Get the reverse dns of a particular IP.
         :param ip: IP Address to Query.
@@ -334,7 +334,7 @@ class Client(object):
         return self._get('dns', 'name', ip=ip, rrType=rrtype,
             maxResults=maxresults)
 
-    def get_pdns_data_by_data(self, ip, rrtype=None, maxresults=1000):
+    def get_dns_data_by_data(self, ip, rrtype=None, maxresults=1000):
         """
         Get the passive dns results by ip address, query data
         :param ip: IP address of query, can also include wildcard, e.g. 192.168.0.*
@@ -342,7 +342,8 @@ class Client(object):
         :param maxresults: Max Results to Return(default 1,000)
         :return: return a JSON object of the data
         """
-        return self._get('dns', 'data', name=ip, rrType=rrtype, maxResults=maxresults)
+        return self._get('dns', 'data', name=ip, rrType=rrtype, 
+            maxResults=maxresults)
 
     def submit_landing_page(self, url, project_name=None):
         """
