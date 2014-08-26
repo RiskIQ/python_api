@@ -1,47 +1,137 @@
 import sys
-from optparse import OptionParser
+import json
+
+from argparse import ArgumentParser
+
 from riskiq.api import Client
 from riskiq.config import Config
-from riskiq.output import BlacklistIncident, BlacklistEntry
+
+FILTERS = ('blackhole', 'sakura', 'exploitKit')
+CONFIDENCES = ('H', 'M', 'L')
+
+def bl_lookup(client, url, oneline=False, short=False, as_json=False):
+    data = client.get_blacklist_lookup(url)
+    if as_json:
+        print(json.dumps(data, indent=4))
+
+def bl_incident(client, url, oneline=False, short=False, as_json=False):
+    data = client.get_blacklist_incident(url)
+    if as_json:
+        print(json.dumps(data, indent=4))
+
+def bl_incidentlist(client, oneline=False, short=False, as_json=False,
+    **kwargs):
+    data = client.get_blacklist_incident_list(**kwargs)
+    if as_json:
+        print(json.dumps(data, indent=4))
+
+def bl_list(client, bl_filter=None, oneline=False, short=False, as_json=False,
+    **kwargs):
+    if bl_filter not in (None, ) + FILTERS:
+        raise ValueError('Invalid filter. Must be one of %s' % str(FILTERS))
+    data = client.get_blacklist_list(blacklist_filter=bl_filter, **kwargs)
+    if as_json:
+        print(json.dumps(data, indent=4))
+
+def bl_malware(client, oneline=False, short=False, as_json=False,
+    bl_filter=None, confidence=None, **kwargs):
+    if bl_filter not in (None, ) + FILTERS:
+        raise ValueError('Invalid filter.\nMust be one of %s' % str(FILTERS))
+    if confidence not in (None, ) + CONFIDENCES:
+        raise ValueError('Invalid confidence.\n'
+            'Must be one of %s' % str(CONFIDENCES))
+    data = client.get_blacklist_malware(blacklist_filter=bl_filter,
+        confidence=confidence, **kwargs)
+    if as_json:
+        print(json.dumps(data, indent=4))
 
 def main():
-    # TODO: Implement date range options
-    usage = "%prog [options] INDICATOR [...]"
-    parser = OptionParser(usage)
-    # parser.add_option('-g', '--global-incidents', dest='global_incidents', action='store_true', default=False,
-    #                   help='Global Incident List')
-    # parser.add_option('-i', '--incidents', dest='incidents', action='store_true', default=False,
-    #                   help='Workspace Incident List')
-    # parser.add_option('-m', '--malware', dest='malware', action='store_true', default=False, help='Malware Incidents')
-    # parser.add_option('-M', '--malware-confidence', dest='malware_confidence', action='store', default=None,
-    #                   help='Malware Confidence (L, M, H)')
-    parser.add_option('-j', '--json', dest='json', action="store_true", default=False, help="Output as JSON")
-    parser.add_option('-l', '--oneline', dest='oneline', action="store_true", default=False, help="Output in one single line (print blacklist match info one line per entry)")
-    parser.add_option('-s', '--short', dest='short', action="store_true", default=False, help="Output in short format (print matching input indicator only)")
-    options, args = parser.parse_args()
+    parser = ArgumentParser()
+    parser.add_argument('-l', '--oneline', action="store_true",
+        help="Output one line per entry")
+    parser.add_argument('-s', '--short', action="store_true",
+        help="Output in short format (print matching input indicator only)")
+    parser.add_argument('-j', '--json', action="store_true", dest='as_json',
+        help="Output as JSON")
+
+    subs = parser.add_subparsers(dest='cmd')
+
+    lookup_parser = subs.add_parser('lookup', help='Query blacklist on URL')
+    lookup_parser.add_argument('url')
+
+    incident_parser = subs.add_parser('incident', help='Query blacklist incident '
+        'on URL')
+    incident_parser.add_argument('url')
+
+    incident_list_parser = subs.add_parser('incidentlist',
+        help='query blacklist incidents within timeframe')
+    incident_list_parser.add_argument('--all-workspace-crawls', '-a',
+        action='store_true', help='Filter crawls to those on workspace')
+    incident_list_parser.add_argument('--days', '-d', default=1, type=int,
+        help='days to query')
+    incident_list_parser.add_argument('--start', '-s', default=None,
+        help='start datetime in yyyy-mm-dd HH:MM:SS format')
+    incident_list_parser.add_argument('--end', '-e', default=None,
+        help='end datetime in yyyy-mm-dd HH:MM:SS format')
+
+    list_parser = subs.add_parser('list', help = 'query blacklisted resources')
+    list_parser.add_argument('--filter', '-f', default=None,
+        help='Filter to one of "blackhole", "sakura" or "exploitKit"')
+    list_parser.add_argument('--days', '-d', default=1, type=int,
+        help='days to query')
+    list_parser.add_argument('--start', '-s', default=None,
+        help='start datetime in yyyy-mm-dd HH:MM:SS format')
+    list_parser.add_argument('--end', '-e', default=None,
+        help='end datetime in yyyy-mm-dd HH:MM:SS format')
+
+    malware_parser = subs.add_parser('malware',
+        help='Query for all discovered malware resources generated within a '
+            'particular period.')
+    malware_parser.add_argument('--filter', '-f', default=None,
+        help='Filter to one of "blackhole", "sakura" or "exploitKit"')
+    malware_parser.add_argument('--confidence', '-c', default=None,
+        help='Restrict results to malicious probability of H, M, or L\n'
+            '(high, medium or low)')
+    malware_parser.add_argument('--days', '-d', default=1, type=int,
+        help='days to query')
+    malware_parser.add_argument('--start', '-s', default=None,
+        help='start datetime in yyyy-mm-dd HH:MM:SS format')
+    malware_parser.add_argument('--end', '-e', default=None,
+        help='end datetime in yyyy-mm-dd HH:MM:SS format')
+
+    args = parser.parse_args()
     config = Config()
     client = Client(token=config.get('api_token'), key=config.get('api_private_key'),
                     server=config.get('api_server'), version=config.get('api_version'))
 
-    # TODO: Global Blacklist Downloads
-    if not args:
-        parser.print_help()
-        sys.exit(-1)
-    results = []
-
-    for arg in args:
-        result = client.get_blacklist_lookup(arg)
-        if result:
-            results.append(result)
-    results = BlacklistEntry(results)
-    if options.json:
-        print results.json
-    elif options.short:
-        print results.short
-    elif options.oneline:
-        print results.oneline
-    else:
-        print results.text
+    kwargs = {'as_json': args.as_json, 'oneline': args.oneline, 
+        'short': args.short}
+    if hasattr(args, 'days'):
+        kwargs['days'] = args.days
+        kwargs['start'] = args.start
+        kwargs['end'] = args.end
+    if args.cmd == 'lookup':
+        bl_lookup(client, args.url, **kwargs)
+    elif args.cmd == 'incidentlist':
+        bl_incidentlist(client, all_workspace_crawls=args.all_workspace_crawls,
+            **kwargs)
+    elif args.cmd == 'incident':
+        bl_incident(client, args.url, **kwargs)
+    elif args.cmd == 'list':
+        try:
+            bl_list(client, bl_filter=args.filter, **kwargs)
+        except ValueError as e:
+            print(args.usage())
+            print(str(e))
+            sys.exit(1)
+    elif args.cmd == 'malware':
+        try:
+            bl_malware(client, bl_filter=args.filter,
+                confidence=args.confidence, **kwargs)
+        except ValueError as e:
+            print(args.usage())
+            print(str(e))
+            sys.exit(1)
 
 if __name__ == '__main__':
     main()
