@@ -167,6 +167,14 @@ class Client(object):
             kwargs['client_workspace_only'] = client_workspace_only
         return self._get('binary', 'list', **kwargs)
 
+    def get_binary_data(self, md5_hash):
+        """
+        Return the affiliate campaign summary report for the given date range.
+        :param md5_hash: md5 hash of the binary data
+        :return: object containing a dict with 'data' key encoded in base64
+        """
+        return self._get('binary', 'data', md5=md5_hash)
+
     def get_blacklist_lookup(self, url):
         """
         Query blacklist on url.
