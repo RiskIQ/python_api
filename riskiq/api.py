@@ -271,7 +271,7 @@ class Client(object):
             kwargs['confidence'] = confidence
         return self._get('blacklist', 'malware', **kwargs)
 
-    def get_blacklist_exploit_binary(self, days=1, start=None, end=None):
+    def __get_blacklist_exploit_binary(self, days=1, start=None, end=None):
         """
         Query for all PE format binaries on webpages used for exploitation
         :param days: How many days to include from today(for generating 30 day time windows, etc.)
@@ -279,6 +279,7 @@ class Client(object):
         :param end: Override end date
         :return: all binaries
         """
+        raise NotImplementedError('Not implemented server-side')
         start, end = date_range(days, start, end)
         kwargs = {
             'startDateInclusive': start,
@@ -304,7 +305,7 @@ class Client(object):
     def get_zlist_urls(self, days=1, start=None, end=None):
         """
         Get the current zlist urls.
-        :param days: How many days you want to grab(if this is set, start and end are ignored)
+        :param days: How many days you want to grab
         :param start: Which date to start from, use time_format.
         :param end: Date to end, use time_format.
         :return:
@@ -385,7 +386,7 @@ class Client(object):
         """
         List landing pages by crawl date - maximum of 100
         :param whois: Bool, whether to include whois information
-        :param days: How many days you want to grab(if this is set, start and end are ignored)
+        :param days: How many days you want to grab
         :param start: Which date to start from, use time_format.
         :param end: Date to end, use time_format.
         :return: landing page data
@@ -404,7 +405,7 @@ class Client(object):
         """
         List landing pages by known profile creation date - maximum of 100
         :param whois: Bool, whether to include whois information
-        :param days: How many days you want to grab(if this is set, start and end are ignored)
+        :param days: How many days you want to grab
         :param start: Which date to start from, use time_format.
         :param end: Date to end, use time_format.
         :return: landing page data
@@ -433,7 +434,7 @@ class Client(object):
         """
         List landing pages with malicious binary incidents.
         :param whois: Bool, whether to include whois information
-        :param days: How many days you want to grab(if this is set, start and end are ignored)
+        :param days: How many days you want to grab
         :param start: Which date to start from, use time_format.
         :param end: Date to end, use time_format.
         :return: landing page data
@@ -469,3 +470,23 @@ class Client(object):
         """
         return self._get('mobile/android', 'lookup', url=url)
 
+    def get_mobile_incident(self, incident_id):
+        """
+        Retrieve an mobile app incident by ID.
+        If the incident is not found, 404 NOT FOUND is returned.
+        :param incident_id: Long int ID
+        :return: mobile incident
+        """
+        return self._get('mobile/incident', str(incident_id))
+
+    def get_mobile_incident_list(self, days=1, start=None, end=None):
+        """
+        List app incidents by their incident creation date.
+        :param days: How many days you want to grab
+        :param start: Which date to start from, use time_format.
+        :param end: Date to end, use time_format.
+        :return: mobile incidents
+        """
+        start, end = date_range(days, start, end)
+        return self._get('mobile/incident', 'list', 
+            startDateInclusive=start, endDateExclusive=end)
