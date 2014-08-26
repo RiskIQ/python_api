@@ -449,3 +449,23 @@ class Client(object):
         List all projects that landing pages may be submitted to.
         """
         return self._get('landingPage', 'projects')
+
+    def get_android(self, package_name):
+        """
+        Retrieve an android application by package name.
+        If the app is not found, 404 NOT FOUND is returned.
+        :param package_name: name of android package
+        :return: the requested app
+        """
+        return self._get('mobile/android', package_name)
+
+    def get_android_lookup(self, url):
+        """
+        Retrieve an android app by store URL.
+        The store URL should be of the form
+        https://play.google.com/store/apps/details?id=[package name]
+        :param url: The store URL
+        :return: app details
+        """
+        return self._get('mobile/android', 'lookup', url=url)
+
