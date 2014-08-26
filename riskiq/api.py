@@ -190,7 +190,7 @@ class Client(object):
         """
         Query blacklist incidents by url.
         :param url: URL to query blacklist on.
-        :return: Blacklist Dict
+        :return: Blacklist incident
         """
         return self._get('blacklist', 'incident', url=url)
 
@@ -202,7 +202,7 @@ class Client(object):
         :param all_workspace_crawls:False by default, filtered to crawls that 
             are either landing pages, site scanning, or matching a brand 
             classifier
-        :return: Blacklist Dict
+        :return: Blacklist list
         """
         start, end = self._date_range(days, start, end)
         kwargs = {
@@ -212,6 +212,23 @@ class Client(object):
         if all_workspace_crawls is not None:
             kwargs['all_workspace_crawls'] = all_workspace_crawls
         return self._get('blacklist/incident', 'list', **kwargs)
+
+    def get_blacklist_list(self, blacklist_filter=None, 
+        days=1, start=None, end=None):
+        """
+        Query blacklist incidents by url.
+        :param blacklist_filter: None, or one of
+            'blackhole', 'sakura', 'exploitKit'
+        :return: all blacklisted resources
+        """
+        start, end = self._date_range(days, start, end)
+        kwargs = {
+            'startDateInclusive': start,
+            'endDateExclusive': end,
+        }
+        if blacklist_filter is not None:
+            kwargs['filter'] = blacklist_filter
+        return self._get('blacklist', 'list', **kwargs)
 
     def get_zlist_urls(self, days=1, start=None, end=None):
         """
