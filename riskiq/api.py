@@ -127,7 +127,7 @@ class Client(object):
         max_results=None, days=1, start=None, end=None):
         """
         Return the affiliate campaign summary report for the given date range.
-        :param known_profile: Boolean, only return incidents that match a known profile
+        :param known_profile: Bool, only return incidents that match a known profile
         :param max_results: maximum number of results to return
         :param days: How many days to include from today(for generating 30 day time windows, etc.)
         :param start: Override start date.
@@ -144,6 +144,28 @@ class Client(object):
         if max_results is not None:
             kwargs['maxResults'] = max_results
         return self._get('affiliate/incident', 'list', **kwargs)
+    
+    def get_binary_list(self, virus_total_only=None,
+            client_workspace_only=None, days=1, start=None, end=None):
+        """
+        Return the affiliate campaign summary report for the given date range.
+        :param virus_total_only: Bool, only include those flagged by VT
+        :param client_workspace_only: Bool, only include those found in crawls
+        :param days: How many days to include from today(for generating 30 day time windows, etc.)
+        :param start: Override start date.
+        :param end: Override end date
+        :return: data containing the number of results and the objects
+        """
+        start, end = self._date_range(days, start, end)
+        kwargs = {
+            'startDateInclusive': start,
+            'endDateExclusive': end,
+        }
+        if virus_total_only is not None:
+            kwargs['virus_total_only'] = virus_total_only
+        if client_workspace_only is not None:
+            kwargs['client_workspace_only'] = client_workspace_only
+        return self._get('binary', 'list', **kwargs)
 
     def get_blacklist_lookup(self, url):
         """
