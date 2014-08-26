@@ -477,7 +477,7 @@ class Client(object):
         :param incident_id: Long int ID
         :return: mobile incident
         """
-        return self._get('mobile/incident', str(incident_id))
+        return self._get('mobile/incident', '%d' % incident_id)
 
     def get_mobile_incident_list(self, days=1, start=None, end=None):
         """
@@ -553,3 +553,18 @@ class Client(object):
         return self._get('page', '%s/%s/%s/response' % 
             (crawl_guid, page_guid, child_guid)
         )
+    
+    def get_project_list(self):
+        """
+        List all projects.
+        """
+        return self._get('project', 'list')
+
+    def get_project_keywords(self, project_id):
+        """
+        List all keywords associated to specified project.
+        :param project_id: Integer ID of the project
+        :return: Keywords of project
+        """
+        return self._get('project', '%d/keywords' % project_id)
+
