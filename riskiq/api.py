@@ -427,3 +427,20 @@ class Client(object):
         """
         data = {'entry': [{'url': url} for url in urls]}
         return self._post('landingPage', 'bulk', data)
+
+    def get_landing_page_malicious_binary(self, whois=None,
+        days=1, start=None, end=None):
+        """
+        List landing pages with malicious binary incidents.
+        :param whois: Bool, whether to include whois information
+        :param days: How many days you want to grab(if this is set, start and end are ignored)
+        :param start: Which date to start from, use time_format.
+        :param end: Date to end, use time_format.
+        :return: landing page data
+        """
+        start, end = date_range(days, start, end)
+        kwargs = { 'start': start, 'end': end }
+        if whois is not None:
+            kwargs['whois'] = whois
+        return self._get('landingPage', 'maliciousBinary', **kwargs)
+
