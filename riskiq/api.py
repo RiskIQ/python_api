@@ -490,3 +490,66 @@ class Client(object):
         start, end = date_range(days, start, end)
         return self._get('mobile/incident', 'list', 
             startDateInclusive=start, endDateExclusive=end)
+
+    def get_page(self, crawl_guid, page_guid):
+        """
+        retrieve a page and return it
+        :param crawl_guid: crawl GUID
+        :param page_guid: page GUID
+        :return: requested page
+        """
+        return self._get('page', '%s/%s' % (crawl_guid, page_guid))
+
+    def get_page_dom(self, crawl_guid, page_guid):
+        """
+        retrieve a page and return its DOM
+        :param crawl_guid: crawl GUID
+        :param page_guid: page GUID
+        :return: requested page
+        """
+        return self._get('page', '%s/%s/dom' % (crawl_guid, page_guid))
+
+    def get_page_response(self, crawl_guid, page_guid):
+        """
+        retrieve a page and return it
+        :param crawl_guid: crawl GUID
+        :param page_guid: page GUID
+        :return: requested page
+        """
+        return self._get('page', '%s/%s/response' % (crawl_guid, page_guid))
+
+    def get_page_child_dom(self, crawl_guid, page_guid, child_guid):
+        """
+        retrieve a page and return its DOM
+        :param crawl_guid: crawl GUID
+        :param page_guid: page GUID
+        :param child_guid: child GUID
+        :return: requested page
+        """
+        return self._get('page', '%s/%s/%s/dom' % 
+            (crawl_guid, page_guid, child_guid)
+        )
+
+    def get_page_child_dom_text(self, crawl_guid, page_guid, child_guid):
+        """
+        retrieve a page and return its DOM text
+        :param crawl_guid: crawl GUID
+        :param page_guid: page GUID
+        :param child_guid: child GUID
+        :return: requested page
+        """
+        return self._get('page', '%s/%s/%s/domText' % 
+            (crawl_guid, page_guid, child_guid)
+        )
+
+    def get_page_child_response(self, crawl_guid, page_guid, child_guid):
+        """
+        retrieve a page and return its response
+        :param crawl_guid: crawl GUID
+        :param page_guid: page GUID
+        :param child_guid: child GUID
+        :return: requested page
+        """
+        return self._get('page', '%s/%s/%s/response' % 
+            (crawl_guid, page_guid, child_guid)
+        )
