@@ -37,11 +37,11 @@ def main():
             else:
                 qtype = 'query'
         if qtype == 'data':
-            results.append(client.get_pdns_data_by_data(arg, rrtype=options.rrtype))
+            results.append(client.get_dns_data_by_data(arg, rrtype=options.rrtype))
         if qtype == 'ip':
-            results.append(client.get_pdns_data_by_ip(arg, rrtype=options.rrtype))
+            results.append(client.get_dns_data_by_ip(arg, rrtype=options.rrtype))
         if qtype == 'query':
-            results.append(client.get_pdns_data_by_name(arg, rrtype=options.rrtype))
+            results.append(client.get_dns_data_by_name(arg, rrtype=options.rrtype))
     results = PassiveDNS(results)
     if options.json:
         print results.json
