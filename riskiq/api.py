@@ -250,7 +250,8 @@ class Client(object):
     def get_blacklist_malware(self, blacklist_filter=None, confidence=None,
         days=1, start=None, end=None):
         """
-        Query blacklist incidents by url.
+        Query for all discovered malware resources generated within a 
+        particular period. 
         :param blacklist_filter: None, or one of
             'blackhole', 'sakura', 'exploitKit'
         :param confidence: to restrict the result set by malicious probability
