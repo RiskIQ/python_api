@@ -444,3 +444,8 @@ class Client(object):
             kwargs['whois'] = whois
         return self._get('landingPage', 'maliciousBinary', **kwargs)
 
+    def get_landing_page_projects(self):
+        """
+        List all projects that landing pages may be submitted to.
+        """
+        return self._get('landingPage', 'projects')
