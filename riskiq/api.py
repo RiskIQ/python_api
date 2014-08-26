@@ -4,11 +4,45 @@ RiskIQ API
 """
 __author__ = 'RiskIQ Research'
 __version__ = '0.1-ALPHA'
-import requests
-from datetime import timedelta
-from datetime import datetime
 import json
+from datetime import timedelta, datetime
 
+import requests
+
+# Acceptable string time format for all requests
+TIME_FORMAT = '%Y-%m-%d'
+
+def format_date(day):
+    """
+    Generates a date string in the required format from a datetime object.
+    :param day: Datetime object
+    :return: string in acceptable date format
+    """
+    return datetime.strftime(day, TIME_FORMAT)
+
+def date_range(days=1, start=None, end=None, exclusive=True):
+    """
+    Generate a start date and an end date based off of how many days. 
+    :param days: How many days to include from today(for generating 30 day time windows, etc.)
+    :param start: Override start date.
+    :param end: Override end date
+    :param exclusive: Whether end date is exclusive (usually)
+    :return: (start, end) tuple of strings in acceptable date format
+    """
+    if not any([days, start, end]):
+        return None, None
+    if start is None:
+        start = format_date(datetime.now() - timedelta(days=days))
+    elif isinstance(start, datetime):
+        start = format_date(start)
+    if end is None:
+        if exclusive:
+            end = format_date(datetime.now() + timedelta(days=1))
+        else:
+            end = format_date(datetime.now())
+    elif isinstance(end, datetime):
+        end = format_date(end)
+    return start, end
 
 class Client(object):
     """
@@ -21,7 +55,6 @@ class Client(object):
             'Accept': 'Application/JSON',
             'Content-Type': 'Application/JSON',
         }
-        self.time_format = '%Y-%m-%d'
 
     def _endpoint(self, endpoint, action, *urlparams, **params):
         """
@@ -87,30 +120,6 @@ class Client(object):
         response = requests.post(api_url, auth=self.auth, headers=self.headers, verify=True, data=data, params=params)
         return self._json(response)
 
-    def _date(self, day):
-        """
-        Generates a date string in the required format from a datetime object.
-        :param day: Datetime object
-        :return: string in acceptable date format
-        """
-        return datetime.strftime(day, self.time_format)
-
-    def _date_range(self, days=1, start=None, end=None):
-        """
-        Generate a start date and an end date based off of how many days. 
-        For use with inclusive dates.
-        :param days: How many days to include from today(for generating 30 day time windows, etc.)
-        :param start: Override start date.
-        :param end: Override end date
-        :return: (start, end) tuple of strings in acceptable date format
-        """
-        if start is None or days > 1:
-            start = datetime.strftime(datetime.now() - timedelta(days=days), 
-                self.time_format)
-        if end is None or days > 1:
-            end = datetime.strftime(datetime.now(), self.time_format)
-        return start, end
-
     def get_affiliate_campaign_summary(self, days=1, start=None, end=None):
         """
         Return the affiliate campaign summary report for the given date range.
@@ -119,7 +128,7 @@ class Client(object):
         :param end: Override end date
         :return: data containing the number of results and the objects
         """
-        start, end = self._date_range(days, start, end)
+        start, end = date_range(days, start, end)
         return self._get('affiliate', 'campaignSummary', 
             startDateInclusive=start, endDateExclusive=end)
 
@@ -134,7 +143,7 @@ class Client(object):
         :param end: Override end date
         :return: data containing the number of results and the objects
         """
-        start, end = self._date_range(days, start, end)
+        start, end = date_range(days, start, end)
         kwargs = {
             'startDateInclusive': start,
             'endDateExclusive': end,
@@ -156,7 +165,7 @@ class Client(object):
         :param end: Override end date
         :return: data containing the number of results and the objects
         """
-        start, end = self._date_range(days, start, end)
+        start, end = date_range(days, start, end)
         kwargs = {
             'startDateInclusive': start,
             'endDateExclusive': end,
@@ -207,7 +216,7 @@ class Client(object):
         :param end: Override end date
         :return: Blacklist list
         """
-        start, end = self._date_range(days, start, end)
+        start, end = date_range(days, start, end)
         kwargs = {
             'startDateInclusive': start,
             'endDateExclusive': end,
@@ -227,7 +236,7 @@ class Client(object):
         :param end: Override end date
         :return: all blacklisted resources
         """
-        start, end = self._date_range(days, start, end)
+        start, end = date_range(days, start, end)
         kwargs = {
             'startDateInclusive': start,
             'endDateExclusive': end,
@@ -249,7 +258,7 @@ class Client(object):
         :param end: Override end date
         :return: all blacklisted resources
         """
-        start, end = self._date_range(days, start, end)
+        start, end = date_range(days, start, end)
         kwargs = {
             'startDateInclusive': start,
             'endDateExclusive': end,
@@ -268,7 +277,7 @@ class Client(object):
         :param end: Override end date
         :return: all binaries
         """
-        start, end = self._date_range(days, start, end)
+        start, end = date_range(days, start, end)
         kwargs = {
             'startDateInclusive': start,
             'endDateExclusive': end,
@@ -283,7 +292,7 @@ class Client(object):
         :param end: Override end date
         :return: crawl volume daily summary
         """
-        start, end = self._date_range(days, start, end)
+        start, end = date_range(days, start, end)
         kwargs = {
             'startDateInclusive': start,
             'endDateInclusive': end,
@@ -298,7 +307,7 @@ class Client(object):
         :param end: Date to end, use time_format.
         :return:
         """
-        start, end = self._date_range(days, start, end)
+        start, end = date_range(days, start, end)
         return self._get('zlist', 'urls', start=start, end=end)
 
     def get_dns_data_by_name(self, name, rrtype=None, maxresults=1000):
@@ -345,6 +354,18 @@ class Client(object):
         return self._get('dns', 'data', name=ip, rrType=rrtype, 
             maxResults=maxresults)
 
+    def get_landing_page(self, md5_hash, whois=None):
+        """
+        Retrieve a single landing page by MD5.
+        :param md5_hash: md5 of the landing page
+        :param whois: Bool, whether to include whois information
+        :return: landing page data
+        """
+        kwargs = {}
+        if whois is not None:
+            kwargs['whois'] = whois
+        return self._get('landingPage', md5_hash, **kwargs)
+
     def submit_landing_page(self, url, project_name=None):
         """
         Submit a single landing page.
@@ -356,3 +377,22 @@ class Client(object):
         if project_name:
             data['projectName'] = project_name
         return self._post('landingPage', '', data)
+
+    def get_landing_page_crawled(self, whois=None,
+        days=None, start=None, end=None):
+        """
+        Retrieve a single landing page by MD5.
+        :param whois: Bool, whether to include whois information
+        :param days: How many days you want to grab(if this is set, start and end are ignored)
+        :param start: Which date to start from, use time_format.
+        :param end: Date to end, use time_format.
+        :return: landing page data
+        """
+        start, end = date_range(days, start, end)
+        if any([days, start, end]):
+            kwargs = { 'start': start, 'end': end }
+        else:
+            kwargs = {}
+        if whois is not None:
+            kwargs['whois'] = whois
+        return self._get('landingPage', 'crawled', **kwargs)
