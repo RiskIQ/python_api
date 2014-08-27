@@ -57,21 +57,26 @@ def bl_malware(client, oneline=False, as_json=False,
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument('-l', '--oneline', action="store_true",
-        help="Output one line per entry")
-    #parser.add_argument('-s', '--short', action="store_true",
-        #help="Output in short format (print matching input indicator only)")
-    parser.add_argument('-j', '--json', action="store_true", dest='as_json',
-        help="Output as JSON")
-
     subs = parser.add_subparsers(dest='cmd')
 
     lookup_parser = subs.add_parser('lookup', help='Query blacklist on URL')
     lookup_parser.add_argument('url')
+    lookup_parser.add_argument('-l', '--oneline', action="store_true",
+        help="Output one line per entry")
+    #lookup_parser.add_argument('-s', '--short', action="store_true",
+        #help="Output in short format (print matching input indicator only)")
+    lookup_parser.add_argument('-j', '--json', action="store_true", dest='as_json',
+        help="Output as JSON")
 
     incident_parser = subs.add_parser('incident', help='Query blacklist incident '
         'on URL')
     incident_parser.add_argument('url')
+    incident_parser.add_argument('-l', '--oneline', action="store_true",
+        help="Output one line per entry")
+    #incident_parser.add_argument('-s', '--short', action="store_true",
+        #help="Output in short format (print matching input indicator only)")
+    incident_parser.add_argument('-j', '--json', action="store_true", dest='as_json',
+        help="Output as JSON")
 
     incident_list_parser = subs.add_parser('incidentlist',
         help='query blacklist incidents within timeframe')
@@ -83,6 +88,12 @@ def main():
         help='start datetime in yyyy-mm-dd HH:MM:SS format')
     incident_list_parser.add_argument('--end', '-e', default=None,
         help='end datetime in yyyy-mm-dd HH:MM:SS format')
+    incident_list_parser.add_argument('-l', '--oneline', action="store_true",
+        help="Output one line per entry")
+    #incident_list_parser.add_argument('-s', '--short', action="store_true",
+        #help="Output in short format (print matching input indicator only)")
+    incident_list_parser.add_argument('-j', '--json', action="store_true",
+        dest='as_json', help="Output as JSON")
 
     list_parser = subs.add_parser('list', help = 'query blacklisted resources')
     list_parser.add_argument('--filter', '-f', default=None,
@@ -93,6 +104,12 @@ def main():
         help='start datetime in yyyy-mm-dd HH:MM:SS format')
     list_parser.add_argument('--end', '-e', default=None,
         help='end datetime in yyyy-mm-dd HH:MM:SS format')
+    list_parser.add_argument('-l', '--oneline', action="store_true",
+        help="Output one line per entry")
+    #list_parser.add_argument('-s', '--short', action="store_true",
+        #help="Output in short format (print matching input indicator only)")
+    list_parser.add_argument('-j', '--json', action="store_true",
+        dest='as_json', help="Output as JSON")
 
     malware_parser = subs.add_parser('malware',
         help='Query for all discovered malware resources generated within a '
@@ -108,6 +125,12 @@ def main():
         help='start datetime in yyyy-mm-dd HH:MM:SS format, or "today HH:MM:SS"')
     malware_parser.add_argument('--end', '-e', default=None,
         help='end datetime in yyyy-mm-dd HH:MM:SS format, or "today HH:MM:SS"')
+    malware_parser.add_argument('-l', '--oneline', action="store_true",
+        help="Output one line per entry")
+    #malware_parser.add_argument('-s', '--short', action="store_true",
+        #help="Output in short format (print matching input indicator only)")
+    malware_parser.add_argument('-j', '--json', action="store_true",
+        dest='as_json', help="Output as JSON")
 
     args = parser.parse_args()
     config = Config()

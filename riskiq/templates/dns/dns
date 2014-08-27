@@ -1,0 +1,9 @@
+{% for record in data.records %}
+Name:        {{record.name}}
+Type:        {{record.rrtype}}
+Last Seen:   {{record.lastSeen}}
+First Seen:  {{record.firstSeen}}
+Data:        {% for datum in record.data %}
+             {{ datum }}
+             {%- endfor %}
+{% endfor %}

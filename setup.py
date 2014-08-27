@@ -24,14 +24,17 @@ setup(
     ],
     entry_points = {
         'console_scripts': [
-            'riq-pdns = riskiq.cli.pdns:main',
+            'riq-dns = riskiq.cli.dns:main',
             'riq-config = riskiq.cli.config:main',
             'riq-blacklist = riskiq.cli.blacklist:main',
             #'riq-mobile = riskiq.cli.mobile:main',
         ],
     },
     package_data = {
-        'riskiq': ['templates/blacklist/*'],
+        'riskiq': [
+            'templates/blacklist/*',
+            'templates/dns/dns',
+        ],
     },
     include_package_data = True,
 )

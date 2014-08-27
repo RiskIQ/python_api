@@ -343,7 +343,7 @@ class Client(object):
         return self._get('dns', 'name', ip=ip, rrType=rrtype,
             maxResults=maxresults)
 
-    def get_dns_data_by_data(self, ip, rrtype=None, maxresults=1000):
+    def get_dns_data_by_data(self, hostname, rrtype=None, maxresults=1000):
         """
         Get the passive dns results by ip address, query data
         :param ip: IP address of query, can also include wildcard, e.g. 192.168.0.*
@@ -351,7 +351,7 @@ class Client(object):
         :param maxresults: Max Results to Return(default 1,000)
         :return: return a JSON object of the data
         """
-        return self._get('dns', 'data', name=ip, rrType=rrtype, 
+        return self._get('dns', 'data', name=hostname, rrType=rrtype, 
             maxResults=maxresults)
 
     def get_landing_page(self, md5_hash, whois=None):
