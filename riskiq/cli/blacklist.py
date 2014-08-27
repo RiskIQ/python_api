@@ -13,7 +13,7 @@ def bl_lookup(client, url, oneline=False, short=False, as_json=False):
     data = client.get_blacklist_lookup(url)
     if as_json:
         print(json.dumps(data, indent=4))
-    else:
+    elif data:
         print(renderer(data, 'blacklist/lookup'))
 
 def bl_incident(client, url, oneline=False, short=False, as_json=False):
