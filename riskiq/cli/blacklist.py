@@ -28,6 +28,8 @@ def bl_incidentlist(client, oneline=False, short=False, as_json=False,
     data = client.get_blacklist_incident_list(**kwargs)
     if as_json:
         print(json.dumps(data, indent=4))
+    else:
+        print(renderer(data, 'blacklist/incident'))
 
 def bl_list(client, bl_filter=None, oneline=False, short=False, as_json=False,
     **kwargs):
