@@ -1,0 +1,15 @@
+{% for incident in data.incident %}
+ID:          {{incident.id}}
+URL:         {{incident.resource.url}}
+IP:          {{incident.resource.ip}}
+Score:       {{incident.resource.score}}
+Rank:        {{incident.resource.rank}}
+Type:        {{incident.resource.matchType}}
+RiskIQ Link: {{incident.resource.incidentLink}}
+Malware:     {{incident.resource.malware}}
+Phishing:    {{incident.resource.phishing}}
+Spam:        {{incident.resource.spam}}
+Entries:{% for entry in incident.resource.entries %}
+             URL:  {{entry.url}}
+             Type: {{entry.type}}
+        {% endfor %}{% endfor %}
