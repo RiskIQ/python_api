@@ -38,6 +38,8 @@ def bl_list(client, bl_filter=None, oneline=False, short=False, as_json=False,
     data = client.get_blacklist_list(blacklist_filter=bl_filter, **kwargs)
     if as_json:
         print(json.dumps(data, indent=4))
+    else:
+        print(renderer(data, 'blacklist/malware'))
 
 def bl_malware(client, oneline=False, short=False, as_json=False,
     bl_filter=None, confidence=None, **kwargs):
@@ -50,6 +52,8 @@ def bl_malware(client, oneline=False, short=False, as_json=False,
         confidence=confidence, **kwargs)
     if as_json:
         print(json.dumps(data, indent=4))
+    else:
+        print(renderer(data, 'blacklist/malware'))
 
 def main():
     parser = ArgumentParser()
@@ -127,7 +131,7 @@ def main():
         try:
             bl_list(client, bl_filter=args.filter, **kwargs)
         except ValueError as e:
-            print(args.usage())
+            parser.print_usage()
             print(str(e))
             sys.exit(1)
     elif args.cmd == 'malware':
@@ -135,7 +139,7 @@ def main():
             bl_malware(client, bl_filter=args.filter,
                 confidence=args.confidence, **kwargs)
         except ValueError as e:
-            print(args.usage())
+            parser.print_usage()
             print(str(e))
             sys.exit(1)
 

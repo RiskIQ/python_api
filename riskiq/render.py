@@ -13,4 +13,4 @@ def renderer(data, datatype):
     with open(template_path) as temp_f:
         template_text = temp_f.read()
     template = Template(template_text)
-    return template.render(data=data)
+    return template.render(data=data).encode('utf-8')
