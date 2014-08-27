@@ -9,29 +9,29 @@ from riskiq.render import renderer
 FILTERS = ('blackhole', 'sakura', 'exploitKit')
 CONFIDENCES = ('H', 'M', 'L')
 
-def bl_lookup(client, url, oneline=False, short=False, as_json=False):
+def bl_lookup(client, url, oneline=False, as_json=False):
     data = client.get_blacklist_lookup(url)
     if as_json:
         print(json.dumps(data, indent=4))
     elif data:
-        print(renderer(data, 'blacklist/lookup'))
+        print(renderer(data, 'blacklist/lookup', oneline=oneline))
 
-def bl_incident(client, url, oneline=False, short=False, as_json=False):
+def bl_incident(client, url, oneline=False, as_json=False):
     data = client.get_blacklist_incident(url)
     if as_json:
         print(json.dumps(data, indent=4))
     elif data:
-        print(renderer(data, 'blacklist/incident'))
+        print(renderer(data, 'blacklist/incident', oneline=oneline))
 
-def bl_incidentlist(client, oneline=False, short=False, as_json=False,
+def bl_incidentlist(client, oneline=False, as_json=False,
     **kwargs):
     data = client.get_blacklist_incident_list(**kwargs)
     if as_json:
         print(json.dumps(data, indent=4))
     elif data:
-        print(renderer(data, 'blacklist/incident'))
+        print(renderer(data, 'blacklist/incident', oneline=oneline))
 
-def bl_list(client, bl_filter=None, oneline=False, short=False, as_json=False,
+def bl_list(client, bl_filter=None, oneline=False, as_json=False,
     **kwargs):
     if bl_filter not in (None, ) + FILTERS:
         raise ValueError('Invalid filter. Must be one of %s' % str(FILTERS))
@@ -39,9 +39,9 @@ def bl_list(client, bl_filter=None, oneline=False, short=False, as_json=False,
     if as_json:
         print(json.dumps(data, indent=4))
     elif data:
-        print(renderer(data, 'blacklist/malware'))
+        print(renderer(data, 'blacklist/malware', oneline=oneline))
 
-def bl_malware(client, oneline=False, short=False, as_json=False,
+def bl_malware(client, oneline=False, as_json=False,
     bl_filter=None, confidence=None, **kwargs):
     if bl_filter not in (None, ) + FILTERS:
         raise ValueError('Invalid filter.\nMust be one of %s' % str(FILTERS))
@@ -53,14 +53,14 @@ def bl_malware(client, oneline=False, short=False, as_json=False,
     if as_json:
         print(json.dumps(data, indent=4))
     elif data:
-        print(renderer(data, 'blacklist/malware'))
+        print(renderer(data, 'blacklist/malware', oneline=oneline))
 
 def main():
     parser = ArgumentParser()
     parser.add_argument('-l', '--oneline', action="store_true",
         help="Output one line per entry")
-    parser.add_argument('-s', '--short', action="store_true",
-        help="Output in short format (print matching input indicator only)")
+    #parser.add_argument('-s', '--short', action="store_true",
+        #help="Output in short format (print matching input indicator only)")
     parser.add_argument('-j', '--json', action="store_true", dest='as_json',
         help="Output as JSON")
 
@@ -114,8 +114,7 @@ def main():
     client = Client(token=config.get('api_token'), key=config.get('api_private_key'),
                     server=config.get('api_server'), version=config.get('api_version'))
 
-    kwargs = {'as_json': args.as_json, 'oneline': args.oneline, 
-        'short': args.short}
+    kwargs = {'as_json': args.as_json, 'oneline': args.oneline}
     if hasattr(args, 'days'):
         kwargs['days'] = args.days
         kwargs['start'] = args.start

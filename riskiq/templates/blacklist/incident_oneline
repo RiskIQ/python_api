@@ -1,0 +1,11 @@
+{% for incident in data.incident -%}
+{{incident.resource.url}}
+{%- if incident.resource.description -%}
+        |{{incident.resource.description}}
+{%- else -%}
+        |NODESC
+{%- endif -%}
+|{% for entry in incident.resource.entries -%}
+        {{entry.id}}/{{entry.detectedAt}}/{{entry.description}},
+{%- endfor %}
+{% endfor %}
