@@ -13,6 +13,9 @@ import requests
 TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 TIME_FORMAT_DAY = '%Y-%m-%d 00:00:00'
 
+def today():
+    return datetime.strftime(datetime.now(), '%Y-%m-%d')
+
 def format_date(dt, day=False):
     """
     Generates a date string in the required format from a datetime object.
@@ -40,10 +43,14 @@ def date_range(days=1, start=None, end=None):
         start = format_date(datetime.now() - timedelta(days=days-1), day=True)
     elif isinstance(start, datetime):
         start = format_date(start)
+    elif isinstance(start, basestring):
+        start = start.replace('today', today())
     if end is None:
         end = format_date(datetime.now())
     elif isinstance(end, datetime):
         end = format_date(end)
+    elif isinstance(end, basestring):
+        end = end.replace('today', today())
     return start, end
 
 class Client(object):

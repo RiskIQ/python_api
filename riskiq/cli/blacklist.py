@@ -105,9 +105,9 @@ def main():
     malware_parser.add_argument('--days', '-d', default=1, type=int,
         help='days to query')
     malware_parser.add_argument('--start', '-s', default=None,
-        help='start datetime in yyyy-mm-dd HH:MM:SS format')
+        help='start datetime in yyyy-mm-dd HH:MM:SS format, or "today HH:MM:SS"')
     malware_parser.add_argument('--end', '-e', default=None,
-        help='end datetime in yyyy-mm-dd HH:MM:SS format')
+        help='end datetime in yyyy-mm-dd HH:MM:SS format, or "today HH:MM:SS"')
 
     args = parser.parse_args()
     config = Config()
