@@ -27,6 +27,7 @@ setup(
             'riq-pdns = riskiq.cli.pdns:main',
             'riq-config = riskiq.cli.config:main',
             'riq-blacklist = riskiq.cli.blacklist:main',
+            #'riq-mobile = riskiq.cli.mobile:main',
         ],
     },
     package_data = {
