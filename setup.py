@@ -27,6 +27,7 @@ setup(
             'riq-dns = riskiq.cli.dns:main',
             'riq-config = riskiq.cli.config:main',
             'riq-blacklist = riskiq.cli.blacklist:main',
+            'riq-zlist = riskiq.cli.zlist:main',
             #'riq-mobile = riskiq.cli.mobile:main',
         ],
     },
@@ -34,6 +35,7 @@ setup(
         'riskiq': [
             'templates/blacklist/*',
             'templates/dns/dns',
+            'templates/zlist/urls',
         ],
     },
     include_package_data = True,

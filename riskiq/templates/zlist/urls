@@ -1,0 +1,4 @@
+{% for item in data['items'] %}
+URL:        {{ item.url }}
+Created At: {{ item.createdAt }}
+{% endfor %}
