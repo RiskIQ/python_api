@@ -20,7 +20,7 @@ def bl_incident(client, url, oneline=False, short=False, as_json=False):
     data = client.get_blacklist_incident(url)
     if as_json:
         print(json.dumps(data, indent=4))
-    else:
+    elif data:
         print(renderer(data, 'blacklist/incident'))
 
 def bl_incidentlist(client, oneline=False, short=False, as_json=False,
@@ -28,7 +28,7 @@ def bl_incidentlist(client, oneline=False, short=False, as_json=False,
     data = client.get_blacklist_incident_list(**kwargs)
     if as_json:
         print(json.dumps(data, indent=4))
-    else:
+    elif data:
         print(renderer(data, 'blacklist/incident'))
 
 def bl_list(client, bl_filter=None, oneline=False, short=False, as_json=False,
@@ -38,7 +38,7 @@ def bl_list(client, bl_filter=None, oneline=False, short=False, as_json=False,
     data = client.get_blacklist_list(blacklist_filter=bl_filter, **kwargs)
     if as_json:
         print(json.dumps(data, indent=4))
-    else:
+    elif data:
         print(renderer(data, 'blacklist/malware'))
 
 def bl_malware(client, oneline=False, short=False, as_json=False,
@@ -52,7 +52,7 @@ def bl_malware(client, oneline=False, short=False, as_json=False,
         confidence=confidence, **kwargs)
     if as_json:
         print(json.dumps(data, indent=4))
-    else:
+    elif data:
         print(renderer(data, 'blacklist/malware'))
 
 def main():
