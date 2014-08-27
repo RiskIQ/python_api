@@ -1,0 +1,10 @@
+URL:         {{data.url}}
+Description: {{data.description}}
+Rank:        {{data.rank}}
+Score:       {{data.score}}
+malware: {% for entry in data.entries %}
+  ID:   {{entry.id}}
+  Type: {{entry.type}}
+  URL:  {{entry.url}}
+  Desc: {{entry.description}}
+{% endfor %}

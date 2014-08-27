@@ -14,7 +14,7 @@ setup(
     description = 'client for RiskIQ REST API',
     keywords = 'riskiq API REST',
     packages = find_packages(),
-    install_requires = ['requests'],
+    install_requires = ['requests', 'jinja2'],
     long_description=read('README.md'),
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -29,4 +29,8 @@ setup(
             'riq-blacklist = riskiq.cli.blacklist:main',
         ],
     },
+    package_data = {
+        'riskiq': ['templates/blacklist/*'],
+    },
+    include_package_data = True,
 )

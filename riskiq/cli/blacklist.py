@@ -1,10 +1,10 @@
 import sys
 import json
-
 from argparse import ArgumentParser
 
 from riskiq.api import Client
 from riskiq.config import Config
+from riskiq.render import renderer
 
 FILTERS = ('blackhole', 'sakura', 'exploitKit')
 CONFIDENCES = ('H', 'M', 'L')
@@ -13,6 +13,8 @@ def bl_lookup(client, url, oneline=False, short=False, as_json=False):
     data = client.get_blacklist_lookup(url)
     if as_json:
         print(json.dumps(data, indent=4))
+    else:
+        print(renderer(data, 'blacklist/lookup'))
 
 def bl_incident(client, url, oneline=False, short=False, as_json=False):
     data = client.get_blacklist_incident(url)
