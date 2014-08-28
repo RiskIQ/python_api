@@ -1,9 +1,3 @@
-{{data.url}}
-{%- if data.description -%}
-        |{{data.description}}
-{%- else -%}
-        |NODESC
-{%- endif -%}
-|{% for entry in data.entries -%}
-        {{entry.id}}/{{entry.detectedAt}}/{{entry.description}},
-{%- endfor %}
+{%- block body -%}
+{{data.url}}{% if data.description %} | {{data.description}}{% else %} | NODESC {% endif %} | {% for entry in data.entries %}{{entry.id}} / {{entry.type}} / {{entry.detectedAt}} / {{entry.description}}, {% endfor %}
+{%- endblock %}
