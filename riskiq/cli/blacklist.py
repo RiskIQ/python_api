@@ -5,6 +5,7 @@ from argparse import ArgumentParser
 from riskiq.api import Client
 from riskiq.config import Config
 from riskiq.render import renderer
+from riskiq.cli import util
 
 FILTERS = ('blackhole', 'sakura', 'exploitKit')
 CONFIDENCES = ('H', 'M', 'L')
@@ -143,13 +144,16 @@ def main():
         kwargs['start'] = args.start
         kwargs['end'] = args.end
     if args.cmd == 'lookup':
-        for url in args.urls:
+        urls = util.stdin(args.urls)
+        for url in urls:
             bl_lookup(client, url, **kwargs)
     elif args.cmd == 'incidentlist':
         bl_incidentlist(client, all_workspace_crawls=args.all_workspace_crawls,
             **kwargs)
     elif args.cmd == 'incident':
-        bl_incident(client, args.url, **kwargs)
+        urls = util.stdin(args.urls)
+        for url in urls:
+            bl_incident(client, url, **kwargs)
     elif args.cmd == 'list':
         try:
             bl_list(client, bl_filter=args.filter, **kwargs)
