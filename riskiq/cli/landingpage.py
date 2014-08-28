@@ -21,21 +21,15 @@ def lp_submit(client, url, project=None, as_json=False):
     elif data:
         print(renderer({'landingPage': [data]}, 'landingpage/crawled'))
 
-def lp_crawled(client,
-    whois=None, as_json=None, days=None, start=None, end=None):
-    data = client.get_landing_page_crawled(
-        whois=whois, days=days, start=start, end=end
-    )
+def lp_crawled(client, as_json=None, **kwargs):
+    data = client.get_landing_page_crawled(**kwargs)
     if as_json:
         print(json.dumps(data, indent=4))
     elif data:
         print(renderer(data, 'landingpage/crawled'))
 
-def lp_flagged(client,
-    whois=None, as_json=None, days=None, start=None, end=None):
-    data = client.get_landing_page_flagged(
-        whois=whois, days=days, start=start, end=end
-    )
+def lp_flagged(client, as_json=None, **kwargs):
+    data = client.get_landing_page_flagged(**kwargs)
     if as_json:
         print(json.dumps(data, indent=4))
     elif data:
@@ -47,6 +41,13 @@ def lp_submit_bulk(client, urls, project=None, as_json=False):
         print(json.dumps(data, indent=4))
     elif data:
         print(renderer(data, 'landingpage/bulk'))
+
+def lp_binary(client, as_json=False, **kwargs):
+    data = client.get_landing_page_malicious_binary(**kwargs)
+    if as_json:
+        print(json.dumps(data, indent=4))
+    elif data:
+        print(renderer(data, 'landingpage/crawled'))
 
 def main():
     import argparse
@@ -96,6 +97,23 @@ def main():
     flagged_parser.add_argument('-j', '--json', action="store_true",
         dest='as_json', help="Output as JSON")
 
+    binary_parser = subs.add_parser('binary',
+        help='List landing pages with malicious binary incidents. '
+            'A malicious binary is any non-text file that is suspected of '
+            'containing malware or exploit code. A landing page is linked to '
+            'any such binary that is embedded or easily reachable from it.'
+    )
+    binary_parser.add_argument('--whois', '-w', action='store_true',
+        help='whether to include whois information')
+    binary_parser.add_argument('--days', '-d', default=1, type=int,
+        help='days to query')
+    binary_parser.add_argument('--start', '-s', default=None,
+        help='start datetime in yyyy-mm-dd HH:MM:SS format, or "today HH:MM:SS"')
+    binary_parser.add_argument('--end', '-e', default=None,
+        help='end datetime in yyyy-mm-dd HH:MM:SS format, or "today HH:MM:SS"')
+    binary_parser.add_argument('-j', '--json', action="store_true",
+        dest='as_json', help="Output as JSON")
+
     args = parser.parse_args()
     config = Config()
     client = Client(
@@ -121,6 +139,8 @@ def main():
         lp_crawled(client, **kwargs)
     elif args.cmd == 'flagged':
         lp_flagged(client, **kwargs)
+    elif args.cmd == 'binary':
+        lp_binary(client, **kwargs)
 
 if __name__ == '__main__':
     main()
