@@ -19,7 +19,7 @@ def lp_submit(client, url, project=None, as_json=False):
     if as_json:
         print(json.dumps(data, indent=4))
     elif data:
-        print(renderer(data, 'landingpage/submit'))
+        print(renderer({'landingPage': [data]}, 'landingpage/crawled'))
 
 def lp_crawled(client,
     whois=None, as_json=None, days=None, start=None, end=None):
