@@ -1,0 +1,3 @@
+{% for project in data.landingPageProject -%}
+{{ project.name }}
+{% endfor %}

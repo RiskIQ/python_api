@@ -49,6 +49,13 @@ def lp_binary(client, as_json=False, **kwargs):
     elif data:
         print(renderer(data, 'landingpage/crawled'))
 
+def lp_projects(client, as_json=False):
+    data = client.get_landing_page_projects()
+    if as_json:
+        print(json.dumps(data, indent=4))
+    elif data:
+        print(renderer(data, 'landingpage/projects'))
+
 def main():
     import argparse
     parser = argparse.ArgumentParser()
@@ -114,6 +121,11 @@ def main():
     binary_parser.add_argument('-j', '--json', action="store_true",
         dest='as_json', help="Output as JSON")
 
+    pjs_parser = subs.add_parser('projects',
+        help='List all projects that landing pages may be submitted to.')
+    pjs_parser.add_argument('-j', '--json', action="store_true", dest='as_json',
+        help="Output as JSON")
+
     args = parser.parse_args()
     config = Config()
     client = Client(
@@ -122,6 +134,7 @@ def main():
     )
 
     kwargs = {'as_json': args.as_json}
+
     if hasattr(args, 'whois'):
         kwargs['whois'] = args.whois
     if hasattr(args, 'days'):
@@ -141,6 +154,8 @@ def main():
         lp_flagged(client, **kwargs)
     elif args.cmd == 'binary':
         lp_binary(client, **kwargs)
+    elif args.cmd == 'projects':
+        lp_projects(client, **kwargs)
 
 if __name__ == '__main__':
     main()
