@@ -1,0 +1,8 @@
+{% for page in data.landingPage %}
+Project: {{page.projectName}}
+ID:      {{page.internalID}}
+IP:      {{page.ip}}
+URL:     {{page.url}}
+Status:  {{page.reviewCode}}
+MD5:     {{page.md5}}
+{% endfor %}
