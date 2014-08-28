@@ -14,6 +14,11 @@ TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 TIME_FORMAT_DAY = '%Y-%m-%d 00:00:00'
 
 def today():
+    """
+    Generates a date string for today.
+
+    :return: Date string of today in "yyyy-mm-dd" format, accepted by API
+    """
     return datetime.strftime(datetime.now(), '%Y-%m-%d')
 
 def format_date(dt, day=False):
@@ -58,6 +63,26 @@ def date_range(days=1, start=None, end=None):
 class Client(object):
     """
     RiskIQ API Client
+
+    Example:
+    ::
+
+        from riskiq.api import Client
+        # Put credentials here.
+        token, key = None, None
+        client = Client(token, key)
+
+        # Submit URLs to your project
+        urls = ['http://evilexample.com/evil.php?shell=true', ...]
+        client.submit_landing_page_bulk(urls, project_name='Example')
+
+        # Get blacklist list from varying date ranges
+        client.get_blacklist_list(days=5)
+        data = client.get_blacklist_list(
+            start="2014/08/01 00:00:00", end="today 00:00:00"
+        )
+        results = data['resources']
+        all_malware = [x for x in results if x['malware']]
     """
     def __init__(self, token, key, server='ws.riskiq.net', version='v1'):
         self.api_base = 'https://%s/%s' % (server, version)
