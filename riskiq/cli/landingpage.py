@@ -41,16 +41,6 @@ def lp_flagged(client,
     elif data:
         print(renderer(data, 'landingpage/crawled'))
 
-"""
-date options boilerplate:
-get_parser.add_argument('--days', '-d', default=1, type=int,
-    help='days to query')
-get_parser.add_argument('--start', '-s', default=None,
-    help='start datetime in yyyy-mm-dd HH:MM:SS format, or "today HH:MM:SS"')
-get_parser.add_argument('--end', '-e', default=None,
-    help='end datetime in yyyy-mm-dd HH:MM:SS format, or "today HH:MM:SS"')
-"""
-
 def main():
     import argparse
     parser = argparse.ArgumentParser()
