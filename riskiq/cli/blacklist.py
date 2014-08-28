@@ -60,7 +60,7 @@ def main():
     subs = parser.add_subparsers(dest='cmd')
 
     lookup_parser = subs.add_parser('lookup', help='Query blacklist on URL')
-    lookup_parser.add_argument('url')
+    lookup_parser.add_argument('urls', nargs='+')
     lookup_parser.add_argument('-l', '--oneline', action="store_true",
         help="Output one line per entry")
     #lookup_parser.add_argument('-s', '--short', action="store_true",
@@ -143,7 +143,8 @@ def main():
         kwargs['start'] = args.start
         kwargs['end'] = args.end
     if args.cmd == 'lookup':
-        bl_lookup(client, args.url, **kwargs)
+        for url in args.urls:
+            bl_lookup(client, url, **kwargs)
     elif args.cmd == 'incidentlist':
         bl_incidentlist(client, all_workspace_crawls=args.all_workspace_crawls,
             **kwargs)
