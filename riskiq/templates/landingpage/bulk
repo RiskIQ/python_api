@@ -1,0 +1,8 @@
+{% for entry in data.entry %}
+Project: {{entry.landingPage.projectName}}
+ID:      {{entry.landingPage.internalID}}
+IP:      {{entry.landingPage.ip}}
+URL:     {{entry.landingPage.url}}
+Status:  {{entry.landingPage.reviewCode}}
+MD5:     {{entry.landingPage.md5}}
+{% endfor %}

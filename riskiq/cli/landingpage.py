@@ -41,6 +41,13 @@ def lp_flagged(client,
     elif data:
         print(renderer(data, 'landingpage/crawled'))
 
+def lp_submit_bulk(client, urls, project=None, as_json=False):
+    data = client.submit_landing_page_bulk(urls, project_name=project)
+    if as_json:
+        print(json.dumps(data, indent=4))
+    elif data:
+        print(renderer(data, 'landingpage/bulk'))
+
 def main():
     import argparse
     parser = argparse.ArgumentParser()
@@ -55,8 +62,8 @@ def main():
         help="Output as JSON")
 
     submit_parser = subs.add_parser('submit',
-        help='Submit a single landing page.')
-    submit_parser.add_argument('url')
+        help='Submit at least one or many landing pages.')
+    submit_parser.add_argument('urls', nargs='+')
     submit_parser.add_argument('--project', '-p',
         help='Project name to submit to')
     submit_parser.add_argument('-j', '--json', action="store_true", dest='as_json',
@@ -106,7 +113,10 @@ def main():
     if args.cmd == 'get':
         lp_get(client, args.md5, **kwargs)
     elif args.cmd == 'submit':
-        lp_submit(client, args.url, project=args.project, **kwargs)
+        if len(args.urls) == 1:
+            lp_submit(client, args.urls[0], project=args.project, **kwargs)
+        else:
+            lp_submit_bulk(client, args.urls, project=args.project, **kwargs)
     elif args.cmd == 'crawled':
         lp_crawled(client, **kwargs)
     elif args.cmd == 'flagged':

@@ -416,14 +416,25 @@ class Client(object):
             kwargs['whois'] = whois
         return self._get('landingPage', 'flagged', **kwargs)
 
-    def submit_landing_page_bulk(self, urls):
+    def submit_landing_page_bulk(self, urls, project_name=None):
         """
         Submit landing pages in bulk
         :param urls: Urls to submit.
         :param project_name: Project name to submit landing page to
         :return: returns json of landing page.
         """
-        data = {'entry': [{'url': url} for url in urls]}
+        if project_name is not None:
+            data = {
+                'entry': [
+                    {
+                        'url': url, 
+                        'projectName': project_name
+                    }
+                    for url in urls
+                ]
+            }
+        else:
+            data = {'entry': [{'url': url} for url in urls]}
         return self._post('landingPage', 'bulk', data)
 
     def get_landing_page_malicious_binary(self, whois=None,
