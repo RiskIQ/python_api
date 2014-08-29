@@ -71,7 +71,7 @@ def main():
 
     incident_parser = subs.add_parser('incident', help='Query blacklist incident '
         'on URL')
-    incident_parser.add_argument('url')
+    incident_parser.add_argument('urls', nargs='+')
     incident_parser.add_argument('-l', '--oneline', action="store_true",
         help="Output one line per entry")
     #incident_parser.add_argument('-s', '--short', action="store_true",

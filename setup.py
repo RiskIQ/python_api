@@ -35,8 +35,8 @@ setup(
     package_data = {
         'riskiq': [
             'templates/blacklist/*',
-            'templates/dns/dns',
-            'templates/zlist/urls',
+            'templates/dns/*',
+            'templates/zlist/*',
             'templates/landingpage/*',
         ],
     },
