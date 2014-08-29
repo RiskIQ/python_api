@@ -6,6 +6,7 @@ import json
 from riskiq.api import Client
 from riskiq.config import Config
 from riskiq.render import renderer
+from riskiq.cli import util
 
 def lp_get(client, md5_hash, whois=None, as_json=False):
     data = client.get_landing_page(md5_hash, whois=whois)
@@ -63,7 +64,7 @@ def main():
 
     get_parser = subs.add_parser('get',
         help='Retrieve a single landingpage by md5 hash')
-    get_parser.add_argument('md5')
+    get_parser.add_argument('md5_hashes', nargs='+')
     get_parser.add_argument('--whois', '-w', action='store_true',
         help='whether to include whois information')
     get_parser.add_argument('-j', '--json', action="store_true", dest='as_json',
@@ -142,12 +143,15 @@ def main():
         kwargs['start'] = args.start
         kwargs['end'] = args.end
     if args.cmd == 'get':
-        lp_get(client, args.md5, **kwargs)
+        md5_hashes = util.stdin(args.md5_hashes)
+        for md5_hash in md5_hashes:
+            lp_get(client, md5_hash, **kwargs)
     elif args.cmd == 'submit':
-        if len(args.urls) == 1:
-            lp_submit(client, args.urls[0], project=args.project, **kwargs)
+        urls = util.stdin(args.urls)
+        if len(urls) == 1:
+            lp_submit(client, urls[0], project=args.project, **kwargs)
         else:
-            lp_submit_bulk(client, args.urls, project=args.project, **kwargs)
+            lp_submit_bulk(client, urls, project=args.project, **kwargs)
     elif args.cmd == 'crawled':
         lp_crawled(client, **kwargs)
     elif args.cmd == 'flagged':
