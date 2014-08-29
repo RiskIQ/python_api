@@ -7,6 +7,7 @@ import json
 from riskiq.api import Client
 from riskiq.config import Config
 from riskiq.render import renderer
+from riskiq.cli import util
 
 IP_REGEX = re.compile(r'^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.([0-9]{1,3}|\*|[0-9]{1,3}/[0-9]{1,2})$')
 
@@ -46,34 +47,37 @@ def main():
     subs = parser.add_subparsers(dest='cmd')
 
     name_p = subs.add_parser('name')
-    name_p.add_argument('addr', help='Hostname or IP address')
+    name_p.add_argument('addrs', nargs='+', help='Hostname or IP addresses')
     name_p.add_argument('--json', '-j', action="store_true",
         help="Output as JSON")
     name_p.add_argument('--rrtype', '-t', default=None)
 
     data_p = subs.add_parser('data')
-    data_p.add_argument('addr', help='Hostname or IP address')
+    data_p.add_argument('addrs', nargs='+', help='Hostname or IP addresses')
     data_p.add_argument('--json', '-j', action="store_true",
         help="Output as JSON")
     data_p.add_argument('--rrtype', '-t', default=None)
 
     args = parser.parse_args()
-    ip, hostname = ip_hostname(args.addr)
 
-    config = Config()
-    client = Client(
-        token=config.get('api_token'), key=config.get('api_private_key'),
-        server=config.get('api_server'), version=config.get('api_version'),
-    )
-    try:
-        data = get_data(client, args.cmd, rrtype=args.rrtype,
-            hostname=hostname, ip=ip)
-    except ValueError as e:
-        parser.print_usage()
-        print sys.stderr, str(e)
-        sys.exit(1)
+    addrs = util.stdin(args.addrs)
+    for addr in addrs:
+        ip, hostname = ip_hostname(addr)
 
-    if args.json:
-        print(json.dumps(data, indent=4))
-    elif data:
-        print(renderer(data, 'dns/dns'))
+        config = Config()
+        client = Client(
+            token=config.get('api_token'), key=config.get('api_private_key'),
+            server=config.get('api_server'), version=config.get('api_version'),
+        )
+        try:
+            data = get_data(client, args.cmd, rrtype=args.rrtype,
+                hostname=hostname, ip=ip)
+        except ValueError as e:
+            parser.print_usage()
+            print sys.stderr, str(e)
+            sys.exit(1)
+
+        if args.json:
+            print(json.dumps(data, indent=4))
+        elif data:
+            print(renderer(data, 'dns/dns'))
