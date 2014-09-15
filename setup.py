@@ -16,6 +16,7 @@ setup(
     keywords = 'riskiq API REST',
     author = "Research Team, RiskIQ",
     author_email = "research@riskiq.net",
+    license = "GPLv2",
     packages = find_packages(),
     install_requires = ['requests', 'jinja2'],
     long_description=read('README.md'),
