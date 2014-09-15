@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name = 'riskiq',
-    version = '0.2.1',
+    version = '0.2.2',
     description = 'client for RiskIQ REST API',
     url = "https://github.com/riskiq/python_api",
     keywords = 'riskiq API REST',
@@ -19,7 +19,7 @@ setup(
     license = "GPLv2",
     packages = find_packages(),
     install_requires = ['requests', 'jinja2'],
-    long_description=read('README.md'),
+    long_description=read('README.rst'),
     classifiers=[
         'Development Status :: 3 - Alpha',
         #'Development Status :: 4 - Beta',

@@ -48,7 +48,7 @@ At any time, the current API configuration parameters can be queried using the s
 
     $ riq-config -p
 
-Configuration parameters are stored in ``$HOME/.config/riskiq/api_config.json``.
+Configuration parameters are stored in $HOME/.config/riskiq/api_config.json
 
 Use
 ---
@@ -56,7 +56,7 @@ Use
 Every command-line script has several sub-commands that may be passed to it. The
 commands usage may be described with the -h/--help option.
 
-Eg.
+Eg.::
 
     $ riq-blacklist -h
     usage: riq-blacklist [-h] {lookup,incident,incidentlist,list,malware} ...
@@ -73,7 +73,7 @@ Eg.
     optional arguments:
       -h, --help            show this help message and exit
 
-Every sub-command has further help options:
+Every sub-command has further help options:::
 
     $ riq-blacklist lookup -h
     usage: riq-blacklist lookup [-h] [-l] [-j] urls [urls ...]
