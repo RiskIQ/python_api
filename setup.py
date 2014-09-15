@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name = 'riskiq',
-    version = '0.2.0',
+    version = '0.2.1',
     description = 'client for RiskIQ REST API',
     keywords = 'riskiq API REST',
     packages = find_packages(),
