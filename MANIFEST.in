@@ -1,5 +1,5 @@
 include ez_setup.py
-recursive-include templates *
+recursive-include riskiq/templates *
 include *.md
 include *.rst
 include LICENSE
