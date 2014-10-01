@@ -1,3 +1,5 @@
+include ez_setup.py
+include templates/*
 include *.md
 include *.rst
 include LICENSE

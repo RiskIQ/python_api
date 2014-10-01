@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name = 'riskiq',
-    version = '0.2.2',
+    version = '0.2.3',
     description = 'client for RiskIQ REST API',
     url = "https://github.com/riskiq/python_api",
     keywords = 'riskiq API REST',
@@ -45,4 +45,5 @@ setup(
         ],
     },
     include_package_data = True,
+    zip_safe=False,
 )
