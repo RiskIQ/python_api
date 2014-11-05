@@ -1,4 +1,5 @@
 import sys
+import os
 import json
 from argparse import ArgumentParser
 
@@ -13,17 +14,24 @@ def bin_list(client, as_json=False, **kwargs):
     if as_json:
         print(json.dumps(data, indent=4))
     else:
-        raise NotImplementedError('only prints as json currently')
+        for binary in data['binaryIncident']:
+            print(binary['md5'])
 
 
-def bin_download(client, md5hash, as_json=False):
+def bin_download(client, md5hash, as_json=False, output=None, output_dir=None):
     ''' Download a suspicious binary from its md5 hash '''
     data = client.get_binary_data(md5hash)
     if as_json:
         print(json.dumps(data, indent=4))
+    if output is not None:
+        with open(output, 'w') as f:
+            f.write(data['data'].decode('base64'))
+    elif output_dir is not None:
+        path = os.path.join(output_dir, md5hash + '.bin')
+        with open(path, 'w') as f:
+            f.write(data['data'].decode('base64'))
     else:
-        raise NotImplementedError('only prints as json currently')
-
+        print(data['data'].decode('base64'))
 
 def main():
     parser = ArgumentParser()
@@ -44,6 +52,10 @@ def main():
     download_parser.add_argument('md5hash', nargs='+')
     download_parser.add_argument('-j', '--json', action="store_true",
         dest='as_json', help="Output as JSON")
+    download_parser.add_argument('-o', '--output',
+        help='path to output file to')
+    download_parser.add_argument('-d', '--output-dir',
+        help='dir to dump $hash.bin to')
 
     args = parser.parse_args()
     kwargs = {'as_json': args.as_json}
@@ -60,8 +72,13 @@ def main():
         bin_list(client, **kwargs)
     elif args.cmd == 'download':
         hashes = util.stdin(args.md5hash)
-        for md5hash in hashes:
-            bin_download(client, md5hash, **kwargs)
+        for i, md5hash in enumerate(hashes):
+            output = args.output
+            if output and len(hashes) > 1:
+                output = '%s.%d' % (args.output, i)
+            bin_download(client, md5hash,
+                output=output, output_dir=args.output_dir,
+                **kwargs)
 
 if __name__ == '__main__':
     main()
