@@ -33,6 +33,7 @@ setup(
             'riq-blacklist = riskiq.cli.blacklist:main',
             'riq-zlist = riskiq.cli.zlist:main',
             'riq-landingpage = riskiq.cli.landingpage:main',
+            'riq-binary = riskiq.cli.binary:main',
             #'riq-mobile = riskiq.cli.mobile:main',
         ],
     },
