@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name = 'riskiq',
-    version = '0.2.3',
+    version = '0.2.4',
     description = 'client for RiskIQ REST API',
     url = "https://github.com/riskiq/python_api",
     keywords = 'riskiq API REST',
@@ -33,6 +33,7 @@ setup(
             'riq-blacklist = riskiq.cli.blacklist:main',
             'riq-zlist = riskiq.cli.zlist:main',
             'riq-landingpage = riskiq.cli.landingpage:main',
+            'riq-binary = riskiq.cli.binary:main',
             #'riq-mobile = riskiq.cli.mobile:main',
         ],
     },
