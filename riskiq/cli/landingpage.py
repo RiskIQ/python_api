@@ -8,6 +8,7 @@ from riskiq.config import Config
 from riskiq.render import renderer
 from riskiq.cli import util
 
+
 def lp_get(client, md5_hash, whois=None, as_json=False):
     data = client.get_landing_page(md5_hash, whois=whois)
     if as_json:
@@ -15,8 +16,8 @@ def lp_get(client, md5_hash, whois=None, as_json=False):
     elif data:
         print(renderer({'landingPage': [data]}, 'landingpage/crawled'))
 
-def lp_submit(client, url, project=None, as_json=False):
-    data = client.submit_landing_page(url, project_name=project)
+def lp_submit(client, url, as_json=False, **kwargs):
+    data = client.submit_landing_page(url, **kwargs)
     if as_json:
         print(json.dumps(data, indent=4))
     elif data:
@@ -36,8 +37,13 @@ def lp_flagged(client, as_json=None, **kwargs):
     elif data:
         print(renderer(data, 'landingpage/crawled'))
 
-def lp_submit_bulk(client, urls, project=None, as_json=False):
-    data = client.submit_landing_page_bulk(urls, project_name=project)
+def lp_submit_bulk(client, urls, as_json=False, **kwargs):
+    entries = []
+    for url in urls:
+        entries += [{'url': url}]
+    for entry in entries:
+        entry.update(kwargs)
+    data = client.submit_landing_page_bulk(entries)
     if as_json:
         print(json.dumps(data, indent=4))
     elif data:
@@ -75,6 +81,14 @@ def main():
     submit_parser.add_argument('urls', nargs='+')
     submit_parser.add_argument('--project', '-p',
         help='Project name to submit to')
+    submit_parser.add_argument('--keyword', '-k',
+        help='Optional Keyword')
+    submit_parser.add_argument('--md5', '-m',
+        help='Optional MD5 representing the canonical ID')
+    submit_parser.add_argument('--pingback-url', '-P',
+        help='Optional URL to be GET requested upon completion of analysis')
+    submit_parser.add_argument('--fields', '-f', nargs='*',
+        help='Optional list of custom fields eg -f foo=bar alpha=beta')
     submit_parser.add_argument('-j', '--json', action="store_true", dest='as_json',
         help="Output as JSON")
     
@@ -148,10 +162,18 @@ def main():
             lp_get(client, md5_hash, **kwargs)
     elif args.cmd == 'submit':
         urls = util.stdin(args.urls)
+        kwargs.update({
+            'keyword': args.keyword,
+            'md5_hash': args.md5,
+            'pingback_url': args.pingback_url,
+            'project_name': args.project,
+        })
+        if args.fields:
+            kwargs.update({'fields': dict([f.split('=') for f in args.fields])})
         if len(urls) == 1:
-            lp_submit(client, urls[0], project=args.project, **kwargs)
+            lp_submit(client, urls[0], **kwargs)
         else:
-            lp_submit_bulk(client, urls, project=args.project, **kwargs)
+            lp_submit_bulk(client, urls, **kwargs)
     elif args.cmd == 'crawled':
         lp_crawled(client, **kwargs)
     elif args.cmd == 'flagged':

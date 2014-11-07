@@ -171,6 +171,42 @@ class Client(object):
         return self._get('affiliate', 'campaignSummary', 
             startDateInclusive=start, endDateExclusive=end)
 
+    def _landing_page_entry(self, url=None, keyword=None, 
+            md5_hash=None, project_name=None, pingback_url=None, fields=None):
+        """
+        Build the dictionary for a single landing_page submission.
+
+        :param url: Url to submit. Only required parameter.
+        :param keyword: Optional Keyword for this landing page.
+        :param md5_hash: Optional MD5 representing the canonical ID for this 
+            landing page
+        :param project_name: Optional Project name to submit landing page to
+        :param pingback_url: Optional URL to be GET requested upon completion 
+            of analysis of the landing page
+        :param fields: Optional dictionary of custom fields
+        :return: returns dictionary usable for requests
+        """
+        if url is None:
+            raise ValueError('url param is required in landing_page '
+                'submission')
+        data = {}
+        if url:
+            data['url'] = url
+        if keyword:
+            data['keyword'] = keyword
+        if md5_hash:
+            data['md5'] = md5_hash
+        if project_name:
+            data['projectName'] = project_name
+        if pingback_url:
+            data['pingbackUrl'] = pingback_url
+        if fields:
+            data['fields'] = [
+                {'name': t[0], 'value': t[1]}
+                for t in fields.items()
+            ]
+        return data
+
     def get_affiliate_incident_list(self, known_profile=None, 
         max_results=None, days=1, start=None, end=None):
         """
@@ -412,17 +448,22 @@ class Client(object):
             kwargs['whois'] = whois
         return self._get('landingPage', md5_hash, **kwargs)
 
-    def submit_landing_page(self, url, project_name=None):
+    def submit_landing_page(self, url, **kwargs):
         """
         Submit a single landing page.
 
-        :param url: Url to submit.
-        :param project_name: Project name to submit landing page to
+        :param url: Url to submit. Only required parameter.
+        :param keyword: Optional Keyword for this landing page.
+        :param md5_hash: Optional MD5 representing the canonical ID for this 
+            landing page
+        :param project_name: Optional Project name to submit landing page to
+        :param pingback_url: Optional URL to be GET requested upon completion 
+            of analysis of the landing page
+        :param fields: Optional dictionary of custom fields
         :return: returns json of landing page.
         """
-        data = {'url': url}
-        if project_name:
-            data['projectName'] = project_name
+        kwargs.update({'url': url})
+        data = self._landing_page_entry(**kwargs)
         return self._post('landingPage', '', data)
 
     def get_landing_page_crawled(self, whois=None,
@@ -438,7 +479,7 @@ class Client(object):
         """
         start, end = date_range(days, start, end)
         if any([days, start, end]):
-            kwargs = { 'start': start, 'end': end }
+            kwargs = {'start': start, 'end': end}
         else:
             kwargs = {}
         if whois is not None:
@@ -465,14 +506,17 @@ class Client(object):
             kwargs['whois'] = whois
         return self._get('landingPage', 'flagged', **kwargs)
 
-    def submit_landing_page_bulk(self, urls, project_name=None):
+    def __submit_landing_page_urls(self, urls, **kwargs):
         """
-        Submit landing pages in bulk
+        Submit landing pages in bulk. This is the old form of
+        submit_landing_page_bulk, and does not offer the full features of the
+        API. See submit_landing_page_bulk.
 
         :param urls: Urls to submit.
         :param project_name: Project name to submit landing page to
         :return: returns json of landing page.
         """
+        project_name = kwargs.get('project_name')
         if project_name is not None:
             data = {
                 'entry': [
@@ -485,6 +529,35 @@ class Client(object):
             }
         else:
             data = {'entry': [{'url': url} for url in urls]}
+        return self._post('landingPage', 'bulk', data)
+
+
+    def submit_landing_page_bulk(self, entries, **kwargs):
+        """
+        Submit landing pages in bulk
+        At least url must be specified.
+
+        :param entries: list of dictionaries specifying the below
+
+        :entry_key url: Url to submit.
+        :entry_key keyword: Optional Keyword for this landing page.
+        :entry_key md5_hash: Optional MD5 representing the canonical ID for this 
+            landing page
+        :entry_key project_name: Optional Project name to submit landing page to
+        :entry_key pingback_url: Optional URL to be GET requested upon completion 
+            of analysis of the landing page
+        :entry_key fields: Optional dictionary of custom fields
+        :return: returns json of landing page bulk request.
+        """
+        # Check to see if entries is a list of urls via the old API call.
+        # We need to check this for backwards compatibility.
+        if len(entries) > 0 and isinstance(entries[0], basestring):
+            return self.__submit_landing_page_urls(entries, **kwargs)
+        # It's new style, so build it from the list of dictionaries.
+        data = {'entry': [
+            self._landing_page_entry(**entry)
+            for entry in entries
+        ]}
         return self._post('landingPage', 'bulk', data)
 
     def get_landing_page_malicious_binary(self, whois=None,
