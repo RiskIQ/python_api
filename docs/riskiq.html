@@ -61,6 +61,25 @@
 <em class="property">class </em><tt class="descclassname">riskiq.api.</tt><tt class="descname">Client</tt><big>(</big><em>token</em>, <em>key</em>, <em>server='ws.riskiq.net'</em>, <em>version='v1'</em><big>)</big><a class="headerlink" href="#riskiq.api.Client" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>RiskIQ API Client</p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">riskiq.api</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="c"># Put credentials here.</span>
+<span class="n">token</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+<span class="c"># Submit URLs to your project</span>
+<span class="n">urls</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;http://evilexample.com/evil.php?shell=true&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+<span class="n">client</span><span class="o">.</span><span class="n">submit_landing_page_bulk</span><span class="p">(</span><span class="n">urls</span><span class="p">,</span> <span class="n">project_name</span><span class="o">=</span><span class="s">&#39;Example&#39;</span><span class="p">)</span>
+
+<span class="c"># Get blacklist list from varying date ranges</span>
+<span class="n">client</span><span class="o">.</span><span class="n">get_blacklist_list</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_blacklist_list</span><span class="p">(</span>
+    <span class="n">start</span><span class="o">=</span><span class="s">&quot;2014/08/01 00:00:00&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s">&quot;today 00:00:00&quot;</span>
+<span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;resources&#39;</span><span class="p">]</span>
+<span class="n">all_malware</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">results</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s">&#39;malware&#39;</span><span class="p">]]</span>
+</pre></div>
+</div>
 <dl class="method">
 <dt id="riskiq.api.Client.get_affiliate_campaign_summary">
 <tt class="descname">get_affiliate_campaign_summary</tt><big>(</big><em>days=1</em>, <em>start=None</em>, <em>end=None</em><big>)</big><a class="headerlink" href="#riskiq.api.Client.get_affiliate_campaign_summary" title="Permalink to this definition">¶</a></dt>
@@ -745,15 +764,21 @@ If the incident is not found, 404 NOT FOUND is returned.</p>
 
 <dl class="method">
 <dt id="riskiq.api.Client.submit_landing_page">
-<tt class="descname">submit_landing_page</tt><big>(</big><em>url</em>, <em>project_name=None</em><big>)</big><a class="headerlink" href="#riskiq.api.Client.submit_landing_page" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">submit_landing_page</tt><big>(</big><em>url</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#riskiq.api.Client.submit_landing_page" title="Permalink to this definition">¶</a></dt>
 <dd><p>Submit a single landing page.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>url</strong> &#8211; Url to submit.</li>
-<li><strong>project_name</strong> &#8211; Project name to submit landing page to</li>
+<li><strong>url</strong> &#8211; Url to submit. Only required parameter.</li>
+<li><strong>keyword</strong> &#8211; Optional Keyword for this landing page.</li>
+<li><strong>md5_hash</strong> &#8211; Optional MD5 representing the canonical ID for this 
+landing page</li>
+<li><strong>project_name</strong> &#8211; Optional Project name to submit landing page to</li>
+<li><strong>pingback_url</strong> &#8211; Optional URL to be GET requested upon completion 
+of analysis of the landing page</li>
+<li><strong>fields</strong> &#8211; Optional dictionary of custom fields</li>
 </ul>
 </td>
 </tr>
@@ -766,20 +791,35 @@ If the incident is not found, 404 NOT FOUND is returned.</p>
 
 <dl class="method">
 <dt id="riskiq.api.Client.submit_landing_page_bulk">
-<tt class="descname">submit_landing_page_bulk</tt><big>(</big><em>urls</em>, <em>project_name=None</em><big>)</big><a class="headerlink" href="#riskiq.api.Client.submit_landing_page_bulk" title="Permalink to this definition">¶</a></dt>
-<dd><p>Submit landing pages in bulk</p>
+<tt class="descname">submit_landing_page_bulk</tt><big>(</big><em>entries</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#riskiq.api.Client.submit_landing_page_bulk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submit landing pages in bulk
+At least url must be specified.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>urls</strong> &#8211; Urls to submit.</li>
-<li><strong>project_name</strong> &#8211; Project name to submit landing page to</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>entries</strong> &#8211; list of dictionaries specifying the below</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">returns json of landing page.</p>
-</td>
+<tr class="field-even field"><th class="field-name">Entry_key url:</th><td class="field-body">Url to submit.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Entry_key keyword:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Optional Keyword for this landing page.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Entry_key md5_hash:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Optional MD5 representing the canonical ID for this 
+landing page</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Entry_key project_name:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Optional Project name to submit landing page to</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Entry_key pingback_url:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Optional URL to be GET requested upon completion 
+of analysis of the landing page</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Entry_key fields:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Optional dictionary of custom fields</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">returns json of landing page bulk request.</td>
 </tr>
 </tbody>
 </table>
@@ -834,7 +874,16 @@ If the incident is not found, 404 NOT FOUND is returned.</p>
 <dl class="function">
 <dt id="riskiq.api.today">
 <tt class="descclassname">riskiq.api.</tt><tt class="descname">today</tt><big>(</big><big>)</big><a class="headerlink" href="#riskiq.api.today" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Generates a date string for today.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Date string of today in &#8220;yyyy-mm-dd&#8221; format, accepted by API</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </div>
 <div class="section" id="module-riskiq.config">
