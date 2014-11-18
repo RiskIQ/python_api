@@ -1,8 +1,13 @@
 {% for entry in data.entry %}
+{% if entry.landingPage is defined -%}
 Project: {{entry.landingPage.projectName}}
 ID:      {{entry.landingPage.internalID}}
 IP:      {{entry.landingPage.ip}}
 URL:     {{entry.landingPage.url}}
 Status:  {{entry.landingPage.reviewCode}}
 MD5:     {{entry.landingPage.md5}}
+{% elif entry.errorMessage is defined -%}
+URL:     {{entry.originalURL}}
+Error:   {{entry.errorMessage}}
+{% endif -%}
 {% endfor %}
