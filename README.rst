@@ -31,6 +31,8 @@ Installation
 ------------
 
     $ python setup.py install
+    # or from PyPI
+    # sudo pip install riskiq
 
 The package depends on the Python Requests_ library.
 If Requests is not installed, it will be installed as a result of the above command.
@@ -89,3 +91,18 @@ Every sub-command has further help options:::
 All commands will have the -j/--json option to return raw responses in JSON
 format, which often contain more information than present in the default,
 human readable format.
+
+Version History
+---------------
+
+Up until 0.2.7 it has been mostly base implementation and bug fixes.
+I do not recommend using anything less that 0.2.7.
+
+0.2.7: Fixed template bug in `riq-landingpage submit`
+0.2.6: Fix landingpage submissions to allow md5, project, keyword, fields
+0.2.5: Added binary download options --output and --output-dir
+       8f540b0 List and download suspicious binaries via CLI
+       fix MANIFEST.in installation bug
+0.2.3: Documentation changes
+0.2.1: Added documentation
+<= 0.2.0: Most implementation of CLI tools and client API
