@@ -98,17 +98,17 @@ Version History
 Up until 0.2.7 it has been mostly base implementation and bug fixes.
 I do not recommend using anything less that 0.2.7.
 
-:0.2.7: 
+:0.2.7 
     Fixed template bug in `riq-landingpage submit`
-:0.2.6:
+:0.2.6
     Fix landingpage submissions to allow md5, project, keyword, fields
-:0.2.5:
+:0.2.5
     Added binary download options --output and --output-dir
     8f540b0 List and download suspicious binaries via CLI
     fix MANIFEST.in installation bug
-:0.2.3:
+:0.2.3
     Documentation changes
-:0.2.1:
+:0.2.1
     Added documentation
-:<= 0.2.0:
+:<= 0.2.0
     Most implementation of CLI tools and client API
