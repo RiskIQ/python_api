@@ -69,7 +69,7 @@ def main():
     subs = parser.add_subparsers(dest='cmd')
 
     get_parser = subs.add_parser('get',
-        help='Retrieve a single landingpage by md5 hash')
+        help='Retrieve a single landingpage by MD5 hash')
     get_parser.add_argument('md5_hashes', nargs='+')
     get_parser.add_argument('--whois', '-w', action='store_true',
         help='whether to include whois information')
@@ -184,4 +184,7 @@ def main():
         lp_projects(client, **kwargs)
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass

@@ -19,7 +19,7 @@ def bin_list(client, as_json=False, **kwargs):
 
 
 def bin_download(client, md5hash, as_json=False, output=None, output_dir=None):
-    ''' Download a suspicious binary from its md5 hash '''
+    ''' Download a suspicious binary from its MD5 hash '''
     data = client.get_binary_data(md5hash)
     if as_json:
         print(json.dumps(data, indent=4))
@@ -48,7 +48,7 @@ def main():
         dest='as_json', help="Output as JSON")
 
     download_parser = subs.add_parser('download',
-        help='download from md5 hash, or hashes')
+        help='download from MD5 hash, or hashes')
     download_parser.add_argument('md5hash', nargs='+')
     download_parser.add_argument('-j', '--json', action="store_true",
         dest='as_json', help="Output as JSON")
@@ -81,4 +81,7 @@ def main():
                 **kwargs)
 
 if __name__ == '__main__':
-    main()
+    try:
+       main()
+    except KeyboardInterrupt:
+       pass
