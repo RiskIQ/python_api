@@ -91,6 +91,8 @@ def main():
         help='end datetime in yyyy-mm-dd HH:MM:SS format')
     incident_list_parser.add_argument('-l', '--oneline', action="store_true",
         help="Output one line per entry")
+    incident_list_parser.add_argument('--timeout', '-t', type=float,
+        default=None, help='socket timeout in seconds')
     #incident_list_parser.add_argument('-s', '--short', action="store_true",
         #help="Output in short format (print matching input indicator only)")
     incident_list_parser.add_argument('-j', '--json', action="store_true",
@@ -143,6 +145,8 @@ def main():
         kwargs['days'] = args.days
         kwargs['start'] = args.start
         kwargs['end'] = args.end
+    if hasattr(args, 'timeout'):
+        kwargs['timeout'] = args.timeout
     if args.cmd == 'lookup':
         urls = util.stdin(args.urls)
         for url in urls:

@@ -84,6 +84,11 @@ class Client(object):
         results = data['resources']
         all_malware = [x for x in results if x['malware']]
     """
+
+    # Default seconds until socket timeout on all GETs
+    # override with self._get(..., timeout=10)
+    TIMEOUT = 60
+
     def __init__(self, token, key, server='ws.riskiq.net', version='v1'):
         self.api_base = 'https://%s/%s' % (server, version)
         self.auth = (token, key)
@@ -139,8 +144,13 @@ class Client(object):
         :return: response deserialized from JSON
         """
         api_url = self._endpoint(endpoint, action, *urlparams, **params)
+        if 'timeout' in params:
+            timeout = params['timeout']
+            del params['timeout']
+        else:
+            timeout = Client.TIMEOUT
         response = requests.get(api_url, auth=self.auth, headers=self.headers,
-            verify=True, params=params)
+            verify=True, params=params, timeout=timeout)
         return self._json(response)
 
     def _post(self, endpoint, action, data, *urlparams, **params):
@@ -284,7 +294,7 @@ class Client(object):
         return self._get('blacklist', 'incident', url=url)
 
     def get_blacklist_incident_list(self, all_workspace_crawls=None, 
-        days=1, start=None, end=None):
+        days=1, start=None, end=None, timeout=None):
         """
         Query blacklist incidents
 
@@ -304,6 +314,8 @@ class Client(object):
         }
         if all_workspace_crawls is not None:
             kwargs['all_workspace_crawls'] = all_workspace_crawls
+        if timeout is not None:
+            kwargs['timeout'] = timeout
         return self._get('blacklist/incident', 'list', **kwargs)
 
     def get_blacklist_list(self, blacklist_filter=None, 
