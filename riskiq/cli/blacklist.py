@@ -58,8 +58,9 @@ def bl_malware(client, oneline=False, as_json=False,
 
 def main():
     parser = ArgumentParser()
+    parser.add_argument('--dump-requests', action='store_true')
     subs = parser.add_subparsers(dest='cmd')
-
+    
     lookup_parser = subs.add_parser('lookup', help='Query blacklist on URL')
     lookup_parser.add_argument('urls', nargs='+')
     lookup_parser.add_argument('-l', '--oneline', action="store_true",
@@ -139,6 +140,8 @@ def main():
     config = Config()
     client = Client(token=config.get('api_token'), key=config.get('api_private_key'),
                     server=config.get('api_server'), version=config.get('api_version'))
+    if args.dump_requests:
+        client._dump_requests()
 
     kwargs = {'as_json': args.as_json, 'oneline': args.oneline}
     if hasattr(args, 'days'):
