@@ -26,6 +26,11 @@ def bl_incident(client, url, oneline=False, as_json=False):
 
 def bl_incidentlist(client, oneline=False, as_json=False,
     **kwargs):
+    if kwargs.get('six_hours'):
+        from datetime import datetime, timedelta
+        td = (datetime.now() - timedelta(hours=6)).strftime('%Y-%m-%d %H:%M:%S')
+        kwargs['start'] = td
+    del kwargs['six_hours']
     data = client.get_blacklist_incident_list(**kwargs)
     if as_json:
         print(json.dumps(data, indent=4))
@@ -86,6 +91,8 @@ def main():
         action='store_true', help='Filter crawls to those on workspace')
     incident_list_parser.add_argument('--days', '-d', default=1, type=int,
         help='days to query')
+    incident_list_parser.add_argument('--six-hours', '-6', action='store_true',
+        help='request last 6 hours of data')
     incident_list_parser.add_argument('--start', '-s', default=None,
         help='start datetime in yyyy-mm-dd HH:MM:SS format')
     incident_list_parser.add_argument('--end', '-e', default=None,
@@ -148,8 +155,9 @@ def main():
         kwargs['days'] = args.days
         kwargs['start'] = args.start
         kwargs['end'] = args.end
-    if hasattr(args, 'timeout'):
-        kwargs['timeout'] = args.timeout
+    for attr in ('timeout', 'six_hours'):
+        if hasattr(args, attr):
+            kwargs[attr] = getattr(args, attr)
     if args.cmd == 'lookup':
         urls = util.stdin(args.urls)
         for url in urls:
