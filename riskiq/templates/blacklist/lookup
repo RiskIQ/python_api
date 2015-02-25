@@ -3,8 +3,9 @@ Description: {{data.description}}
 Rank:        {{data.rank}}
 Score:       {{data.score}}
 malware: {% for entry in data.entries %}
-  ID:   {{entry.id}}
-  Type: {{entry.type}}
-  URL:  {{entry.url}}
-  Desc: {{entry.description}}
+  Type: {{entry.type}}{% if entry.id %}
+  ID:   {{entry.id}}{% endif %}{% if entry.detectedAt %}
+  Date: {{entry.detectedAt}}{% endif %}
+  URL:  {{entry.url}}{% if entry.description %}
+  Desc: {{entry.description}}{% endif %}
 {% endfor %}
