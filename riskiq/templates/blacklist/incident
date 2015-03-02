@@ -1,8 +1,8 @@
 {% for incident in data.incident %}
 ID:          {{incident.id}}
 URL:         {{incident.resource.url}}
+Score:       {{incident.score}}
 IP:          {{incident.resource.ip}}
-Score:       {{incident.resource.score}}
 Rank:        {{incident.resource.rank}}
 Type:        {{incident.resource.matchType}}
 RiskIQ Link: {{incident.resource.incidentLink}}
