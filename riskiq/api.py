@@ -10,6 +10,8 @@ from datetime import timedelta, datetime
 
 import requests
 
+from riskiq.config import Config
+
 # Acceptable string time format for all requests
 TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 TIME_FORMAT_DAY = '%Y-%m-%d 00:00:00'
@@ -90,13 +92,32 @@ class Client(object):
     # override with self._get(..., timeout=10)
     TIMEOUT = 60
 
-    def __init__(self, token, key, server='ws.riskiq.net', version='v1'):
+    def __init__(self, token, key, server='ws.riskiq.net', version='v1',
+            http_proxy=None, https_proxy=None):
         self.api_base = 'https://%s/%s' % (server, version)
         self.auth = (token, key)
         self.headers = {
             'Accept': 'Application/JSON',
             'Content-Type': 'Application/JSON',
         }
+        self.proxies = {}
+        if http_proxy:
+            self.proxies['http'] = self.http_proxy
+        if https_proxy:
+            self.proxies['https'] = self.https_proxy
+
+    @classmethod
+    def from_config(cls):
+        config = Config()
+        client = cls(
+            token=config.get('api_token'),
+            key=config.get('api_private_key'),
+            server=config.get('api_server'),
+            version=config.get('api_version'),
+            http_proxy=config.get('http_proxy'),
+            https_proxy=config.get('https_proxy'),
+        )
+        return client
 
     def _endpoint(self, endpoint, action, *urlparams, **params):
         """
@@ -161,8 +182,11 @@ class Client(object):
             del params['timeout']
         else:
             timeout = Client.TIMEOUT
-        response = requests.get(api_url, auth=self.auth, headers=self.headers,
-            verify=True, params=params, timeout=timeout)
+        kwargs = {'auth': self.auth, 'headers': self.headers, 'params': params,
+                  'timeout': timeout, 'verify': True}
+        if self.proxies:
+            kwargs['proxies'] = self.proxies
+        response = requests.get(api_url, **kwargs)
         return self._json(response)
 
     def _post(self, endpoint, action, data, *urlparams, **params):
@@ -177,7 +201,11 @@ class Client(object):
         """
         api_url = self._endpoint(endpoint, action, *urlparams, **params)
         data = json.dumps(data)
-        response = requests.post(api_url, auth=self.auth, headers=self.headers, verify=True, data=data, params=params)
+        kwargs = {'auth': self.auth, 'headers': self.headers, 'params': params,
+                  'verify': True, 'data': data}
+        if self.proxies:
+            kwargs['proxies'] = self.proxies
+        response = requests.post(api_url, **kwargs)
         return self._json(response)
 
     def get_affiliate_campaign_summary(self, days=1, start=None, end=None):
