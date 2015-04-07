@@ -48,7 +48,4 @@ class Config(object):
         return self.config.keys()
 
     def get(self, item, default=None):
-        if item in self.config:
-            return self.config[item]
-        else:
-            return default
+        return self.config.get(item, default)
