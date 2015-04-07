@@ -48,17 +48,23 @@ def main():
 
     name_p = subs.add_parser('name')
     name_p.add_argument('addrs', nargs='+', help='Hostname or IP addresses')
+    name_p.add_argument('--rrtype', '-t', default=None)
     name_p.add_argument('--json', '-j', action="store_true",
         help="Output as JSON")
-    name_p.add_argument('--rrtype', '-t', default=None)
+    name_p.add_argument('--oneline', '-l', action="store_true",
+        help="Output as oneline per record.data")
+    name_p.add_argument('--short', '-s', action="store_true",
+        help="Output as oneline per entry in record.data")
 
     data_p = subs.add_parser('data')
     data_p.add_argument('addrs', nargs='+', help='Hostname or IP addresses')
+    data_p.add_argument('--rrtype', '-t', default=None)
     data_p.add_argument('--json', '-j', action="store_true",
         help="Output as JSON")
     data_p.add_argument('--oneline', '-l', action="store_true",
         help="Output as oneline per record.data")
-    data_p.add_argument('--rrtype', '-t', default=None)
+    data_p.add_argument('--short', '-s', action="store_true",
+        help="Output as oneline per record.name")
 
     args = parser.parse_args()
 
@@ -83,5 +89,9 @@ def main():
             print(json.dumps(data, indent=4))
         elif args.oneline:
             print(renderer(data, 'dns/dns_oneline'))
+        elif args.short and args.cmd == 'data':
+            print(renderer(data, 'dns/dns_data'))
+        elif args.short and args.cmd == 'name':
+            print(renderer(data, 'dns/dns_name'))
         elif data:
             print(renderer(data, 'dns/dns'))
