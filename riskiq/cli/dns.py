@@ -55,6 +55,8 @@ def main():
         help="Output as oneline per record.data")
     name_p.add_argument('--short', '-s', action="store_true",
         help="Output as oneline per entry in record.data")
+    name_p.add_argument('--text', '-T', action="store_true",
+        help="Output full human readable text")
 
     data_p = subs.add_parser('data')
     data_p.add_argument('addrs', nargs='+', help='Hostname or IP addresses')
@@ -65,6 +67,8 @@ def main():
         help="Output as oneline per record.data")
     data_p.add_argument('--short', '-s', action="store_true",
         help="Output as oneline per record.name")
+    data_p.add_argument('--text', '-T', action="store_true",
+        help="Output full human readable text")
 
     args = parser.parse_args()
 
@@ -93,5 +97,7 @@ def main():
             print(renderer(data, 'dns/dns_data'))
         elif args.short and args.cmd == 'name':
             print(renderer(data, 'dns/dns_name'))
-        elif data:
+        elif args.text:
             print(renderer(data, 'dns/dns'))
+        elif data:
+            print(renderer(data, 'dns/dns_oneline'))
