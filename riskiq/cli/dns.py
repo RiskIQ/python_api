@@ -51,10 +51,8 @@ def main():
     name_p.add_argument('--rrtype', '-t', default=None)
     name_p.add_argument('--json', '-j', action="store_true",
         help="Output as JSON")
-    name_p.add_argument('--oneline', '-l', action="store_true",
-        help="Output as oneline per record.data")
     name_p.add_argument('--short', '-s', action="store_true",
-        help="Output as oneline per entry in record.data")
+        help="Output as one line per entry in record.data")
     name_p.add_argument('--text', '-T', action="store_true",
         help="Output full human readable text")
 
@@ -63,10 +61,8 @@ def main():
     data_p.add_argument('--rrtype', '-t', default=None)
     data_p.add_argument('--json', '-j', action="store_true",
         help="Output as JSON")
-    data_p.add_argument('--oneline', '-l', action="store_true",
-        help="Output as oneline per record.data")
     data_p.add_argument('--short', '-s', action="store_true",
-        help="Output as oneline per record.name")
+        help="Output as one line per record.name")
     data_p.add_argument('--text', '-T', action="store_true",
         help="Output full human readable text")
 
@@ -91,8 +87,6 @@ def main():
 
         if args.json:
             print(json.dumps(data, indent=4))
-        elif args.oneline:
-            print(renderer(data, 'dns/dns_oneline'))
         elif args.short and args.cmd == 'data':
             print(renderer(data, 'dns/dns_data'))
         elif args.short and args.cmd == 'name':
