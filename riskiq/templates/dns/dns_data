@@ -1,0 +1,2 @@
+{% for record in data.records %}{{record.name[:-1]}}
+{% endfor %}

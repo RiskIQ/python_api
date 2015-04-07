@@ -1,0 +1,2 @@
+{% for record in data.records %}{% for datum in record.data %}{{ datum }}
+{% endfor %}{% endfor %}
