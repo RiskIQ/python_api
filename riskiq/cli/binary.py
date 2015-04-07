@@ -4,7 +4,6 @@ import json
 from argparse import ArgumentParser
 
 from riskiq.api import Client
-from riskiq.config import Config
 from riskiq.cli import util
 
 
@@ -64,9 +63,7 @@ def main():
         kwargs['start'] = args.start
         kwargs['end'] = args.end
 
-    config = Config()
-    client = Client(token=config.get('api_token'), key=config.get('api_private_key'),
-                    server=config.get('api_server'), version=config.get('api_version'))
+    client = Client.from_config()
     
     if args.cmd == 'list':
         bin_list(client, **kwargs)

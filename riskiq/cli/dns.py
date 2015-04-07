@@ -5,7 +5,6 @@ import sys
 import json
 
 from riskiq.api import Client
-from riskiq.config import Config
 from riskiq.render import renderer
 from riskiq.cli import util
 
@@ -72,11 +71,7 @@ def main():
     for addr in addrs:
         ip, hostname = ip_hostname(addr)
 
-        config = Config()
-        client = Client(
-            token=config.get('api_token'), key=config.get('api_private_key'),
-            server=config.get('api_server'), version=config.get('api_version'),
-        )
+        client = Client.from_config()
         try:
             data = get_data(client, args.cmd, rrtype=args.rrtype,
                 hostname=hostname, ip=ip)

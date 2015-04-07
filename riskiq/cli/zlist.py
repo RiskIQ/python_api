@@ -4,7 +4,6 @@ import sys
 import json
 
 from riskiq.api import Client
-from riskiq.config import Config
 from riskiq.render import renderer
 
 def main():
@@ -23,9 +22,7 @@ def main():
             '(or "today HH:MM:SS")')
     args = parser.parse_args()
 
-    config = Config()
-    client = Client(token=config.get('api_token'), key=config.get('api_private_key'),
-                    server=config.get('api_server'), version=config.get('api_version'))
+    client = Client.from_config()
 
     kwargs = {'as_json': args.as_json}
     kwargs['days'] = args.days

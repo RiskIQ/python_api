@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 from riskiq.api import Client
-from riskiq.config import Config
 from riskiq.output import PassiveDNS
 from optparse import OptionParser
 import re
@@ -19,9 +18,8 @@ def main():
     if not args:
         parser.print_help()
         sys.exit(-1)
-    config = Config()
-    client = Client(token=config.get('api_token'), key=config.get('api_private_key'),
-                    server=config.get('api_server'), version=config.get('api_version'))
+    client = Client.from_config()
+
     qtype = None
     if options.query:
         qtype = 'query'
