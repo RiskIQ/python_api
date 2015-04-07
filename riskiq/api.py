@@ -102,9 +102,9 @@ class Client(object):
         }
         self.proxies = {}
         if http_proxy:
-            self.proxies['http'] = self.http_proxy
+            self.proxies['http'] = http_proxy
         if https_proxy:
-            self.proxies['https'] = self.https_proxy
+            self.proxies['https'] = https_proxy
 
     @classmethod
     def from_config(cls):
