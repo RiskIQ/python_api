@@ -1,2 +1,0 @@
-{% for record in data.records %}{% for datum in record.data %}{{record.name}} IN {{record.rrtype}} {{datum}}
-{% endfor %}{% endfor %}

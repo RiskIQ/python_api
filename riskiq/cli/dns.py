@@ -56,8 +56,8 @@ def main():
     data_p.add_argument('addrs', nargs='+', help='Hostname or IP addresses')
     data_p.add_argument('--json', '-j', action="store_true",
         help="Output as JSON")
-    data_p.add_argument('--zlist', '-z', action="store_true",
-        help="Output for zlist bulk")
+    data_p.add_argument('--oneline', '-l', action="store_true",
+        help="Output as oneline per record.data")
     data_p.add_argument('--rrtype', '-t', default=None)
 
     args = parser.parse_args()
@@ -81,7 +81,7 @@ def main():
 
         if args.json:
             print(json.dumps(data, indent=4))
-        elif args.zlist:
-            print(renderer(data, 'dns/dns_zlist'))
+        elif args.oneline:
+            print(renderer(data, 'dns/dns_oneline'))
         elif data:
             print(renderer(data, 'dns/dns'))
