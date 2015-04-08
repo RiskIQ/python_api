@@ -87,10 +87,10 @@ def main():
         if args.json:
             print(json.dumps(data, indent=4))
         elif args.short and args.cmd == 'data':
-            print(renderer(data, 'dns/dns_data')),
+            print(renderer(data, 'dns/dns_data'))
         elif args.short and args.cmd == 'name':
-            print(renderer(data, 'dns/dns_name')),
+            print(renderer(data, 'dns/dns_name'))
         elif args.text:
-            print(renderer(data, 'dns/dns')),
+            print(renderer(data, 'dns/dns'))
         elif data:
-            print(renderer(data, 'dns/dns_oneline', verbose=args.verbose)),
+            print(renderer(data, 'dns/dns_oneline', verbose=args.verbose))
