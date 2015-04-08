@@ -1,2 +1,2 @@
-{% for record in data.records %}{% for datum in record.data %}{{record.name}} IN {{record.rrtype}} {{datum}} {{record.firstSeen}} {{record.lastSeen}} {{record.count}}
+{% for record in data.records %}{% for datum in record.data %}{{ record.name }} IN {{ record.rrtype }} {{ datum }}{% if verbose %} {{ record.firstSeen }} {{ record.lastSeen }} {{ record.count }}{% endif %}
 {% endfor %}{% endfor %}
