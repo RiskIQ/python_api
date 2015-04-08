@@ -26,7 +26,7 @@ The following command line scripts are installed with the library:
 - **riq-landingpage**: get and submit new landing pages
 - **riq-binary**: list and download files from the binary feed
 
-See the *Usage* section for information on usage.
+See the *Usage* section for more information.
 
 Installation
 ------------
@@ -55,7 +55,7 @@ At any time, the current API configuration parameters can be queried using the s
 
     $ riq-config -p
 
-Configuration parameters are stored in ``$HOME/.config/riskiq/api_config.json``.
+Configuration parameters are stored in **$HOME/.config/riskiq/api_config.json**.
 
 Usage
 -----
