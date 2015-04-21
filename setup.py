@@ -21,7 +21,7 @@ setup(
     install_requires = ['requests', 'jinja2'],
     extras_require = {
         'stix': ['stix'],
-    }
+    },
     long_description=read('README.rst'),
     classifiers=[
         'Development Status :: 3 - Alpha',
