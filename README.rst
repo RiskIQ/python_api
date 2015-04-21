@@ -1,7 +1,7 @@
 riskiq 
 ======
 
-*Python client API for RiskIQ services*
+*Python client for RiskIQ API services*
 
 **riskiq** provides a Python client library implementation into RiskIQ API
 services. The library currently provides support for the following services:
@@ -24,41 +24,46 @@ The following command line scripts are installed with the library:
   listings in the RiskIQ blacklist.
 - **riq-zlist**: query the zlist for entries within a time range
 - **riq-landingpage**: get and submit new landing pages
+- **riq-binary**: list and download files from the binary feed
 
-See the *Use* section for information on usage.
+See the *Usage* section for more information.
 
 Installation
 ------------
 
+From the downloaded source distribution::
+
     $ python setup.py install
-    # or from PyPI
-    # sudo pip install riskiq
+
+Or from PyPI::
+
+    $ pip install riskiq
 
 The package depends on the Python Requests_ library.
-If Requests is not installed, it will be installed as a result of the above command.
+If Requests is not installed, it will be installed as a dependency.
 
 .. _Requests: http://docs.python-requests.org/
 
 Setup
 -----
 
-First-time setup requires configuring an API token and private key for authentication.
+First-time setup requires configuring your API token and private key for authentication::
 
     $ riq-config -t <API_TOKEN> -k <API_PRIVATE_KEY>
 
-At any time, the current API configuration parameters can be queried using the same utility:
+At any time, the current API configuration parameters can be queried using the same utility::
 
     $ riq-config -p
 
-Configuration parameters are stored in $HOME/.config/riskiq/api_config.json
+Configuration parameters are stored in **$HOME/.config/riskiq/api_config.json**.
 
-Use
----
+Usage
+-----
 
 Every command-line script has several sub-commands that may be passed to it. The
-commands usage may be described with the -h/--help option.
+commands usage may be described with the ``-h/--help`` option.
 
-Eg.::
+For example::
 
     $ riq-blacklist -h
     usage: riq-blacklist [-h] {lookup,incident,incidentlist,list,malware} ...
@@ -88,18 +93,23 @@ Every sub-command has further help options:::
       -l, --oneline  Output one line per entry
       -j, --json     Output as JSON
 
-All commands will have the -j/--json option to return raw responses in JSON
+All commands will have the ``-j/--json`` option to return raw responses in JSON
 format, which often contain more information than present in the default,
 human readable format.
 
 Version History
 ---------------
 
-Up until 0.2.7 it has been mostly base implementation and bug fixes.
-I do not recommend using anything less that 0.2.7.
+Versions before 0.2.7 have been mostly base implementation and bug fixes.
+We do not recommend using anything less than 0.2.7.
 
+:0.3.2:
+    Updated ``riq-dns`` output formats. Default output format is now a
+    shortened one-line format per record. A more verbose one-line format
+    is available with the ``-v/--verbose`` option. The previous text-based
+    "human-readable" format is available using the ``-T/--text`` option.
 :0.2.7:
-    Fixed template bug in `riq-landingpage submit`
+    Fixed template bug in ``riq-landingpage submit``
 :0.2.6:
     Fix landingpage submissions to allow md5, project, keyword, fields
 :0.2.5:

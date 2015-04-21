@@ -51,9 +51,11 @@ def main():
     name_p.add_argument('--json', '-j', action="store_true",
         help="Output as JSON")
     name_p.add_argument('--short', '-s', action="store_true",
-        help="Output as one line per entry in record.data")
+        help="Output newline-separated data only")
     name_p.add_argument('--text', '-T', action="store_true",
         help="Output full human readable text")
+    name_p.add_argument('--verbose', '-v', action="store_true",
+        help="Output verbose records with first/lastseen times and observed count")
 
     data_p = subs.add_parser('data')
     data_p.add_argument('addrs', nargs='+', help='Hostname or IP addresses')
@@ -61,9 +63,11 @@ def main():
     data_p.add_argument('--json', '-j', action="store_true",
         help="Output as JSON")
     data_p.add_argument('--short', '-s', action="store_true",
-        help="Output as one line per record.name")
+        help="Output newline-separated name only")
     data_p.add_argument('--text', '-T', action="store_true",
         help="Output full human readable text")
+    data_p.add_argument('--verbose', '-v', action="store_true",
+        help="Output verbose records with first/lastseen times and observed count")
 
     args = parser.parse_args()
 
@@ -89,4 +93,4 @@ def main():
         elif args.text:
             print(renderer(data, 'dns/dns'))
         elif data:
-            print(renderer(data, 'dns/dns_oneline'))
+            print(renderer(data, 'dns/dns_oneline', verbose=args.verbose))

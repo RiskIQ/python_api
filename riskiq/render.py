@@ -1,18 +1,15 @@
 import os
 
-from jinja2 import Template
+from jinja2 import Template, Environment, PackageLoader
 
-TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'templates')
+def renderer(data, template_file, verbose=False, oneline=False):
+    """
+    Render the template with supplied context.
+    Example template_file: "blacklist/lookup"
 
-def renderer(data, datatype, oneline=False):
     """
-    Render data of type datatype
-    Example datatype: "blacklist/lookup"
-    """
-    template_path = os.path.join(TEMPLATE_DIR, datatype)
     if oneline:
-        template_path += '_oneline'
-    with open(template_path) as temp_f:
-        template_text = temp_f.read()
-    template = Template(template_text)
-    return template.render(data=data).encode('utf-8')
+        template_file += '_oneline'
+    env = Environment(loader=PackageLoader('riskiq', 'templates'))
+    template = env.get_template(template_file)
+    return template.render(data=data, verbose=verbose).encode('utf-8').rstrip()

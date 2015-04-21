@@ -34,13 +34,21 @@ class Config(object):
         if not os.path.exists(CONFIG_FILE):
             virgin_config = True
         if not virgin_config:
+            # Why dict here? Does an older version of json not do this
+            # automatically?
             self.config = dict(json.load(open(CONFIG_FILE)))
         if kwargs:
             self.config.update(kwargs)
         if virgin_config or kwargs:
             self.write_config()
-        if 'api_token' not in self.config or not 'api_private_key' in self.config:
-            raise ValueError("API token or private key missing. Run 'riq-config' to configure.")
+        if 'api_token' not in self.config:
+            print >> sys.stderr, 'configure missing API token'
+        if 'api_private_key' not in self.config:
+            print >> sys.stderr, 'configure missing private key'
+        if not ('api_token' in self.config and 
+                'api_private_key' in self.config):
+            print >> sys.stderr, ('Errors have been reported. Run riq-config '
+                'to fix these warnings.')
         return True
 
     @property

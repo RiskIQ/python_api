@@ -6,8 +6,10 @@ import sys
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument('-t', '--token', help='API token')
-    parser.add_argument('-k', '--key', help='API private key')
+    parser.add_argument('-t', '--token', default='',
+        help='API token')
+    parser.add_argument('-k', '--key', default='',
+        help='API private key')
     parser.add_argument('--http-proxy', default='',
         help='proxy to use for http requests')
     parser.add_argument('--https-proxy', default='',
@@ -21,7 +23,9 @@ def main():
         sys.exit(0)
     config_options = {}
     if not args.token or not args.key:
-        parser.error("provide API token and secret key to configure client")
+        print >> sys.stderr, (
+            'warning: missing token or private key'
+        )
     config_options['api_token'] = args.token
     config_options['api_private_key'] = args.key
     config_options['http_proxy'] = args.http_proxy
