@@ -19,6 +19,9 @@ setup(
     license = "GPLv2",
     packages = find_packages(),
     install_requires = ['requests', 'jinja2'],
+    extras_require = {
+        'stix': ['stix'],
+    }
     long_description=read('README.rst'),
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -34,6 +37,7 @@ setup(
             'riq-zlist = riskiq.cli.zlist:main',
             'riq-landingpage = riskiq.cli.landingpage:main',
             'riq-binary = riskiq.cli.binary:main',
+            'riq-stix = riskiq.stix:main [stix]',
             #'riq-mobile = riskiq.cli.mobile:main',
         ],
     },
