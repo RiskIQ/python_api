@@ -13,8 +13,11 @@ from cybox.objects.uri_object import URI
 
 def load_bldata(path):
     # Read the json data
-    with open(path) as blFile:
-        data = json.load(blFile)
+    if isinstance(path, dict):
+        data = path
+    else:
+        with open(path) as blFile:
+            data = json.load(blFile)
     if 'resources' in data:
         return data['resources']
     elif 'incident' in data:

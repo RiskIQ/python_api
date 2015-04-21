@@ -6,24 +6,42 @@ from riskiq.api import Client
 from riskiq.render import renderer
 from riskiq.cli import util
 
+try:
+    from riskiq import blacklist_stix
+    NO_STIX = False
+except ImportError:
+    NO_STIX = True
+
 FILTERS = ('blackhole', 'sakura', 'exploitKit')
 CONFIDENCES = ('H', 'M', 'L')
 
-def bl_lookup(client, url, oneline=False, as_json=False):
+def dump_stix(data, path):
+    if NO_STIX:
+        raise RuntimeError('Please install riskiq[stix]')
+    data = blacklist_stix.load_bldata(data)
+    output_xml = blacklist_stix.stix_xml(data)
+    blacklist_stix.dump_xml(path, output_xml)
+    print('Dumped XML to {}'.format(path))
+
+def bl_lookup(client, url, stix=None, oneline=False, as_json=False):
     data = client.get_blacklist_lookup(url)
-    if as_json:
+    if stix:
+        dump_stix(data, stix)
+    elif as_json:
         print(json.dumps(data, indent=4))
     elif data:
         print(renderer(data, 'blacklist/lookup', oneline=oneline))
 
-def bl_incident(client, url, oneline=False, as_json=False):
+def bl_incident(client, url, stix=None, oneline=False, as_json=False):
     data = client.get_blacklist_incident(url)
-    if as_json:
+    if stix:
+        dump_stix(data, stix)
+    elif as_json:
         print(json.dumps(data, indent=4))
     elif data:
         print(renderer(data, 'blacklist/incident', oneline=oneline))
 
-def bl_incidentlist(client, oneline=False, as_json=False,
+def bl_incidentlist(client, stix=None, oneline=False, as_json=False,
     **kwargs):
     if kwargs.get('six_hours'):
         from datetime import datetime, timedelta
@@ -31,22 +49,26 @@ def bl_incidentlist(client, oneline=False, as_json=False,
         kwargs['start'] = td
     del kwargs['six_hours']
     data = client.get_blacklist_incident_list(**kwargs)
-    if as_json:
+    if stix:
+        dump_stix(data, stix)
+    elif as_json:
         print(json.dumps(data, indent=4))
     elif data:
         print(renderer(data, 'blacklist/incident', oneline=oneline))
 
-def bl_list(client, bl_filter=None, oneline=False, as_json=False,
+def bl_list(client, bl_filter=None, stix=None, oneline=False, as_json=False,
     **kwargs):
     if bl_filter not in (None, ) + FILTERS:
         raise ValueError('Invalid filter. Must be one of %s' % str(FILTERS))
     data = client.get_blacklist_list(blacklist_filter=bl_filter, **kwargs)
-    if as_json:
+    if stix:
+        dump_stix(data, stix)
+    elif as_json:
         print(json.dumps(data, indent=4))
     elif data:
         print(renderer(data, 'blacklist/malware', oneline=oneline))
 
-def bl_malware(client, oneline=False, as_json=False,
+def bl_malware(client, stix=None, oneline=False, as_json=False,
     bl_filter=None, confidence=None, **kwargs):
     if bl_filter not in (None, ) + FILTERS:
         raise ValueError('Invalid filter.\nMust be one of %s' % str(FILTERS))
@@ -55,7 +77,9 @@ def bl_malware(client, oneline=False, as_json=False,
             'Must be one of %s' % str(CONFIDENCES))
     data = client.get_blacklist_malware(blacklist_filter=bl_filter,
         confidence=confidence, **kwargs)
-    if as_json:
+    if stix:
+        dump_stix(data, stix)
+    elif as_json:
         print(json.dumps(data, indent=4))
     elif data:
         print(renderer(data, 'blacklist/malware', oneline=oneline))
@@ -63,6 +87,8 @@ def bl_malware(client, oneline=False, as_json=False,
 def main():
     parser = ArgumentParser()
     parser.add_argument('--dump-requests', action='store_true')
+    parser.add_argument('--stix',
+        help='output to stix file afterwards (requires riskiq[stix] package)')
     subs = parser.add_subparsers(dest='cmd')
     
     lookup_parser = subs.add_parser('lookup', help='Query blacklist on URL')
@@ -148,7 +174,8 @@ def main():
     if args.dump_requests:
         client._dump_requests()
 
-    kwargs = {'as_json': args.as_json, 'oneline': args.oneline}
+    kwargs = {'as_json': args.as_json, 'oneline': args.oneline, 
+        'stix': args.stix}
     if hasattr(args, 'days'):
         kwargs['days'] = args.days
         kwargs['start'] = args.start
