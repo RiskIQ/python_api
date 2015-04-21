@@ -15,7 +15,13 @@ def load_bldata(path):
     # Read the json data
     with open(path) as blFile:
         data = json.load(blFile)
-    return data['resources']
+    if 'resources' in data:
+        return data['resources']
+    elif 'incident' in data:
+        return [x['resource'] for x in data['incident']]
+    else:
+        raise RuntimeError('Invalid JSON file. Please use riq-blacklist '
+            'malware output, or riq-blacklist incidents')
 
 def dump_xml(out_path, output_xml):
     if out_path == '-':
