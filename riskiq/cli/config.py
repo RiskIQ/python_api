@@ -22,10 +22,11 @@ def main():
         show_config(config)
         sys.exit(0)
     config_options = {}
-    if not args.token or not args.key:
+    if not (args.token and args.key):
         print >> sys.stderr, (
             'warning: missing token or private key'
         )
+        sys.exit(1)
     config_options['api_token'] = args.token
     config_options['api_private_key'] = args.key
     config_options['http_proxy'] = args.http_proxy
