@@ -48,6 +48,7 @@ setup(
             'templates/dns/*',
             'templates/zlist/*',
             'templates/landingpage/*',
+            'templates/whois/*',
         ],
     },
     include_package_data = True,

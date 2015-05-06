@@ -1,0 +1,12 @@
+{% for domain in data.domains %}
+Domain:         {{domain.domain}}
+Contact Email:  {{domain.contactEmail}}
+Registered:     {{domain.registered}}
+Last Loaded:    {{domain.lastLoadedAt}}
+Last Updated:   {{domain.registryUpdatedAt}}
+Name Servers:   {% for ns in domain.nameServers %}
+    - {{ns}}
+{% endfor %}
+TEXT:
+{{domain.text}}
+{% endfor %}
