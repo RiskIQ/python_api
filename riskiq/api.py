@@ -63,6 +63,10 @@ def date_range(days=1, start=None, end=None):
         end = end.replace('today', today())
     return start, end
 
+def set_if(dictionary, key, value):
+    if value is not None:
+        dictionary[key] = value
+
 class Client(object):
     """
     RiskIQ API Client
@@ -785,3 +789,21 @@ class Client(object):
         """
         start, end = date_range(days, start, end)
         return self._get('zlist', 'urls', start=start, end=end)
+
+    def post_whois(self, domain=None, email=None, name_server=None,
+            max_results=100):
+        """
+        Get whois results for a domain, email, name_server.
+        Allows * for wildcard.
+
+        :param domain: Domain to query
+        :param email: email address to query
+        :param name_server: name server to query
+        :param max_results: max results to return, default 100
+        :return: list of domain dictionaries
+        """
+        data = {'maxResults': max_results}
+        set_if(data, 'domain', domain)
+        set_if(data, 'email', email)
+        set_if(data, 'nameServer', name_server)
+        return self._post('whois', 'query', data)
