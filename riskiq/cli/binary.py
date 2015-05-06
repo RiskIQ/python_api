@@ -17,20 +17,20 @@ def bin_list(client, as_json=False, **kwargs):
             print(binary['md5'])
 
 
-def bin_download(client, md5hash, as_json=False, output=None, output_dir=None):
+def bin_download(client, md5hash, output, as_json=False, output_dir=None):
     ''' Download a suspicious binary from its MD5 hash '''
     data = client.get_binary_data(md5hash)
     if as_json:
         print(json.dumps(data, indent=4))
-    if output is not None:
-        with open(output, 'w') as f:
-            f.write(data['data'].decode('base64'))
+    elif output == '-':
+        sys.stdout.write(data['data'].decode('base64'))
     elif output_dir is not None:
         path = os.path.join(output_dir, md5hash + '.bin')
         with open(path, 'w') as f:
             f.write(data['data'].decode('base64'))
     else:
-        print(data['data'].decode('base64'))
+        with open(output, 'w') as f:
+            f.write(data['data'].decode('base64'))
 
 def main():
     parser = ArgumentParser()
@@ -48,11 +48,12 @@ def main():
 
     download_parser = subs.add_parser('download',
         help='download from MD5 hash, or hashes')
-    download_parser.add_argument('md5hash', nargs='+')
+    download_parser.add_argument('md5hash',
+        help='md5 hash to download')
+    download_parser.add_argument('output',
+        help='path to output file to, - for stdout')
     download_parser.add_argument('-j', '--json', action="store_true",
         dest='as_json', help="Output as JSON")
-    download_parser.add_argument('-o', '--output',
-        help='path to output file to')
     download_parser.add_argument('-d', '--output-dir',
         help='dir to dump $hash.bin to')
 
@@ -68,13 +69,12 @@ def main():
     if args.cmd == 'list':
         bin_list(client, **kwargs)
     elif args.cmd == 'download':
-        hashes = util.stdin(args.md5hash)
+        hashes = util.stdin([args.md5hash])
         for i, md5hash in enumerate(hashes):
             output = args.output
-            if output and len(hashes) > 1:
+            if output != '-' and len(hashes) > 1:
                 output = '%s.%d' % (args.output, i)
-            bin_download(client, md5hash,
-                output=output, output_dir=args.output_dir,
+            bin_download(client, md5hash, output, output_dir=args.output_dir,
                 **kwargs)
 
 if __name__ == '__main__':
