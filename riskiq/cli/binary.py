@@ -20,6 +20,9 @@ def bin_list(client, as_json=False, **kwargs):
 def bin_download(client, md5hash, output, as_json=False, output_dir=None):
     ''' Download a suspicious binary from its MD5 hash '''
     data = client.get_binary_data(md5hash)
+    if data is None:
+        sys.stderr.write('Error: No binary with that hash.\n')
+        sys.exit(1)
     if as_json:
         print(json.dumps(data, indent=4))
     elif output == '-':
