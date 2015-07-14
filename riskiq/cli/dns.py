@@ -81,7 +81,7 @@ def main():
                 hostname=hostname, ip=ip)
         except ValueError as e:
             parser.print_usage()
-            print sys.stderr, str(e)
+            sys.stderr.write('{}\n'.format(str(e)))
             sys.exit(1)
 
         if args.json:

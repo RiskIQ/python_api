@@ -3,6 +3,7 @@ __author__ = 'jpleger'
 import os
 import sys
 import json
+
 CONFIG_PATH = os.path.expanduser('~/.config/riskiq')
 CONFIG_FILE = os.path.join(CONFIG_PATH, 'api_config.json')
 CONFIG_DEFAULTS = {
@@ -19,7 +20,7 @@ class Config(object):
         try:
             self.load_config(**kwargs)
         except ValueError as e:
-            print >> sys.stderr, "ERROR:", e.message
+            sys.stderr.write('Error: {}\n'.format(e.message))
             sys.exit(1)
 
     def write_config(self):
@@ -42,13 +43,13 @@ class Config(object):
         if virgin_config or kwargs:
             self.write_config()
         if 'api_token' not in self.config:
-            print >> sys.stderr, 'configure missing API token'
+            sys.stderr.write('configure missing API token\n')
         if 'api_private_key' not in self.config:
-            print >> sys.stderr, 'configure missing private key'
+            sys.stderr.write('configure missing private key\n')
         if not ('api_token' in self.config and 
                 'api_private_key' in self.config):
-            print >> sys.stderr, ('Errors have been reported. Run riq-config '
-                'to fix these warnings.')
+            sys.stderr.write('Errors have been reported. Run riq-config '
+                'to fix these warnings.\n')
         return True
 
     @property

@@ -42,8 +42,8 @@ def main():
             results.append(client.get_dns_data_by_name(arg, rrtype=options.rrtype))
     results = PassiveDNS(results)
     if options.json:
-        print results.json
+        print(results.json)
         sys.exit(0)
-    print results.text
+    print(results.text)
     sys.exit(0)
 
