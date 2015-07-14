@@ -5,7 +5,11 @@ RiskIQ API
 __author__ = 'RiskIQ Research'
 __version__ = '0.1-ALPHA'
 import json
-import httplib
+import sys
+PY2 = (sys.version_info.major == 2)
+PY3 = (sys.version_info.major == 3)
+if PY2:
+    import httplib
 from datetime import timedelta, datetime
 
 import requests
@@ -139,15 +143,19 @@ class Client(object):
         return api_url
 
     def _dump_requests(self):
-        self._old_send = httplib.HTTPConnection.send
-        old_send = self._old_send
-        def new_send(self, data):
-            print(data)
-            return old_send(self, data)
-        httplib.HTTPConnection.send = new_send
+        ''' Disable for Python3 '''
+        if PY2:
+            self._old_send = httplib.HTTPConnection.send
+            old_send = self._old_send
+            def new_send(self, data):
+                print(data)
+                return old_send(self, data)
+            httplib.HTTPConnection.send = new_send
 
     def _undump_requests(self):
-        httplib.HTTPConnection.send = self._old_send
+        ''' Disable for Python3 '''
+        if PY2:
+            httplib.HTTPConnection.send = self._old_send
 
     def _json(self, response):
         """
