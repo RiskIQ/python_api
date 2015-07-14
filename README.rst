@@ -103,6 +103,10 @@ Version History
 Versions before 0.2.7 have been mostly base implementation and bug fixes.
 We do not recommend using anything less than 0.2.7.
 
+:0.4.1:
+    Disable httplib if in Python 3+
+:0.4.0:
+    Working on Python 3 compatibility
 :0.3.2:
     Updated ``riq-dns`` output formats. Default output format is now a
     shortened one-line format per record. A more verbose one-line format
