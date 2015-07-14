@@ -142,7 +142,7 @@ class Client(object):
         self._old_send = httplib.HTTPConnection.send
         old_send = self._old_send
         def new_send(self, data):
-            print data
+            print(data)
             return old_send(self, data)
         httplib.HTTPConnection.send = new_send
 
