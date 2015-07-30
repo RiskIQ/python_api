@@ -17,8 +17,8 @@ Command-line scripts
 
 The following command line scripts are installed with the library:
 
-- **riq-config**: utility to set API configuration options for the library
-  (API token and private key).
+- **riq-config**: utility to set or query API configuration options for the
+  library (API token and private key).
 - **riq-dns**: client to issue queries to the RiskIQ Passive DNS database service.
 - **riq-blacklist**: client to issue queries for domains and URLs to identify
   listings in the RiskIQ blacklist.
@@ -49,12 +49,11 @@ Setup
 
 First-time setup requires configuring your API token and private key for authentication::
 
-    $ riq-config -t <API_TOKEN> -k <API_PRIVATE_KEY>
     $ riq-config setup <API_TOKEN> <API_PRIVATE_KEY>
 
 At any time, the current API configuration parameters can be queried using the same utility::
 
-    $ riq-config -p
+    $ riq-config show
 
 Configuration parameters are stored in **$HOME/.config/riskiq/api_config.json**.
 
