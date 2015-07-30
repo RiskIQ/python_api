@@ -50,6 +50,7 @@ Setup
 First-time setup requires configuring your API token and private key for authentication::
 
     $ riq-config -t <API_TOKEN> -k <API_PRIVATE_KEY>
+    $ riq-config setup <API_TOKEN> <API_PRIVATE_KEY>
 
 At any time, the current API configuration parameters can be queried using the same utility::
 
