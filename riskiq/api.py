@@ -6,11 +6,13 @@ __author__ = 'RiskIQ Research'
 __version__ = '0.1-ALPHA'
 import json
 import sys
-PY2 = (sys.version_info.major == 2)
-PY3 = (sys.version_info.major == 3)
+from datetime import timedelta, datetime
+
+# sys.version_info.major exists in python>=2.7, but just a tuple python<2.7 :(
+PY2 = (sys.version_info[0] == 2)
+PY3 = (sys.version_info[0] == 3)
 if PY2:
     import httplib
-from datetime import timedelta, datetime
 
 import requests
 
