@@ -1,6 +1,7 @@
-{% for incident in data.incident %}Incident ID:  {{incident.id}}{% if incident.resource.description %}
-Date:         {{incident.date}}
-Crawl GUID:   {{incident.crawl.guid}}
+{% for incident in data.incident %}Incident ID:  {{incident.id}}
+Date:         {{incident.date}}{% if verbose %}
+Detected at:  {{incident.resource.detectedAt}}{% endif %}
+Crawl GUID:   {{incident.crawl.guid}}{% if incident.resource.description %}
 Description:  {{incident.resource.description}}{% endif %}
 Score:        {{incident.score}}
 Resource URL: {{incident.resource.url}}
