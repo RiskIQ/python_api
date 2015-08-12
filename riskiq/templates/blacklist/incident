@@ -11,5 +11,7 @@ RiskIQ link:  {{incident.resource.incidentLink}}
 Entries:{% for entry in incident.resource.entries %}
               Source:       {{entry.type}}{% if entry.matchType %} (match level: {{entry.matchType}}){% endif %}{% if entry.description %}
               Description:  {{entry.description}}{% endif %}
-{% endfor %}{% if not loop.last %}
+{% endfor %}{% if verbose %}Sequence to resource:
+{% for sequence in incident.sequence %}              * {{sequence.url}}
+{% endfor %}{% endif %}{% if not loop.last %}
 {% endif %}{% endfor %}

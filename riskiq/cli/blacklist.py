@@ -32,14 +32,16 @@ def bl_lookup(client, url, stix=None, oneline=False, as_json=False):
     elif data:
         print(renderer(data, 'blacklist/lookup', oneline=oneline))
 
-def bl_incident(client, url, stix=None, oneline=False, as_json=False):
+def bl_incident(client, url, stix=None, verbose=False, oneline=False,
+    as_json=False):
     data = client.get_blacklist_incident(url)
     if stix:
         dump_stix(data, stix)
     elif as_json:
         print(json.dumps(data, indent=4))
     elif data:
-        print(renderer(data, 'blacklist/incident', oneline=oneline))
+        print(renderer(data, 'blacklist/incident', verbose=verbose,
+            oneline=oneline))
 
 def bl_incidentlist(client, stix=None, oneline=False, as_json=False,
     **kwargs):
@@ -93,7 +95,7 @@ def main():
     
     lookup_parser = subs.add_parser('lookup', help='look up URL/host/domain on '
         'RiskIQ Global Blacklist (GBL)')
-    lookup_parser.add_argument('URL', nargs='+', help='URL/host/domain for which to query')
+    lookup_parser.add_argument('urls', nargs='+', metavar='URL', help='URL/host/domain for which to query')
     lookup_parser.add_argument('-l', '--oneline', action="store_true",
         help="output one entry per line")
     #lookup_parser.add_argument('-s', '--short', action="store_true",
@@ -101,13 +103,15 @@ def main():
     lookup_parser.add_argument('-j', '--json', action="store_true", dest='as_json',
         help="output raw JSON response")
 
-    incident_parser = subs.add_parser('incident', help='query blacklist incidents '
+    incident_parser = subs.add_parser('incident', help='query blacklist incident data '
         'by given URL/host/domain')
-    incident_parser.add_argument('URL', nargs='+', help='URL/host/domain for which to query')
+    incident_parser.add_argument('urls', nargs='+', metavar='URL', help='URL/host/domain for which to query')
     incident_parser.add_argument('-l', '--oneline', action="store_true",
         help="output one entry per line")
     #incident_parser.add_argument('-s', '--short', action="store_true",
     #    help="output in short format (print matching input indicator only)")
+    incident_parser.add_argument('-v', '--verbose', action="store_true",
+        help="output additional incident data (used with standard long output)")
     incident_parser.add_argument('-j', '--json', action="store_true", dest='as_json',
         help="output raw JSON response")
 
@@ -192,6 +196,7 @@ def main():
         bl_incidentlist(client, all_workspace_crawls=args.all_workspace_crawls,
             **kwargs)
     elif args.cmd == 'incident':
+        kwargs['verbose'] = args.verbose
         urls = util.stdin(args.urls)
         for url in urls:
             bl_incident(client, url, **kwargs)
