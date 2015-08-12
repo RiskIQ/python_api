@@ -21,7 +21,7 @@ def dump_stix(data, path):
     data = blacklist_stix.load_bldata(data)
     output_xml = blacklist_stix.stix_xml(data)
     blacklist_stix.dump_xml(path, output_xml)
-    print('Dumped XML to {}'.format(path))
+    print('Dumped STIX XML to {}'.format(path))
 
 def bl_lookup(client, url, stix=None, oneline=False, as_json=False):
     data = client.get_blacklist_lookup(url)
@@ -32,14 +32,16 @@ def bl_lookup(client, url, stix=None, oneline=False, as_json=False):
     elif data:
         print(renderer(data, 'blacklist/lookup', oneline=oneline))
 
-def bl_incident(client, url, stix=None, oneline=False, as_json=False):
+def bl_incident(client, url, stix=None, verbose=False, oneline=False,
+    as_json=False):
     data = client.get_blacklist_incident(url)
     if stix:
         dump_stix(data, stix)
     elif as_json:
         print(json.dumps(data, indent=4))
     elif data:
-        print(renderer(data, 'blacklist/incident', oneline=oneline))
+        print(renderer(data, 'blacklist/incident', verbose=verbose,
+            oneline=oneline))
 
 def bl_incidentlist(client, stix=None, oneline=False, as_json=False,
     **kwargs):
@@ -88,85 +90,88 @@ def main():
     parser = ArgumentParser()
     parser.add_argument('--dump-requests', action='store_true')
     parser.add_argument('--stix',
-        help='output to stix file afterwards (requires riskiq[stix] package)')
+        help='output results to STIX file (requires riskiq[stix] package)')
     subs = parser.add_subparsers(dest='cmd')
     
-    lookup_parser = subs.add_parser('lookup', help='Query blacklist on URL')
-    lookup_parser.add_argument('urls', nargs='+')
+    lookup_parser = subs.add_parser('lookup', help='look up URL/host/domain on '
+        'RiskIQ Global Blacklist (GBL)')
+    lookup_parser.add_argument('urls', nargs='+', metavar='URL', help='URL/host/domain for which to query')
     lookup_parser.add_argument('-l', '--oneline', action="store_true",
-        help="Output one line per entry")
+        help="output one entry per line")
     #lookup_parser.add_argument('-s', '--short', action="store_true",
-        #help="Output in short format (print matching input indicator only)")
+    #    help="output in short format (print matching input indicator only)")
     lookup_parser.add_argument('-j', '--json', action="store_true", dest='as_json',
-        help="Output as JSON")
+        help="output raw JSON response")
 
-    incident_parser = subs.add_parser('incident', help='Query blacklist incident '
-        'on URL')
-    incident_parser.add_argument('urls', nargs='+')
+    incident_parser = subs.add_parser('incident', help='query blacklist incident data '
+        'by given URL/host/domain')
+    incident_parser.add_argument('urls', nargs='+', metavar='URL', help='URL/host/domain for which to query')
     incident_parser.add_argument('-l', '--oneline', action="store_true",
-        help="Output one line per entry")
+        help="output one entry per line")
     #incident_parser.add_argument('-s', '--short', action="store_true",
-        #help="Output in short format (print matching input indicator only)")
+    #    help="output in short format (print matching input indicator only)")
+    incident_parser.add_argument('-v', '--verbose', action="store_true",
+        help="output additional incident data (used with standard long output)")
     incident_parser.add_argument('-j', '--json', action="store_true", dest='as_json',
-        help="Output as JSON")
+        help="output raw JSON response")
 
     incident_list_parser = subs.add_parser('incidentlist',
-        help='query blacklist incidents within timeframe')
+        help='query blacklist incidents within given timeframe')
     incident_list_parser.add_argument('--all-workspace-crawls', '-a',
-        action='store_true', help='Filter crawls to those on workspace')
+        action='store_true', help='filter crawls to those on workspace')
     incident_list_parser.add_argument('--days', '-d', default=1, type=int,
-        help='days to query')
+        help='number of days to query')
     incident_list_parser.add_argument('--six-hours', '-6', action='store_true',
         help='request last 6 hours of data')
     incident_list_parser.add_argument('--start', '-s', default=None,
-        help='start datetime in yyyy-mm-dd HH:MM:SS format')
+        help='start datetime in YYYY-MM-DD HH:MM:SS format')
     incident_list_parser.add_argument('--end', '-e', default=None,
-        help='end datetime in yyyy-mm-dd HH:MM:SS format')
+        help='end datetime in YYYY-MM-DD HH:MM:SS format')
     incident_list_parser.add_argument('-l', '--oneline', action="store_true",
-        help="Output one line per entry")
+        help="output one entry per line")
     incident_list_parser.add_argument('--timeout', '-t', type=float,
         default=None, help='socket timeout in seconds')
     #incident_list_parser.add_argument('-s', '--short', action="store_true",
-        #help="Output in short format (print matching input indicator only)")
+    #    help="output in short format (print matching input indicator only)")
     incident_list_parser.add_argument('-j', '--json', action="store_true",
-        dest='as_json', help="Output as JSON")
+        dest='as_json', help="output raw JSON response")
 
     list_parser = subs.add_parser('list', help = 'query blacklisted resources')
     list_parser.add_argument('--filter', '-f', default=None,
-        help='Filter to one of "blackhole", "sakura" or "exploitKit"')
+        help='filter to one of "blackhole", "sakura" or "exploitKit"')
     list_parser.add_argument('--days', '-d', default=1, type=int,
-        help='days to query')
+        help='number of days to query')
     list_parser.add_argument('--start', '-s', default=None,
-        help='start datetime in yyyy-mm-dd HH:MM:SS format')
+        help='start datetime in YYYY-MM-DD HH:MM:SS format')
     list_parser.add_argument('--end', '-e', default=None,
-        help='end datetime in yyyy-mm-dd HH:MM:SS format')
+        help='end datetime in YYYY-MM-DD HH:MM:SS format')
     list_parser.add_argument('-l', '--oneline', action="store_true",
-        help="Output one line per entry")
+        help="output one entry per line")
     #list_parser.add_argument('-s', '--short', action="store_true",
-        #help="Output in short format (print matching input indicator only)")
+    #    help="output in short format (print matching input indicator only)")
     list_parser.add_argument('-j', '--json', action="store_true",
-        dest='as_json', help="Output as JSON")
+        dest='as_json', help="output raw JSON response")
 
     malware_parser = subs.add_parser('malware',
-        help='Query for all discovered malware resources generated within a '
-            'particular period.')
+        help='query RiskIQ suspicious binary feed for all samples stored within a '
+            'given period')
     malware_parser.add_argument('--filter', '-f', default=None,
-        help='Filter to one of "blackhole", "sakura" or "exploitKit"')
-    malware_parser.add_argument('--confidence', '-c', default=None,
-        help='Restrict results to malicious probability of H, M, or L\n'
-            '(high, medium or low)')
+        help='filter to one of "blackhole", "sakura" or "exploitKit"')
+    malware_parser.add_argument('--confidence', '-c', choices=['H', 'M', 'L'],
+        default=None, help='restrict results to malicious probability of '
+        '[H]igh, [M]edium, or [L]ow')
     malware_parser.add_argument('--days', '-d', default=1, type=int,
-        help='days to query')
+        help='number of days to query')
     malware_parser.add_argument('--start', '-s', default=None,
-        help='start datetime in yyyy-mm-dd HH:MM:SS format, or "today HH:MM:SS"')
+        help='start datetime in YYYY-MM-DD HH:MM:SS format, or "today HH:MM:SS"')
     malware_parser.add_argument('--end', '-e', default=None,
-        help='end datetime in yyyy-mm-dd HH:MM:SS format, or "today HH:MM:SS"')
+        help='end datetime in YYYY-MM-DD HH:MM:SS format, or "today HH:MM:SS"')
     malware_parser.add_argument('-l', '--oneline', action="store_true",
-        help="Output one line per entry")
+        help="output one entry per line")
     #malware_parser.add_argument('-s', '--short', action="store_true",
-        #help="Output in short format (print matching input indicator only)")
+    #    help="output in short format (print matching input indicator only)")
     malware_parser.add_argument('-j', '--json', action="store_true",
-        dest='as_json', help="Output as JSON")
+        dest='as_json', help="output raw JSON response")
 
     args = parser.parse_args()
     client = Client.from_config()
@@ -191,6 +196,7 @@ def main():
         bl_incidentlist(client, all_workspace_crawls=args.all_workspace_crawls,
             **kwargs)
     elif args.cmd == 'incident':
+        kwargs['verbose'] = args.verbose
         urls = util.stdin(args.urls)
         for url in urls:
             bl_incident(client, url, **kwargs)
