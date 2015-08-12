@@ -1,15 +1,15 @@
-{% for incident in data.incident %}
-ID:          {{incident.id}}
-URL:         {{incident.resource.url}}
-Score:       {{incident.score}}
-IP:          {{incident.resource.ip}}
-Rank:        {{incident.resource.rank}}
-Type:        {{incident.resource.matchType}}
-RiskIQ Link: {{incident.resource.incidentLink}}
-Malware:     {{incident.resource.malware}}
-Phishing:    {{incident.resource.phishing}}
-Spam:        {{incident.resource.spam}}
+{% for incident in data.incident %}Incident ID:  {{incident.id}}{% if incident.resource.description %}
+Date:         {{incident.date}}
+Crawl GUID:   {{incident.crawl.guid}}
+Description:  {{incident.resource.description}}{% endif %}
+Score:        {{incident.score}}
+Resource URL: {{incident.resource.url}}
+Resource IP:  {{incident.resource.ip}}{% if incident.resource.asn %} (AS{{incident.resource.asn}}){% endif %}
+Type:         {{incident.resource.matchType}}
+Class(es):    {% if incident.resource.malware %}Malware{% endif %}{% if incident.resource.phishing %}Phishing{% endif %}{% if incident.resource.spam %}Spam{% endif %}
+RiskIQ link:  {{incident.resource.incidentLink}}
 Entries:{% for entry in incident.resource.entries %}
-             URL:  {{entry.url}}
-             Type: {{entry.type}}
-        {% endfor %}{% endfor %}
+              Source:       {{entry.type}}{% if entry.matchType %} (match level: {{entry.matchType}}){% endif %}{% if entry.description %}
+              Description:  {{entry.description}}{% endif %}
+{% endfor %}{% if not loop.last %}
+{% endif %}{% endfor %}
