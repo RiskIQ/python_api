@@ -19,4 +19,4 @@ def add_render_args(parser):
     parser.add_argument('-j', '--json', action="store_true",
         dest='as_json', help="output raw JSON response")
     parser.add_argument('-v', '--verbose', action="store_true",
-        help="output additional incident data (used with standard long output)")
+        help="output additional data in default templates")
