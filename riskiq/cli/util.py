@@ -21,35 +21,29 @@ def stdin(argv):
 def six_hours():
     return (datetime.now() - timedelta(hours=6)).strftime('%Y-%m-%d %H:%M:%S')
 
+def dump_data(data, temp, kwargs):
+    # Dump to --stix path
+    if kwargs['stix']:
+        dump_stix(data, kwargs['stix'])
+    elif kwargs['as_json']:
+        print(json.dumps(data, indent=4))
+    elif data:
+        print(
+            renderer(data, temp, oneline=kwargs['oneline'],
+                verbose=kwargs['verbose']
+            )
+        )
+
 def templated(temp, yielding=False):
     def deco(func):
+        # Simple return of one set of data
         def wrapped(*args, **kwargs):
             data, kwargs2 = func(*args, **kwargs)
-            # Dump to --stix path
-            if kwargs2['stix']:
-                dump_stix(data, kwargs2['stix'])
-            elif kwargs2['as_json']:
-                print(json.dumps(data, indent=4))
-            elif data:
-                print(
-                    renderer(data, temp, oneline=kwargs2['oneline'],
-                        verbose=kwargs2['verbose']
-                    )
-                )
-
+            dump_data(data, temp, kwargs2)
+        # Handles case where it yields multiple data points
         def wrapped_yielding(*args, **kwargs):
             for data, kwargs2 in func(*args, **kwargs):
-                # Dump to --stix path
-                if kwargs2['stix']:
-                    dump_stix(data, kwargs2['stix'])
-                elif kwargs2['as_json']:
-                    print(json.dumps(data, indent=4))
-                elif data:
-                    print(
-                        renderer(data, temp, oneline=kwargs2['oneline'],
-                            verbose=kwargs2['verbose']
-                        )
-                    )
+                dump_data(data, temp, kwargs2)
         if yielding:
             return wrapped_yielding
         return wrapped
