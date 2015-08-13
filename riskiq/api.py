@@ -338,14 +338,20 @@ class Client(object):
             result['description'] = ''
         return result
 
-    def get_blacklist_incident(self, url):
+    def get_blacklist_incident(self, url, start_index=None, max_results=None,
+            **kwargs):
         """
         Query blacklist incidents by url.
 
         :param url: URL to query blacklist on.
         :return: Blacklist incident
         """
-        return self._get('blacklist', 'incident', url=url)
+        url_params = {'url': url}
+        if start_index is not None:
+            url_params['startIndex'] = start_index
+        if max_results is not None:
+            url_params['maxResults'] = max_results
+        return self._get('blacklist', 'incident', **url_params)
 
     def get_blacklist_incident_list(self, all_workspace_crawls=None, 
         days=1, start=None, end=None, timeout=None, **kwargs):
