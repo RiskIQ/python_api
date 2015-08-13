@@ -129,19 +129,18 @@ class Client(object):
         )
         return client
 
-    def _endpoint(self, endpoint, action, *urlparams, **params):
+    def _endpoint(self, endpoint, action, *url_args):
         """
         Return the URL for the action
 
         :param endpoint: The controller
         :param action: The action provided by the controller
-        :param urlparams: Additional endpoints(for endpoints that take part of the url as option)
-        :param params: Parameters to pass to url, typically query string
+        :param url_args: Additional endpoints(for endpoints that take part of the url as option)
         :return: Full URL for the requested action
         """
         api_url = "/".join((self.api_base, endpoint, action))
-        if urlparams:
-            api_url += "/".join(urlparams)
+        if url_args:
+            api_url += "/".join(url_args)
         return api_url
 
     def _dump_requests(self):
@@ -180,42 +179,42 @@ class Client(object):
                 )
             )
 
-    def _get(self, endpoint, action, *urlparams, **params):
+    def _get(self, endpoint, action, *url_args, **url_params):
         """
         Request API Endpoint - for GET methods.
 
         :param endpoint: Endpoint
         :param action: Endpoint Action
-        :param urlparams: Additional endpoints(for endpoints that take part of the url as option)
-        :param params: Parameters to pass to url, typically query string
+        :param url_args: Additional endpoints(for endpoints that take part of the url as option)
+        :param url_params: Parameters to pass to url, typically query string
         :return: response deserialized from JSON
         """
-        api_url = self._endpoint(endpoint, action, *urlparams, **params)
-        if 'timeout' in params:
-            timeout = params['timeout']
-            del params['timeout']
+        api_url = self._endpoint(endpoint, action, *url_args)
+        if 'timeout' in url_params:
+            timeout = url_params['timeout']
+            del url_params['timeout']
         else:
             timeout = Client.TIMEOUT
-        kwargs = {'auth': self.auth, 'headers': self.headers, 'params': params,
+        kwargs = {'auth': self.auth, 'headers': self.headers, 'url_params': url_params,
                   'timeout': timeout, 'verify': True}
         if self.proxies:
             kwargs['proxies'] = self.proxies
         response = requests.get(api_url, **kwargs)
         return self._json(response)
 
-    def _post(self, endpoint, action, data, *urlparams, **params):
+    def _post(self, endpoint, action, data, *url_args, **url_params):
         """
         Submit to API Endpoint - for POST methods.
 
         :param endpoint: Endpoint
         :param action: Endpoint Action
-        :param urlparams: Additional endpoints(for endpoints that take part of the url as option)
-        :param params: Parameters to pass to url, typically query string
+        :param url_args: Additional endpoints(for endpoints that take part of the url as option)
+        :param url_params: Parameters to pass to url, typically query string
         :return: response deserialized from JSON
         """
-        api_url = self._endpoint(endpoint, action, *urlparams, **params)
+        api_url = self._endpoint(endpoint, action, *url_args)
         data = json.dumps(data)
-        kwargs = {'auth': self.auth, 'headers': self.headers, 'params': params,
+        kwargs = {'auth': self.auth, 'headers': self.headers, 'url_params': url_params,
                   'verify': True, 'data': data}
         if self.proxies:
             kwargs['proxies'] = self.proxies
@@ -368,15 +367,15 @@ class Client(object):
         :return: Blacklist list
         """
         start, end = date_range(days, start, end)
-        kwargs = {
+        url_params = {
             'startDateInclusive': start,
             'endDateExclusive': end,
         }
         if all_workspace_crawls is not None:
-            kwargs['all_workspace_crawls'] = all_workspace_crawls
+            url_params['all_workspace_crawls'] = all_workspace_crawls
         if timeout is not None:
-            kwargs['timeout'] = timeout
-        return self._get('blacklist/incident', 'list', **kwargs)
+            url_params['timeout'] = timeout
+        return self._get('blacklist/incident', 'list', **url_params)
 
     def get_blacklist_list(self, blacklist_filter=None, 
         days=1, start=None, end=None, **kwargs):
@@ -391,13 +390,13 @@ class Client(object):
         :return: all blacklisted resources
         """
         start, end = date_range(days, start, end)
-        kwargs = {
+        url_params = {
             'startDateInclusive': start,
             'endDateExclusive': end,
         }
         if blacklist_filter is not None:
-            kwargs['filter'] = blacklist_filter
-        return self._get('blacklist', 'list', **kwargs)
+            url_params['filter'] = blacklist_filter
+        return self._get('blacklist', 'list', **url_params)
 
     def get_blacklist_malware(self, blacklist_filter=None, confidence=None,
         days=1, start=None, end=None, **kwargs):
@@ -416,17 +415,18 @@ class Client(object):
         :return: all blacklisted resources
         """
         start, end = date_range(days, start, end)
-        kwargs = {
+        url_params = {
             'startDateInclusive': start,
             'endDateExclusive': end,
         }
         if blacklist_filter is not None:
-            kwargs['filter'] = blacklist_filter
+            url_params['filter'] = blacklist_filter
         if confidence is not None:
-            kwargs['confidence'] = confidence
-        return self._get('blacklist', 'malware', **kwargs)
+            url_params['confidence'] = confidence
+        return self._get('blacklist', 'malware', **url_params)
 
-    def __get_blacklist_exploit_binary(self, days=1, start=None, end=None):
+    def __get_blacklist_exploit_binary(self, days=1, start=None, end=None,
+            **kwargs):
         """
         Query for all PE format binaries on webpages used for exploitation
 
@@ -437,11 +437,11 @@ class Client(object):
         """
         raise NotImplementedError('Not implemented server-side')
         start, end = date_range(days, start, end)
-        kwargs = {
+        url_params = {
             'startDateInclusive': start,
             'endDateExclusive': end,
         }
-        return self._get('blacklist', 'exploitBinary', **kwargs)
+        return self._get('blacklist', 'exploitBinary', **url_params)
 
     def get_crawl_volume_daily_summary(self, days=1, start=None, end=None):
         """
@@ -644,10 +644,10 @@ class Client(object):
         :return: landing page data
         """
         start, end = date_range(days, start, end)
-        kwargs = { 'start': start, 'end': end }
+        url_params = { 'start': start, 'end': end }
         if whois is not None:
-            kwargs['whois'] = whois
-        return self._get('landingPage', 'maliciousBinary', **kwargs)
+            url_params['whois'] = whois
+        return self._get('landingPage', 'maliciousBinary', **url_params)
 
     def get_landing_page_projects(self):
         """
