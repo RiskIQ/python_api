@@ -4,6 +4,8 @@
 from riskiq.cli.util import templated, stdin
 from riskiq.cli.parser import add_timerange_args, add_render_args
 
+CHUNK_SIZE = 1000
+
 def add_parser(subs):
     parser = subs.add_parser('incident', help='query blacklist incident data '
         'by given URL/host/domain')
@@ -13,26 +15,18 @@ def add_parser(subs):
         help='start index, for pagination (default 0)')
     parser.add_argument('--max-results', '--mr', type=int,
         help='max results to return (default 10)')
-    parser.add_argument('--auto', '-A', action='store_true',
-        help='automatically fetch all results')
     add_render_args(parser)
 
 @templated('blacklist/incident', yielding=True)
 def run(client, args, kwargs):
     urls = stdin(args.urls)
-    blkwargs = {}
-    for url_param in ('start_index', 'max_results'):
-        if getattr(args, url_param) is not None:
-            blkwargs[url_param] = getattr(args, url_param)
-    if args.auto:
+    if args.start_index is None and args.max_results is None:
         for url in urls:
-            chunk_size = args.max_results or 1000
-            chunk_i = args.start_index or 0
-            data_ct = 0
+            chunk_i, data_ct = 0, 0
             data = []
             while True:
                 data_i = client.get_blacklist_incident(url, start_index=chunk_i,
-                    max_results=chunk_size)
+                    max_results=CHUNK_SIZE)
                 incidents = data_i['incident']
                 data += incidents
                 size_data = len(incidents)
@@ -42,6 +36,10 @@ def run(client, args, kwargs):
                     break
             yield {'incident': data, 'totalResults': len(data)}, kwargs
     else:
+        blkwargs = {}
+        for url_param in ('start_index', 'max_results'):
+            if getattr(args, url_param) is not None:
+                blkwargs[url_param] = getattr(args, url_param)
         for url in urls:
             data = client.get_blacklist_incident(url, **blkwargs)
             yield data, kwargs
