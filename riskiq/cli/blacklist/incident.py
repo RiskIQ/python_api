@@ -12,9 +12,9 @@ def add_parser(subs):
     parser.add_argument('urls', nargs='+', metavar='URL',
         help='URL/host/domain for which to query')
     parser.add_argument('--start-index', '--si', type=int,
-        help='start index, for pagination (default 0)')
+        help='start index, for pagination (default retrieves all data)')
     parser.add_argument('--max-results', '--mr', type=int,
-        help='max results to return (default 10)')
+        help='max results to return (default 10 if --start-index given)')
     add_render_args(parser)
 
 @templated('blacklist/incident', yielding=True)
