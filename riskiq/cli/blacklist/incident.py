@@ -23,18 +23,20 @@ def run(client, args, kwargs):
     if args.start_index is None and args.max_results is None:
         for url in urls:
             chunk_i, data_ct = 0, 0
-            data = []
+            data = {}
+            incidents = []
             while True:
                 data_i = client.get_blacklist_incident(url, start_index=chunk_i,
                     max_results=CHUNK_SIZE)
-                incidents = data_i['incident']
-                data += incidents
-                size_data = len(incidents)
+                data.update(data_i)
+                incidents += data_i['incident']
+                size_data = len(data_i['incident'])
                 data_ct += size_data
                 chunk_i += size_data
                 if data_ct >= data_i['totalResults']:
                     break
-            yield {'incident': data, 'totalResults': len(data)}, kwargs
+            data['incident'] = incidents
+            yield {url: data}, kwargs
     else:
         blkwargs = {}
         for url_param in ('start_index', 'max_results'):
@@ -42,4 +44,4 @@ def run(client, args, kwargs):
                 blkwargs[url_param] = getattr(args, url_param)
         for url in urls:
             data = client.get_blacklist_incident(url, **blkwargs)
-            yield data, kwargs
+            yield {url: data}, kwargs

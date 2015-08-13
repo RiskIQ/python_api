@@ -15,4 +15,4 @@ def run(client, args, kwargs):
     urls = stdin(args.urls)
     for url in urls:
         data = client.get_blacklist_lookup(url)
-        yield data, kwargs
+        yield {url: data}, kwargs
