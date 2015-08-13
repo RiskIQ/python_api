@@ -103,6 +103,8 @@ Version History
 Versions before 0.2.7 have been mostly base implementation and bug fixes.
 We do not recommend using anything less than 0.2.7.
 
+:0.4.4:
+    Refactored riskiq.cli.blacklist scripts
 :0.4.3:
     Fixed issue where Python 2.6 sys.version_info is a tuple, not namedtuple.
 :0.4.2:
