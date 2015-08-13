@@ -40,7 +40,7 @@ def run(client, args, kwargs):
                 chunk_i += size_data
                 if data_ct >= data_i['totalResults']:
                     break
-            yield {'incident': data}, kwargs
+            yield {'incident': data, 'totalResults': len(data)}, kwargs
     else:
         for url in urls:
             data = client.get_blacklist_incident(url, **blkwargs)
