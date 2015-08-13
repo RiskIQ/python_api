@@ -21,8 +21,10 @@ def run(client, args, kwargs):
     if kwargs.get('six_hours'):
         kwargs['start'] = six_hours()
         del kwargs['six_hours']
-    if kwargs['filter'] not in (None, ) + FILTERS:
+    blacklist_filter = kwargs['filter']
+    del kwargs['filter']
+    if blacklist_filter not in (None, ) + FILTERS:
         raise ValueError('Invalid filter. Must be one of %s' % str(FILTERS))
-    data = client.get_blacklist_list(blacklist_filter=kwargs['filter'],
+    data = client.get_blacklist_list(blacklist_filter=blacklist_filter,
         **kwargs)
     return data, kwargs
