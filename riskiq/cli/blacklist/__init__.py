@@ -5,14 +5,13 @@ Blacklist endpoint CLI scripts
 from argparse import ArgumentParser
 
 from riskiq.api import Client
-from riskiq.cli.blacklist import (
-    lookup, incident, incidentlist, bl_list, malware
-)
-
 
 FILTERS = ('blackhole', 'sakura', 'exploitKit')
 CONFIDENCES = ('H', 'M', 'L')
 
+from riskiq.cli.blacklist import (
+    lookup, incident, incidentlist, bl_list, malware
+)
 
 MAIN_FUNC = {
     'lookup': lookup.run,
