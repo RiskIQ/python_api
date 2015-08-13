@@ -2,7 +2,6 @@
 import sys
 from datetime import datetime, timedelta
 from riskiq.render import renderer
-from riskiq.cli.blacklist import dump_stix
 
 try:
     from riskiq import blacklist_stix
