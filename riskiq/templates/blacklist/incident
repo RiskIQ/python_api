@@ -15,4 +15,5 @@ Entries:{% for entry in incident.resource.entries %}
 {% endfor %}{% if verbose %}Sequence to resource:
 {% for sequence in incident.sequence %}              * {{sequence.url}}
 {% endfor %}{% endif %}{% if not loop.last %}
-{% endif %}{% endfor %}{% endfor %}
+{% endif %}{% endfor %}
+{% endfor %}
