@@ -15,7 +15,7 @@ def add_parser(subs):
         help='start index, for pagination (default retrieves all data)')
     parser.add_argument('--max-results', '--mr', type=int,
         help='max results to return (default 10 if --start-index given)')
-    add_render_args(parser)
+    add_render_args(parser, verbose=True)
 
 @templated('blacklist/incident', yielding=True)
 def run(client, args, kwargs):
