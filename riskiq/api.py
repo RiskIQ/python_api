@@ -195,7 +195,7 @@ class Client(object):
             del url_params['timeout']
         else:
             timeout = Client.TIMEOUT
-        kwargs = {'auth': self.auth, 'headers': self.headers, 'url_params': url_params,
+        kwargs = {'auth': self.auth, 'headers': self.headers, 'params': url_params,
                   'timeout': timeout, 'verify': True}
         if self.proxies:
             kwargs['proxies'] = self.proxies
@@ -214,7 +214,7 @@ class Client(object):
         """
         api_url = self._endpoint(endpoint, action, *url_args)
         data = json.dumps(data)
-        kwargs = {'auth': self.auth, 'headers': self.headers, 'url_params': url_params,
+        kwargs = {'auth': self.auth, 'headers': self.headers, 'params': url_params,
                   'verify': True, 'data': data}
         if self.proxies:
             kwargs['proxies'] = self.proxies
