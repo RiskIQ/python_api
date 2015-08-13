@@ -1,3 +1,4 @@
+{% for url, data in data.items() %}
 URL:         {{data.url}}
 Description: {{data.description}}
 Rank:        {{data.rank}}
@@ -8,4 +9,5 @@ malware: {% for entry in data.entries %}
   Date: {{entry.detectedAt}}{% endif %}
   URL:  {{entry.url}}{% if entry.description %}
   Desc: {{entry.description}}{% endif %}
+{% endfor %}
 {% endfor %}
