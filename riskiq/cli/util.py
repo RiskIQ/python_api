@@ -42,8 +42,19 @@ def templated(temp, yielding=False):
             dump_data(data, temp, kwargs2)
         # Handles case where it yields multiple data points
         def wrapped_yielding(*args, **kwargs):
+            all_data = {}
+            summed = {}
+            totalresults = 0
             for data, kwargs2 in func(*args, **kwargs):
-                dump_data(data, temp, kwargs2)
+                totalresults += data.get('totalResults', 0)
+                all_data.update(data)
+                for k,v in data.items():
+                    if isinstance(v, list):
+                        summed[k] = summed.get(k, []) + v
+            all_data.update(summed)
+            if 'totalResults' in all_data:
+                all_data['totalResults'] = totalresults
+            dump_data(all_data, temp, kwargs2)
         if yielding:
             return wrapped_yielding
         return wrapped
