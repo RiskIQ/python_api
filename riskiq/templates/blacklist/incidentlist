@@ -1,0 +1,18 @@
+{% for incident in data.incident %}Incident ID:  {{incident.id}}
+Date:         {{incident.date}}{% if verbose %}
+Detected at:  {{incident.resource.detectedAt}}{% endif %}
+Crawl GUID:   {{incident.crawl.guid}}{% if incident.resource.description %}
+Description:  {{incident.resource.description}}{% endif %}
+Score:        {{incident.score}}
+Resource URL: {{incident.resource.url}}
+Resource IP:  {{incident.resource.ip}}{% if incident.resource.asn %} (AS{{incident.resource.asn}}){% endif %}
+Type:         {{incident.resource.matchType}}
+Class(es):    {% if incident.resource.malware %}Malware{% endif %}{% if incident.resource.phishing %}Phishing{% endif %}{% if incident.resource.spam %}Spam{% endif %}
+RiskIQ link:  {{incident.resource.incidentLink}}
+Entries:{% for entry in incident.resource.entries %}
+              Source:       {{entry.type}}{% if entry.matchType %} (match level: {{entry.matchType}}){% endif %}{% if entry.description %}
+              Description:  {{entry.description}}{% endif %}
+{% endfor %}{% if verbose %}Sequence to resource:
+{% for sequence in incident.sequence %}              * {{sequence.url}}
+{% endfor %}{% endif %}{% if not loop.last %}
+{% endif %}{% endfor %}
