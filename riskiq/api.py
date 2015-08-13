@@ -348,7 +348,7 @@ class Client(object):
         return self._get('blacklist', 'incident', url=url)
 
     def get_blacklist_incident_list(self, all_workspace_crawls=None, 
-        days=1, start=None, end=None, timeout=None):
+        days=1, start=None, end=None, timeout=None, **kwargs):
         """
         Query blacklist incidents
 
@@ -373,7 +373,7 @@ class Client(object):
         return self._get('blacklist/incident', 'list', **kwargs)
 
     def get_blacklist_list(self, blacklist_filter=None, 
-        days=1, start=None, end=None):
+        days=1, start=None, end=None, **kwargs):
         """
         Query blacklisted resources
 
@@ -394,7 +394,7 @@ class Client(object):
         return self._get('blacklist', 'list', **kwargs)
 
     def get_blacklist_malware(self, blacklist_filter=None, confidence=None,
-        days=1, start=None, end=None):
+        days=1, start=None, end=None, **kwargs):
         """
         Query for all discovered malware resources generated within a
         particular period.
