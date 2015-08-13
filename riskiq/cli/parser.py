@@ -13,10 +13,11 @@ def add_timerange_args(parser):
     parser.add_argument('--end', '-e', default=None,
         help='end datetime in YYYY-MM-DD HH:MM:SS format')
 
-def add_render_args(parser):
+def add_render_args(parser, verbose=False):
     parser.add_argument('-l', '--oneline', action="store_true",
         help="output one entry per line")
     parser.add_argument('-j', '--json', action="store_true",
         dest='as_json', help="output raw JSON response")
-    parser.add_argument('-v', '--verbose', action="store_true",
-        help="output additional incident data (used with standard long output)")
+    if verbose:
+        parser.add_argument('-v', '--verbose', action="store_true",
+            help="output additional incident data in default templates")

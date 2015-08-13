@@ -12,7 +12,7 @@ def add_parser(subs):
     parser.add_argument('--timeout', '-t', type=float,
         default=None, help='socket timeout in seconds')
     add_timerange_args(parser)
-    add_render_args(parser)
+    add_render_args(parser, verbose=True)
 
 @templated('blacklist/incidentlist')
 def run(client, args, kwargs):
