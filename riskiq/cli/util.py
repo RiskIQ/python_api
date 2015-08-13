@@ -23,14 +23,15 @@ def six_hours():
 
 def dump_data(data, temp, kwargs):
     # Dump to --stix path
-    if kwargs['stix']:
+    if kwargs.get('stix'):
         dump_stix(data, kwargs['stix'])
-    elif kwargs['as_json']:
+    elif kwargs.get('as_json'):
         print(json.dumps(data, indent=4))
     elif data:
         print(
-            renderer(data, temp, oneline=kwargs['oneline'],
-                verbose=kwargs['verbose']
+            renderer(data, temp, 
+                oneline=kwargs.get('oneline', False),
+                verbose=kwargs.get('verbose', False),
             )
         )
 
