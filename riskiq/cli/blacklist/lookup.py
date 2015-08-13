@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 ''' riskiq.cli.blacklist.lookup
 '''
-from riskiq.cli.util import templated 
+from riskiq.cli.util import templated, stdin
 from riskiq.cli.parser import add_timerange_args, add_render_args
 
 def add_parser(subs):
@@ -12,7 +12,7 @@ def add_parser(subs):
 
 @templated('blacklist/lookup', yielding=True)
 def run(client, args, kwargs):
-    urls = util.stdin(args.urls)
+    urls = stdin(args.urls)
     for url in urls:
         data = client.get_blacklist_lookup(url)
         yield data, kwargs
