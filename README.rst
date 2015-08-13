@@ -103,6 +103,11 @@ Version History
 Versions before 0.2.7 have been mostly base implementation and bug fixes.
 We do not recommend using anything less than 0.2.7.
 
+:0.4.6:
+    Fixed multiple blacklist templates
+    Fixed verbose flag for riq-blacklist submodules
+:0.4.5:
+    Fixed bugs in riskiq.cli.blacklist scripts
 :0.4.4:
     Refactored riskiq.cli.blacklist scripts
 :0.4.3:
