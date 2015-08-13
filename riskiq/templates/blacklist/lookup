@@ -1,11 +1,13 @@
-URL:         {{data.url}}
-Description: {{data.description}}
-Rank:        {{data.rank}}
-Score:       {{data.score}}
-malware: {% for entry in data.entries %}
+{% for url, d in data.items() %}
+URL:         {{d.url}}
+Description: {{d.description}}
+Rank:        {{d.rank}}
+Score:       {{d.score}}
+malware: {% for entry in d.entries %}
   Type: {{entry.type}}{% if entry.id %}
   ID:   {{entry.id}}{% endif %}{% if entry.detectedAt %}
   Date: {{entry.detectedAt}}{% endif %}
   URL:  {{entry.url}}{% if entry.description %}
   Desc: {{entry.description}}{% endif %}
+{% endfor %}
 {% endfor %}

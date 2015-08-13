@@ -1,3 +1,4 @@
 {%- block body -%}
-{{data.url}}{% if data.description %} | {{data.description}}{% else %} | NODESC{% endif %} | {% for entry in data.entries %}{{entry.type}}{% if entry.id %}/{{entry.id}}{% endif %}{% if entry.detectedAt %}/{{entry.detectedAt}}{% endif %}{% if entry.description %}/{{entry.description}}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}
+{% for url, d in data.items() %}{{d.url}}{% if d.description %} | {{d.description}}{% else %} | NODESC{% endif %} | {% for entry in d.entries %}{{entry.type}}{% if entry.id %}/{{entry.id}}{% endif %}{% if entry.detectedAt %}/{{entry.detectedAt}}{% endif %}{% if entry.description %}/{{entry.description}}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}
+{% endfor %}
 {%- endblock %}

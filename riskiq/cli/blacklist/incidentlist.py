@@ -14,7 +14,7 @@ def add_parser(subs):
     add_timerange_args(parser)
     add_render_args(parser)
 
-@templated('blacklist/incident')
+@templated('blacklist/incidentlist')
 def run(client, args, kwargs):
     if kwargs.get('six_hours'):
         kwargs['start'] = six_hours()

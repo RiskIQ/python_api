@@ -1,4 +1,4 @@
-{% for url, d in data.items() %}{% for incident in d.incident %}Incident ID:  {{incident.id}}
+{% for incident in data.incident %}Incident ID:  {{incident.id}}
 Date:         {{incident.date}}{% if verbose %}
 Detected at:  {{incident.resource.detectedAt}}{% endif %}
 Crawl GUID:   {{incident.crawl.guid}}{% if incident.resource.description %}
@@ -15,4 +15,4 @@ Entries:{% for entry in incident.resource.entries %}
 {% endfor %}{% if verbose %}Sequence to resource:
 {% for sequence in incident.sequence %}              * {{sequence.url}}
 {% endfor %}{% endif %}{% if not loop.last %}
-{% endif %}{% endfor %}{% endfor %}
+{% endif %}{% endfor %}
