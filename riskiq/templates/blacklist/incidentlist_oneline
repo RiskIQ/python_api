@@ -1,0 +1,3 @@
+{% for incident in data.incident -%}
+{{incident.date}} | {{incident.id}} | {{incident.resource.url}}{% if incident.resource.ip %} ({{incident.resource.ip}}){% endif %}{% if incident.resource.description %} | {{incident.resource.description}}{% else %} | NODESC{% endif %} | {% for entry in incident.resource.entries %}{{entry.type}}{% if entry.id %}/{{entry.id}}{% endif %}{% if entry.detectedAt %}/{{entry.detectedAt}}{% endif %}{% if entry.description %}/{{entry.description}}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}
+{% endfor %}
