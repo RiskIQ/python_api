@@ -107,8 +107,8 @@ class Client(object):
         self.api_base = 'https://%s/%s' % (server, version)
         self.auth = (token, key)
         self.headers = {
-            'Accept': 'Application/JSON',
-            'Content-Type': 'Application/JSON',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
         }
         self.proxies = {}
         if http_proxy:
