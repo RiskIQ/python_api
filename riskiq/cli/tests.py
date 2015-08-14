@@ -48,5 +48,3 @@ def test_bl_incident_oneline():
     kwargs = {'oneline': True}
     run(client, args, kwargs)
     out = GLOBALS['buf'].read()
-    with open('foo', 'w') as f:
-        f.write(out)
