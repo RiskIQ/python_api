@@ -5,7 +5,6 @@ Unit tests using nose
 import sys
 import os
 import json
-from StringIO import StringIO
 from mock import MagicMock
 from nose import with_setup
 
@@ -31,15 +30,12 @@ def setup_blacklist():
     args = MagicMock()
     args.urls = ['zief.pl']
     stdout = sys.stdout
-    buf = StringIO()
-    sys.stdout = buf
     GLOBALS['client'] = client
     GLOBALS['args'] = args
     GLOBALS['stdout'] = stdout
-    GLOBALS['buf'] = buf
 
 def teardown_blacklist():
-    sys.stdout = GLOBALS['stdout']
+    pass
 
 @with_setup(setup_blacklist, teardown_blacklist)
 def test_bl_incident_oneline():
@@ -47,4 +43,3 @@ def test_bl_incident_oneline():
     client, args = GLOBALS['client'], GLOBALS['args']
     kwargs = {'oneline': True}
     run(client, args, kwargs)
-    out = GLOBALS['buf'].read()
