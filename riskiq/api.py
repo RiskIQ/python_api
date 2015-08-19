@@ -678,9 +678,20 @@ class Client(object):
         """
         return self._get('mobile/android', 'lookup', url=url)
 
+    def get_mobile_app(self, official_id):
+        """
+        Retrieve mobile applications by official ID. For Android apps, this
+        will be the package name. For iOS apps, this is the Apple store id.
+        If no apps are found, an empty result set will be returned.
+
+        :param official_id: The app's official ID
+        :return: app details
+        """
+        return self._get('mobile/app', str(official_id))
+
     def get_mobile_incident(self, incident_id):
         """
-        Retrieve an mobile app incident by ID.
+        Retrieve a mobile app incident by ID.
         If the incident is not found, 404 NOT FOUND is returned.
 
         :param incident_id: Long int ID
