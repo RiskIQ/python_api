@@ -40,12 +40,14 @@ def templated(temp, yielding=False):
         # Simple return of one set of data
         def wrapped(*args, **kwargs):
             data, kwargs2 = func(*args, **kwargs)
+            temp = kwargs2.get('template', temp)
             dump_data(data, temp, kwargs2)
         # Handles case where it yields multiple data points
         def wrapped_yielding(*args, **kwargs):
             all_data = {}
             for data, kwargs2 in func(*args, **kwargs):
                 all_data.update(data)
+            temp = kwargs2.get('template', temp)
             dump_data(all_data, temp, kwargs2)
         if yielding:
             return wrapped_yielding
