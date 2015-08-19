@@ -32,6 +32,7 @@ def dump_data(data, temp, kwargs):
             renderer(data, temp, 
                 oneline=kwargs.get('oneline', False),
                 verbose=kwargs.get('verbose', False),
+                custom_template=kwargs.get('template'),
             )
         )
 
@@ -40,15 +41,13 @@ def templated(temp, yielding=False):
         # Simple return of one set of data
         def wrapped(*args, **kwargs):
             data, kwargs2 = func(*args, **kwargs)
-            template_path = kwargs2.get('template') or temp
-            dump_data(data, template_path, kwargs2)
+            dump_data(data, temp, kwargs2)
         # Handles case where it yields multiple data points
         def wrapped_yielding(*args, **kwargs):
             all_data = {}
             for data, kwargs2 in func(*args, **kwargs):
                 all_data.update(data)
-            template_path = kwargs2.get('template') or temp
-            dump_data(all_data, template_path, kwargs2)
+            dump_data(all_data, temp, kwargs2)
         if yielding:
             return wrapped_yielding
         return wrapped
