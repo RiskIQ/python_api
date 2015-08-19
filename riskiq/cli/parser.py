@@ -18,6 +18,8 @@ def add_render_args(parser, verbose=False):
         help="output one entry per line")
     parser.add_argument('-j', '--json', action="store_true",
         dest='as_json', help="output raw JSON response")
+    parser.add_argument('-T', '--template',
+        help='path to custom template')
     if verbose:
         parser.add_argument('-v', '--verbose', action="store_true",
             help="output additional incident data in default templates")
