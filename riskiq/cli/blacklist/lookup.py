@@ -15,4 +15,6 @@ def run(client, args, kwargs):
     urls = stdin(args.urls)
     for url in urls:
         data = client.get_blacklist_lookup(url)
+        if not data:
+            continue
         yield {url: data}, kwargs

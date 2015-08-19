@@ -35,6 +35,8 @@ def run(client, args, kwargs):
                 chunk_i += size_data
                 if data_ct >= data_i['totalResults']:
                     break
+            if not incidents:
+                continue
             data['incident'] = incidents
             yield {url: data}, kwargs
     else:
