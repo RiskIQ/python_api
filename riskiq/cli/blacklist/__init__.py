@@ -37,7 +37,8 @@ def main():
 
     kwargs = {}
     for kwarg in ('as_json', 'oneline', 'stix', 'days', 'start', 'end',
-            'verbose', 'timeout', 'six_hours', 'filter', 'confidence'):
+            'verbose', 'timeout', 'six_hours', 'filter', 'confidence',
+            'template'):
         if hasattr(args, kwarg):
             kwargs[kwarg] = getattr(args, kwarg)
     
