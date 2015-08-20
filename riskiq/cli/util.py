@@ -23,32 +23,35 @@ def six_hours():
 
 def dump_data(data, temp, kwargs):
     # Dump to --stix path
+    ret_out = kwargs.get('return_output')
     if kwargs.get('stix'):
         dump_stix(data, kwargs['stix'])
+        return kwargs['stix']
     elif kwargs.get('as_json'):
-        print(json.dumps(data, indent=4))
+        val = json.dumps(data, indent=4)
     elif data:
-        print(
-            renderer(data, temp, 
+        val = renderer(data, temp, 
                 oneline=kwargs.get('oneline', False),
                 verbose=kwargs.get('verbose', False),
                 custom_template=kwargs.get('template'),
             )
-        )
+    print(val)
+    if ret_out:
+        return val
 
 def templated(temp, yielding=False):
     def deco(func):
         # Simple return of one set of data
         def wrapped(*args, **kwargs):
             data, kwargs2 = func(*args, **kwargs)
-            dump_data(data, temp, kwargs2)
+            return dump_data(data, temp, kwargs2)
         # Handles case where it yields multiple data points
         def wrapped_yielding(*args, **kwargs):
             all_data = {}
             kwargs2 = {}
             for data, kwargs2 in func(*args, **kwargs):
                 all_data.update(data)
-            dump_data(all_data, temp, kwargs2)
+            return dump_data(all_data, temp, kwargs2)
         if yielding:
             return wrapped_yielding
         return wrapped
