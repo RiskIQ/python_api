@@ -1,14 +1,36 @@
 #!/usr/bin/env python
 import sys
 import json
+import re
 from datetime import datetime, timedelta
 from riskiq.render import renderer
+try:
+    from pytz.reference import Pacific
+except ImportError:
+    Pacific = None
 
 try:
     from riskiq import blacklist_stix
     NO_STIX = False
 except ImportError:
     NO_STIX = True
+
+RE_TIMESTAMP = re.compile(r'(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})T(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2}).(?P<millisecond>\d{3})(?P<timezone>[+-]\d{4})')
+
+def dt_from_timestamp(ts):
+    match = RE_TIMESTAMP.match(ts)
+    if not match:
+        return None
+    dtdict = match.groupdict()
+    dtdict['microsecond'] = int(dtdict['millisecond']) * 1000
+    del dtdict['millisecond']
+    del dtdict['timezone']
+    dtdict = {k: int(v) for k,v in dtdict.items()}
+    if Pacific is not None:
+        # Assume Pacific/-0800 for now
+        tzinfo = Pacific
+        dtdict['tzinfo'] = tzinfo
+    return datetime(**dtdict)
 
 def stdin(argv):
     parse_stdin = ('-' in argv)
