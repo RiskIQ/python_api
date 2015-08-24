@@ -43,6 +43,33 @@ def stdin(argv):
 def six_hours():
     return (datetime.now() - timedelta(hours=6)).strftime('%Y-%m-%d %H:%M:%S')
 
+def get_subval(data, keypath):
+    keys = keypath.split('.')
+    d = data
+    for key in keys:
+        d = d[key]
+    return d
+
+def sort_data(data, sortkey):
+    '''
+    sortkey must be path to list, then path to the key to use, ie:
+    incident:resource.detectedAt
+    '''
+    incidents = data['incident']
+    spl = sortkey.split(':')
+    if len(spl) != 2:
+        sys.stderr.write('Cant sort incident data, due to bad split on delim(:): {}\n'.format(str(spl)))
+        return None
+    subdict_keypath, keypath = spl
+    subdata = get_subval(data, keypath)
+    if not subdata:
+        return
+    first = get_subval(subdata[0], keypath)
+    if RE_TIMESTAMP.match(first):
+        subdata = sorted(subdata, key=lambda v:dt_from_timestamp(get_subval(v, keypath)))
+    else:
+        subdata = sorted(subdata, key=lambda v:get_subval(v, keypath))
+
 def dump_data(data, temp, kwargs):
     # Dump to --stix path
     ret_out = kwargs.get('return_output')
@@ -61,11 +88,13 @@ def dump_data(data, temp, kwargs):
     if ret_out:
         return val
 
-def templated(temp, yielding=False):
+def templated(temp, yielding=False, sortkey=None):
     def deco(func):
         # Simple return of one set of data
         def wrapped(*args, **kwargs):
             data, kwargs2 = func(*args, **kwargs)
+            if sortkey is not None:
+                sort_data(data, sortkey)
             return dump_data(data, temp, kwargs2)
         # Handles case where it yields multiple data points
         def wrapped_yielding(*args, **kwargs):
@@ -73,6 +102,8 @@ def templated(temp, yielding=False):
             kwargs2 = {}
             for data, kwargs2 in func(*args, **kwargs):
                 all_data.update(data)
+            if sortkey is not None:
+                sort_data(all_data, sortkey)
             return dump_data(all_data, temp, kwargs2)
         if yielding:
             return wrapped_yielding
