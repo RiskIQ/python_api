@@ -30,7 +30,7 @@ RETURN_VALUES = {
 }
 
 ASSERT_VALUES = {
-    #'blacklist_list': read('bl_list'),
+    'blacklist_list': read('bl_list'),
     'blacklist_list.oneline': read('bl_list.oneline'),
     'blacklist_incident.oneline': read('bl_incident.oneline'),
     'blacklist_incident': read('bl_incident'),
@@ -70,7 +70,8 @@ def setup(func):
     def created_test():
         good = assert_val(func.assert_template)
         kwargs = {'return_output': True, 'filter': None}
-        kwargs[func.template] = True
+        if func.template:
+            kwargs[func.template] = True
         mod = __import__('riskiq.cli.blacklist.{}'.format(func.mod_name))
         mod = getattr(mod.cli.blacklist, func.mod_name)
         run = getattr(mod, 'run')
@@ -97,8 +98,6 @@ def test_blacklist_list_oneline():
 def test_blacklist_incident():
     pass
 
-'''
 @setup
 def test_blacklist_list():
     pass
-'''
