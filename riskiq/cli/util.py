@@ -43,32 +43,31 @@ def stdin(argv):
 def six_hours():
     return (datetime.now() - timedelta(hours=6)).strftime('%Y-%m-%d %H:%M:%S')
 
-def get_subval(data, keypath):
-    keys = keypath.split('.')
-    d = data
-    for key in keys:
-        d = d[key]
-    return d
-
 def sort_data(data, sortkey):
     '''
     sortkey must be path to list, then path to the key to use, ie:
     incident:resource.detectedAt
     '''
-    incidents = data['incident']
-    spl = sortkey.split(':')
-    if len(spl) != 2:
-        sys.stderr.write('Cant sort incident data, due to bad split on delim(:): {}\n'.format(str(spl)))
-        return None
-    subdict_keypath, keypath = spl
-    subdata = get_subval(data, keypath)
-    if not subdata:
-        return
-    first = get_subval(subdata[0], keypath)
-    if RE_TIMESTAMP.match(first):
-        subdata = sorted(subdata, key=lambda v:dt_from_timestamp(get_subval(v, keypath)))
+    if sortkey == 'incident.date':
+        if 'incident' in data:
+            data['incident'] = sorted(
+                data['incident'], 
+                key=lambda x:dt_from_timestamp(x['date'])
+            )
+        elif isinstance(data, dict):
+            for v in data.values():
+                if isinstance(v, dict) and 'incident' in v:
+                    sort_data(v, sortkey)
+            return
+        elif isinstance(data, list):
+            for v in data:
+                if isinstance(v, dict) and 'incident' in v:
+                    sort_data(v, sortkey)
+            return
+        else:
+            return
     else:
-        subdata = sorted(subdata, key=lambda v:get_subval(v, keypath))
+        raise NotImplementedError('Only sort available is incident.date')
 
 def dump_data(data, temp, kwargs):
     # Dump to --stix path

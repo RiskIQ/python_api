@@ -18,7 +18,7 @@ def add_parser(subs):
     add_render_args(parser, verbose=True)
 
 @templated('blacklist/incident', yielding=True, 
-            sortkey='incident:resource.detectedAt')
+            sortkey='incident.date')
 def run(client, args, kwargs):
     urls = stdin(args.urls)
     if args.start_index is None and args.max_results is None:
