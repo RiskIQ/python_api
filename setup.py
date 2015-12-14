@@ -10,10 +10,10 @@ def read(fname):
 
 setup(
     name = 'riskiq',
-    version = '0.4.7',
+    version = '0.4.9',
     description = 'client for RiskIQ REST API',
     url = "https://github.com/riskiq/python_api",
-    keywords = 'riskiq API REST',
+    keywords = 'RiskIQ API REST',
     author = "Research Team, RiskIQ",
     author_email = "research@riskiq.net",
     license = "GPLv2",
@@ -24,8 +24,8 @@ setup(
     },
     long_description=read('README.rst'),
     classifiers=[
-        'Development Status :: 3 - Alpha',
-        #'Development Status :: 4 - Beta',
+        #'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         #'Development Status :: 5 - Production/Stable',
         #'Development Status :: 6 - Mature',
     ],
@@ -39,6 +39,7 @@ setup(
             'riq-binary = riskiq.cli.binary:main',
             'riq-whois = riskiq.cli.whois:main',
             'riq-stix = riskiq.blacklist_stix:main [stix]',
+            'zlist-to-crits = riskiq.zlist_to_crits:main',
             #'riq-mobile = riskiq.cli.mobile:main',
         ],
     },

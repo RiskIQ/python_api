@@ -7,10 +7,11 @@ riskiq
 services. The library currently provides support for the following services:
 
 - Passive DNS queries
-- Blacklist URL search
+- Global Blacklist (GBL) lookup
 - Blacklist Incident URL search
 - ZList download
 - Crawler *Landing Page* submission
+- Suspicious binary feed download
 
 Command-line scripts
 --------------------
@@ -19,12 +20,14 @@ The following command line scripts are installed with the library:
 
 - **riq-config**: utility to set or query API configuration options for the
   library (API token and private key).
-- **riq-dns**: client to issue queries to the RiskIQ Passive DNS database service.
-- **riq-blacklist**: client to issue queries for domains and URLs to identify
-  listings in the RiskIQ blacklist.
-- **riq-zlist**: query the zlist for entries within a time range
-- **riq-landingpage**: get and submit new landing pages
-- **riq-binary**: list and download files from the binary feed
+- **riq-binary**: list and download files from the suspicious binary feed.
+- **riq-blacklist**: client to look up domains and URLs against the RiskIQ global blacklist (GBL).
+- **riq-dns**: client to query the RiskIQ Passive DNS database service.
+- **riq-landingpage**: get and submit new Landing Pages.
+- **riq-stix**: produce STIX formatted document from input file.
+- **riq-whois**: query RiskIQ Whois database service.
+- **riq-zlist**: query the ZList for entries within a time range.
+- **zlist-to-crits**: upload ZList exports as indicators in a CRITs instance.
 
 See the *Usage* section for more information.
 
@@ -60,8 +63,8 @@ Configuration parameters are stored in **$HOME/.config/riskiq/api_config.json**.
 Usage
 -----
 
-Every command-line script has several sub-commands that may be passed to it. The
-commands usage may be described with the ``-h/--help`` option.
+Most command-line scripts have several sub-commands that may be passed to them. The
+command usage may be described with the ``-h/--help`` option.
 
 For example::
 
@@ -80,7 +83,7 @@ For example::
     optional arguments:
       -h, --help            show this help message and exit
 
-Every sub-command has further help options:::
+Every sub-command has further help options::
 
     $ riq-blacklist lookup -h
     usage: riq-blacklist lookup [-h] [-l] [-j] urls [urls ...]
