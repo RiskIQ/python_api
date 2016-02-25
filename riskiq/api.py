@@ -337,6 +337,19 @@ class Client(object):
             result['description'] = ''
         return result
 
+    def get_blacklist_lookup_bulk(self, urls):
+        """
+        Query blacklist urls in bulk.
+        At least one url must be specified.
+
+        :param urls: Array of URLs to query blacklist on.
+        :return: Array of Blacklist Dicts
+        """
+        result = self._get('blacklist', 'bulkLookup', urls=",".join(urls))
+        if result and 'lookup' not in result:
+            result['lookup'] = []
+        return result['lookup']
+
     def get_blacklist_incident(self, url, start_index=None, max_results=None,
             **kwargs):
         """
