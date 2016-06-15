@@ -25,6 +25,7 @@ from riskiq.config import Config
 TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 TIME_FORMAT_DAY = '%Y-%m-%d 00:00:00'
 
+
 def today():
     """
     Generates a date string for today.
@@ -32,6 +33,7 @@ def today():
     :return: Date string of today in "yyyy-mm-dd" format, accepted by API
     """
     return datetime.strftime(datetime.now(), '%Y-%m-%d')
+
 
 def format_date(dt, day=False):
     """
@@ -46,6 +48,7 @@ def format_date(dt, day=False):
     if day:
         fmt = TIME_FORMAT_DAY
     return datetime.strftime(dt, fmt)
+
 
 def date_range(days=1, start=None, end=None):
     """
@@ -72,17 +75,24 @@ def date_range(days=1, start=None, end=None):
         end = end.replace('today', today())
     return start, end
 
+
 def set_if(dictionary, key, value):
     if value is not None:
         dictionary[key] = value
 
+
 class FilterField:
+    ''' Used for filter fields in /inventory/search params '''
     AssetType = 'assetType'
 
+
 class FilterValue:
+    ''' Used for filter values in /inventory/search params '''
     WebSite = 'WEB_SITE'
 
+
 class FilterOperation:
+    ''' Used for filter operations in /inventory/search params '''
     Equals = 'EQ'
     NotEqual = "NE"
 
@@ -117,7 +127,7 @@ class Client(object):
     TIMEOUT = 60
 
     def __init__(self, token, key, server='ws.riskiq.net', version='v1',
-            http_proxy=None, https_proxy=None):
+                 http_proxy=None, https_proxy=None):
         self.api_base = 'https://%s/%s' % (server, version)
         self.auth = (token, key)
         self.headers = {
@@ -162,6 +172,7 @@ class Client(object):
         if PY2:
             self._old_send = httplib.HTTPConnection.send
             old_send = self._old_send
+
             def new_send(self, data):
                 print(data)
                 return old_send(self, data)
@@ -246,10 +257,11 @@ class Client(object):
         """
         start, end = date_range(days, start, end)
         return self._get('affiliate', 'campaignSummary',
-            startDateInclusive=start, endDateExclusive=end)
+                         startDateInclusive=start, endDateExclusive=end)
 
     def _landing_page_entry(self, url=None, keyword=None,
-            md5_hash=None, project_name=None, pingback_url=None, fields=None):
+                            md5_hash=None, project_name=None, pingback_url=None,
+                            fields=None):
         """
         Build the dictionary for a single landing_page submission.
 
@@ -264,8 +276,7 @@ class Client(object):
         :return: returns dictionary usable for requests
         """
         if url is None:
-            raise ValueError('url param is required in landing_page '
-                'submission')
+            raise ValueError('url param is required in landing_page submission')
         data = {}
         if url:
             data['url'] = url
@@ -284,8 +295,8 @@ class Client(object):
             ]
         return data
 
-    def get_affiliate_incident_list(self, known_profile=None,
-        max_results=None, days=1, start=None, end=None):
+    def get_affiliate_incident_list(self, known_profile=None, max_results=None,
+                                    days=1, start=None, end=None):
         """
         Return the affiliate campaign summary report for the given date range.
 
@@ -307,8 +318,8 @@ class Client(object):
             kwargs['maxResults'] = max_results
         return self._get('affiliate/incident', 'list', **kwargs)
 
-    def get_binary_list(self, virus_total_only=None,
-            client_workspace_only=None, days=1, start=None, end=None):
+    def get_binary_list(self, virus_total_only=None, client_workspace_only=None,
+                        days=1, start=None, end=None):
         """
         Return a list of all binaries in date range
 
@@ -352,7 +363,7 @@ class Client(object):
         return result
 
     def get_blacklist_incident(self, url, start_index=None, max_results=None,
-            **kwargs):
+                               **kwargs):
         """
         Query blacklist incidents by url.
 
@@ -366,8 +377,9 @@ class Client(object):
             url_params['maxResults'] = max_results
         return self._get('blacklist', 'incident', **url_params)
 
-    def get_blacklist_incident_list(self, all_workspace_crawls=None,
-        days=1, start=None, end=None, timeout=None, **kwargs):
+    def get_blacklist_incident_list(self, all_workspace_crawls=None, days=1,
+                                    start=None, end=None, timeout=None,
+                                    **kwargs):
         """
         Query blacklist incidents
 
@@ -391,8 +403,8 @@ class Client(object):
             url_params['timeout'] = timeout
         return self._get('blacklist/incident', 'list', **url_params)
 
-    def get_blacklist_list(self, blacklist_filter=None,
-        days=1, start=None, end=None, **kwargs):
+    def get_blacklist_list(self, blacklist_filter=None, days=1, start=None,
+                           end=None, **kwargs):
         """
         Query blacklisted resources
 
@@ -413,7 +425,7 @@ class Client(object):
         return self._get('blacklist', 'list', **url_params)
 
     def get_blacklist_malware(self, blacklist_filter=None, confidence=None,
-        days=1, start=None, end=None, **kwargs):
+                              days=1, start=None, end=None, **kwargs):
         """
         Query for all discovered malware resources generated within a
         particular period.
@@ -440,7 +452,7 @@ class Client(object):
         return self._get('blacklist', 'malware', **url_params)
 
     def __get_blacklist_exploit_binary(self, days=1, start=None, end=None,
-            **kwargs):
+                                       **kwargs):
         """
         Query for all PE format binaries on webpages used for exploitation
 
@@ -483,7 +495,7 @@ class Client(object):
         :return: return a JSON object of the data
         """
         return self._get('dns', 'name', name=name, rrType=rrtype,
-            maxResults=maxresults)
+                         maxResults=maxresults)
 
     def get_dns_data_by_ip(self, ip, rrtype=None, maxresults=1000):
         """
@@ -495,7 +507,7 @@ class Client(object):
         :return: return a JSON object of the data
         """
         return self._get('dns', 'data', ip=ip, rrType=rrtype,
-            maxResults=maxresults)
+                         maxResults=maxresults)
 
     def get_dns_ptr_by_ip(self, ip, rrtype=None, maxresults=1000):
         """
@@ -507,7 +519,7 @@ class Client(object):
         :return: return a JSON object of the data
         """
         return self._get('dns', 'name', ip=ip, rrType=rrtype,
-            maxResults=maxresults)
+                         maxResults=maxresults)
 
     def get_dns_data_by_data(self, hostname, rrtype=None, maxresults=1000):
         """
@@ -519,8 +531,7 @@ class Client(object):
         :return: return a JSON object of the data
         """
         return self._get('dns', 'data', name=hostname, rrType=rrtype,
-            maxResults=maxresults)
-
+                         maxResults=maxresults)
 
     def get_landing_page(self, md5_hash, whois=None):
         """
@@ -553,8 +564,8 @@ class Client(object):
         data = self._landing_page_entry(**kwargs)
         return self._post('landingPage', '', data)
 
-    def get_landing_page_crawled(self, whois=None,
-        days=None, start=None, end=None):
+    def get_landing_page_crawled(self, whois=None, days=None, start=None,
+                                 end=None):
         """
         List landing pages by crawl date - maximum of 100
 
@@ -573,8 +584,8 @@ class Client(object):
             kwargs['whois'] = whois
         return self._get('landingPage', 'crawled', **kwargs)
 
-    def get_landing_page_flagged(self, whois=None,
-        days=None, start=None, end=None):
+    def get_landing_page_flagged(self, whois=None, days=None, start=None,
+                                 end=None):
         """
         List landing pages by known profile creation date - maximum of 100
 
@@ -586,7 +597,7 @@ class Client(object):
         """
         start, end = date_range(days, start, end)
         if any([days, start, end]):
-            kwargs = { 'start': start, 'end': end }
+            kwargs = {'start': start, 'end': end}
         else:
             kwargs = {}
         if whois is not None:
@@ -618,7 +629,6 @@ class Client(object):
             data = {'entry': [{'url': url} for url in urls]}
         return self._post('landingPage', 'bulk', data)
 
-
     def submit_landing_page_bulk(self, entries, **kwargs):
         """
         Submit landing pages in bulk
@@ -647,8 +657,8 @@ class Client(object):
         ]}
         return self._post('landingPage', 'bulk', data)
 
-    def get_landing_page_malicious_binary(self, whois=None,
-        days=1, start=None, end=None):
+    def get_landing_page_malicious_binary(self, whois=None, days=1, start=None,
+                                          end=None):
         """
         List landing pages with malicious binary incidents.
 
@@ -659,7 +669,7 @@ class Client(object):
         :return: landing page data
         """
         start, end = date_range(days, start, end)
-        url_params = { 'start': start, 'end': end }
+        url_params = {'start': start, 'end': end}
         if whois is not None:
             url_params['whois'] = whois
         return self._get('landingPage', 'maliciousBinary', **url_params)
@@ -713,8 +723,8 @@ class Client(object):
         :return: mobile incidents
         """
         start, end = date_range(days, start, end)
-        return self._get('mobile/incident', 'list',
-            startDateInclusive=start, endDateExclusive=end)
+        return self._get('mobile/incident', 'list', startDateInclusive=start,
+                         endDateExclusive=end)
 
     def get_page(self, crawl_guid, page_guid):
         """
@@ -755,9 +765,8 @@ class Client(object):
         :param child_guid: child GUID
         :return: requested page
         """
-        return self._get('page', '%s/%s/%s/dom' %
-            (crawl_guid, page_guid, child_guid)
-        )
+        return self._get('page', '%s/%s/%s/dom' % (crawl_guid, page_guid,
+                                                   child_guid))
 
     def get_page_child_dom_text(self, crawl_guid, page_guid, child_guid):
         """
@@ -768,9 +777,8 @@ class Client(object):
         :param child_guid: child GUID
         :return: requested page
         """
-        return self._get('page', '%s/%s/%s/domText' %
-            (crawl_guid, page_guid, child_guid)
-        )
+        return self._get('page', '%s/%s/%s/domText' % (crawl_guid, page_guid,
+                                                       child_guid))
 
     def get_page_child_response(self, crawl_guid, page_guid, child_guid):
         """
@@ -781,9 +789,8 @@ class Client(object):
         :param child_guid: child GUID
         :return: requested page
         """
-        return self._get('page', '%s/%s/%s/response' %
-            (crawl_guid, page_guid, child_guid)
-        )
+        return self._get('page', '%s/%s/%s/response' % (crawl_guid, page_guid,
+                                                        child_guid))
 
     def get_project_list(self):
         """
@@ -822,7 +829,7 @@ class Client(object):
         return self._get('zlist', 'urls', start=start, end=end)
 
     def post_whois(self, domain=None, email=None, name_server=None,
-            max_results=100):
+                   max_results=100):
         """
         Get whois results for a domain, email, name_server.
         Allows * for wildcard.
