@@ -24,7 +24,11 @@ from riskiq.config import Config
 # Acceptable string time format for all requests
 TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 TIME_FORMAT_DAY = '%Y-%m-%d 00:00:00'
+TIME_FORMAT_ISO = '%Y-%m-%dT%H:%M:%S.000-0000'
 
+INVENTORY_ASSET_TYPES = ['ALL', 'WEB_SITE', 'NAME_SERVER', 'MAIL_SERVER',
+                         'HOST', 'DOMAIN', 'IP_BLOCK', 'ASN', 'SSL_CERT',
+                         'CONTACT']
 
 def today():
     """
@@ -374,6 +378,19 @@ class Client(object):
         if result and 'description' not in result:
             result['description'] = ''
         return result
+
+    def get_blacklist_lookup_bulk(self, urls):
+        """
+        Query blacklist urls in bulk.
+        At least one url must be specified.
+
+        :param urls: Array of URLs to query blacklist on.
+        :return: Array of Blacklist Dicts
+        """
+        result = self._get('blacklist', 'bulkLookup', urls=",".join(urls))
+        if result and 'lookup' not in result:
+            result['lookup'] = []
+        return result['lookup']
 
     def get_blacklist_incident(self, url, start_index=None, max_results=None,
                                **kwargs):
@@ -841,15 +858,16 @@ class Client(object):
         start, end = date_range(days, start, end)
         return self._get('zlist', 'urls', start=start, end=end)
 
-    def post_whois(self, domain=None, email=None, name_server=None,
+    def post_whois(self, domain=None, email=None, name_server=None, raw=None,
                    max_results=100):
         """
-        Get whois results for a domain, email, name_server.
+        Query whois results for a domain, email, name_server.
         Allows * for wildcard.
 
         :param domain: Domain to query
         :param email: email address to query
         :param name_server: name server to query
+        :param raw: raw data to query
         :param max_results: max results to return, default 100
         :return: list of domain dictionaries
         """
@@ -857,6 +875,7 @@ class Client(object):
         set_if(data, 'domain', domain)
         set_if(data, 'email', email)
         set_if(data, 'nameServer', name_server)
+        set_if(data, 'raw', raw)
         return self._post('whois', 'query', data)
 
     def get_inventory(self, asset_id=None):
@@ -884,3 +903,83 @@ class Client(object):
         data = {'query': query_string, 'filters': filters_list}
 
         return self._post('inventory', 'search', data)
+
+    def get_v2_events(self, days=1, start=None, end=None, count=50, offset=0):
+        """
+        Get inventory items for workspace.  Can behave in one of 3 ways:
+
+        1. Provided filter. If a filter (dict) is provided, this dict will be
+           sent to the Inventory endpoint unaltered.
+
+        2. Date range. If start and/or end dates are provided, a filter will be
+        constructed for Inventory items created or updated within that period.
+        3. Asset types. A list of asset types can be provided which will be
+           used to query assets of that type. Available asset types are:
+           ['ALL', 'WEB_SITE', 'NAME_SERVER', 'MAIL_SERVER', 'HOST', 'DOMAIN',
+            'IP_BLOCK', 'ASN', 'SSL_CERT', 'CONTACT']
+
+        :param domain: Domain to query
+        :param email: email address to query
+        :param name_server: name server to query
+        :param max_results: max results to return, default 100
+        :return: list of domain dictionaries
+        """
+        start, end = date_range(days, start, end)
+        event_filter = {
+            "query": "optional",
+            "filters": [
+                {
+                    "filters": [
+                        {
+                            "field": "createdAt",
+                            "value": start,
+                            "type": "GTE",
+                        }
+                    ]
+                }
+            ]
+        }
+        return self._post('event', 'search', event_filter, count=count,
+                          offset=offset)
+
+    def search_inventory(self, filter=None, start=None, end=None,
+                         asset_types=None, offset=None, count=None,
+                         scroll=None):
+        if asset_types is None:
+            asset_types = ['ALL']
+        flt = {}
+        if filter:
+            flt = filter
+        elif start or end:
+            start = start.strftime(TIME_FORMAT_ISO)
+            end = end.strftime(TIME_FORMAT_ISO)
+
+            flt = {"filters": [{
+                "filters": [
+                    {
+                        "field": "firstSeen",
+                        "value": start + "," + end,
+                        "type": FilterOperation.Between,
+                    },
+                    {
+                        "field": "lastChanged",
+                        "value": start + "," + end,
+                        "type": FilterOperation.Between,
+                    }
+                ]
+            }]}
+
+        if 'ALL' not in asset_types:
+            flt['filters'].append({
+                "filters": [{
+                    "field": "assetType",
+                    "type": FilterOperation.In,
+                    "value": ",".join(asset_types),
+                }]
+            })
+
+        if scroll is not None:
+            return self._post('inventory', 'search', flt, scroll=scroll)
+        else:
+            return self._post('inventory', 'search', flt, count=count,
+                              offset=offset)
