@@ -242,20 +242,20 @@ class Client(object):
         :return: data containing the number of results and the objects
         """
         start, end = date_range(days, start, end)
-        return self._get('affiliate', 'campaignSummary', 
+        return self._get('affiliate', 'campaignSummary',
             startDateInclusive=start, endDateExclusive=end)
 
-    def _landing_page_entry(self, url=None, keyword=None, 
+    def _landing_page_entry(self, url=None, keyword=None,
             md5_hash=None, project_name=None, pingback_url=None, fields=None):
         """
         Build the dictionary for a single landing_page submission.
 
         :param url: Url to submit. Only required parameter.
         :param keyword: Optional Keyword for this landing page.
-        :param md5_hash: Optional MD5 representing the canonical ID for this 
+        :param md5_hash: Optional MD5 representing the canonical ID for this
             landing page
         :param project_name: Optional Project name to submit landing page to
-        :param pingback_url: Optional URL to be GET requested upon completion 
+        :param pingback_url: Optional URL to be GET requested upon completion
             of analysis of the landing page
         :param fields: Optional dictionary of custom fields
         :return: returns dictionary usable for requests
@@ -281,7 +281,7 @@ class Client(object):
             ]
         return data
 
-    def get_affiliate_incident_list(self, known_profile=None, 
+    def get_affiliate_incident_list(self, known_profile=None,
         max_results=None, days=1, start=None, end=None):
         """
         Return the affiliate campaign summary report for the given date range.
@@ -363,7 +363,7 @@ class Client(object):
             url_params['maxResults'] = max_results
         return self._get('blacklist', 'incident', **url_params)
 
-    def get_blacklist_incident_list(self, all_workspace_crawls=None, 
+    def get_blacklist_incident_list(self, all_workspace_crawls=None,
         days=1, start=None, end=None, timeout=None, **kwargs):
         """
         Query blacklist incidents
@@ -388,7 +388,7 @@ class Client(object):
             url_params['timeout'] = timeout
         return self._get('blacklist/incident', 'list', **url_params)
 
-    def get_blacklist_list(self, blacklist_filter=None, 
+    def get_blacklist_list(self, blacklist_filter=None,
         days=1, start=None, end=None, **kwargs):
         """
         Query blacklisted resources
@@ -515,7 +515,7 @@ class Client(object):
         :param maxresults: Max Results to Return(default 1,000)
         :return: return a JSON object of the data
         """
-        return self._get('dns', 'data', name=hostname, rrType=rrtype, 
+        return self._get('dns', 'data', name=hostname, rrType=rrtype,
             maxResults=maxresults)
 
 
@@ -538,10 +538,10 @@ class Client(object):
 
         :param url: Url to submit. Only required parameter.
         :param keyword: Optional Keyword for this landing page.
-        :param md5_hash: Optional MD5 representing the canonical ID for this 
+        :param md5_hash: Optional MD5 representing the canonical ID for this
             landing page
         :param project_name: Optional Project name to submit landing page to
-        :param pingback_url: Optional URL to be GET requested upon completion 
+        :param pingback_url: Optional URL to be GET requested upon completion
             of analysis of the landing page
         :param fields: Optional dictionary of custom fields
         :return: returns json of landing page.
@@ -605,7 +605,7 @@ class Client(object):
             data = {
                 'entry': [
                     {
-                        'url': url, 
+                        'url': url,
                         'projectName': project_name
                     }
                     for url in urls
@@ -625,10 +625,10 @@ class Client(object):
 
         :entry_key url: Url to submit.
         :entry_key keyword: Optional Keyword for this landing page.
-        :entry_key md5_hash: Optional MD5 representing the canonical ID for this 
+        :entry_key md5_hash: Optional MD5 representing the canonical ID for this
             landing page
         :entry_key project_name: Optional Project name to submit landing page to
-        :entry_key pingback_url: Optional URL to be GET requested upon completion 
+        :entry_key pingback_url: Optional URL to be GET requested upon completion
             of analysis of the landing page
         :entry_key fields: Optional dictionary of custom fields
         :return: returns json of landing page bulk request.
@@ -710,7 +710,7 @@ class Client(object):
         :return: mobile incidents
         """
         start, end = date_range(days, start, end)
-        return self._get('mobile/incident', 'list', 
+        return self._get('mobile/incident', 'list',
             startDateInclusive=start, endDateExclusive=end)
 
     def get_page(self, crawl_guid, page_guid):
@@ -752,7 +752,7 @@ class Client(object):
         :param child_guid: child GUID
         :return: requested page
         """
-        return self._get('page', '%s/%s/%s/dom' % 
+        return self._get('page', '%s/%s/%s/dom' %
             (crawl_guid, page_guid, child_guid)
         )
 
@@ -765,7 +765,7 @@ class Client(object):
         :param child_guid: child GUID
         :return: requested page
         """
-        return self._get('page', '%s/%s/%s/domText' % 
+        return self._get('page', '%s/%s/%s/domText' %
             (crawl_guid, page_guid, child_guid)
         )
 
@@ -778,7 +778,7 @@ class Client(object):
         :param child_guid: child GUID
         :return: requested page
         """
-        return self._get('page', '%s/%s/%s/response' % 
+        return self._get('page', '%s/%s/%s/response' %
             (crawl_guid, page_guid, child_guid)
         )
 
