@@ -73,6 +73,17 @@ def set_if(dictionary, key, value):
     if value is not None:
         dictionary[key] = value
 
+class FilterField:
+    AssetType = 'assetType'
+
+class FilterValue:
+    WebSite = 'WEB_SITE'
+
+class FilterOperation:
+    Equals = 'EQ'
+    NotEqual = "NE"
+
+
 class Client(object):
     """
     RiskIQ API Client
@@ -507,6 +518,7 @@ class Client(object):
         return self._get('dns', 'data', name=hostname, rrType=rrtype, 
             maxResults=maxresults)
 
+
     def get_landing_page(self, md5_hash, whois=None):
         """
         Retrieve a single landing page by MD5.
@@ -823,3 +835,30 @@ class Client(object):
         set_if(data, 'email', email)
         set_if(data, 'nameServer', name_server)
         return self._post('whois', 'query', data)
+
+    def get_inventory(self, asset_id=None):
+        """
+        Retrieve a single inventory item by its assetID
+
+        :param asset_id: assetID for the item to retreive
+        :return inventory item data
+        """
+        # actual_url = 'inventory/' + asset_id
+        return self._get('inventory', asset_id, '')
+
+    def post_inventory_search(self, query_string, filter):
+        """
+	Search the inventory based on a query and filters
+
+	:param query
+	:param filters
+	:return inventory search results
+	"""
+
+	# filter = {'field':'assetType', 'value':'WEB_SITE', 'type':'EQ'}
+	nested_filters_list = [filter]
+	filter_dict = {'filters' : nested_filters_list }
+	filters_list = [filter_dict]
+	data = {'query':query_string,'filters':filters_list}
+
+	return self._post('inventory', 'search', data)
