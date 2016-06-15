@@ -94,7 +94,20 @@ class FilterValue:
 class FilterOperation:
     ''' Used for filter operations in /inventory/search params '''
     Equals = 'EQ'
-    NotEqual = "NE"
+    NotEqual = 'NE'
+    Like = 'LIKE'
+    NotLike = 'NOT_LIKE'
+    Contains = 'CONTAINS'
+    NotContains = 'NOT_CONTAINS'
+    Null = 'NULL'
+    NotNull = 'NOT_NULL'
+    Between = 'BETWEEN'
+    In = 'IN'
+    NotIn = 'NOT_IN'
+    GreaterThan = 'GT'
+    GreaterThanOrEqual = 'GTE'
+    LessThan = 'LT'
+    LessThanOrEqual = 'LTE'
 
 
 class Client(object):
