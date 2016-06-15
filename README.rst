@@ -103,6 +103,8 @@ Version History
 Versions before 0.2.7 have been mostly base implementation and bug fixes.
 We do not recommend using anything less than 0.2.7.
 
+:0.4.9:
+    Added support for bulk blacklist lookups in API.
 :0.4.8:
     Added custom jinja2 template option to CLI render script (--template/-T)
     Fixed whitespace rendering when incidents are empty
