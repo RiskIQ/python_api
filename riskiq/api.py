@@ -3,7 +3,8 @@
 RiskIQ API
 """
 __author__ = 'RiskIQ Research'
-__version__ = '0.1-ALPHA'
+__version__ = '0.4.9'
+
 import json
 import sys
 from datetime import timedelta, datetime
