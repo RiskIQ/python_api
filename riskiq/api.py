@@ -21,6 +21,9 @@ from riskiq.config import Config
 # Acceptable string time format for all requests
 TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 TIME_FORMAT_DAY = '%Y-%m-%d 00:00:00'
+TIME_FORMAT_ISO = '%Y-%m-%dT%H:%M:%S.000-0000'
+
+INVENTORY_ASSET_TYPES = ['ALL', 'WEB_SITE', 'NAME_SERVER', 'MAIL_SERVER', 'HOST', 'DOMAIN', 'IP_BLOCK', 'ASN', 'SSL_CERT', 'CONTACT']
 
 def today():
     """
@@ -819,15 +822,16 @@ class Client(object):
         start, end = date_range(days, start, end)
         return self._get('zlist', 'urls', start=start, end=end)
 
-    def post_whois(self, domain=None, email=None, name_server=None,
+    def post_whois(self, domain=None, email=None, name_server=None, raw=None,
             max_results=100):
         """
-        Get whois results for a domain, email, name_server.
+        Query whois results for a domain, email, name_server.
         Allows * for wildcard.
 
         :param domain: Domain to query
         :param email: email address to query
         :param name_server: name server to query
+        :param raw: raw data to query
         :param max_results: max results to return, default 100
         :return: list of domain dictionaries
         """
@@ -835,4 +839,88 @@ class Client(object):
         set_if(data, 'domain', domain)
         set_if(data, 'email', email)
         set_if(data, 'nameServer', name_server)
+        set_if(data, 'raw', raw)
         return self._post('whois', 'query', data)
+
+    def get_whois(self, domain):
+        """
+        Get whois result for a specific domain.
+        No wildcarding.
+
+        :param domain: Domain to query
+        :return: Individual domain dictionary.
+        """
+        return self._get('whois',domain)
+
+    def get_v2_events(self, days=1, start=None, end=None, count=50, offset=0 ):
+        start, end = date_range(days, start, end)
+        filter = {
+            "query": "optional",
+            "filters": [
+                {
+                    "filters": [
+                        {
+                            "field": "createdAt",
+                            "value": start,
+                            "type": "GTE"
+                        }
+                    ]
+                }
+            ]
+        }
+
+        return self._post('event', 'search', filter, count=count, offset=offset )
+
+    """
+    Get inventory items for workspace.  Can behave in one of 3 ways:
+
+    1. Provided filter.  If a filter (dict) is provided, this dict will be sent to the Inventory endpoint unaltered.
+
+    2. Date range.  If start and/or end dates are provided, a filter will be constructed for Inventory items created or updated within that period.
+    3. Asset types.  A list of asset types can be provided which will be used to query assets of that type.  Available asset types are:
+                ['ALL', 'WEB_SITE', 'NAME_SERVER', 'MAIL_SERVER', 'HOST', 'DOMAIN', 'IP_BLOCK', 'ASN', 'SSL_CERT', 'CONTACT']
+
+    :param domain: Domain to query
+    :param email: email address to query
+    :param name_server: name server to query
+    :param max_results: max results to return, default 100
+    :return: list of domain dictionaries
+    """
+
+    def search_inventory(self, filter=None, start=None, end=None, asset_types=['ALL'], offset=None, count=None, scroll=None ):
+        flt = {}
+        if filter:
+            flt=filter
+
+        else:
+            if start or end:
+                # start, end = date_range(start=start, end=end)
+                start = start.strftime(TIME_FORMAT_ISO)
+                end = end.strftime(TIME_FORMAT_ISO)
+
+                flt = {
+                    "filters": [
+                        {
+                            "filters": [
+                                {
+                                    "field": "firstSeen",
+                                    "value": start + "," + end,
+                                    "type": "BETWEEN"
+                                },
+                                {
+                                    "field": "lastChanged",
+                                    "value": start + "," + end,
+                                    "type": "BETWEEN"
+                                }
+                            ]
+                        }
+                    ]
+                }
+
+        if 'ALL' not in asset_types:
+            flt['filters'].append( { "filters": [ { "field": "assetType", "type": "IN", "value": ",".join(asset_types) }]} )
+
+        if scroll is not None:
+            return self._post('inventory', 'search', flt, scroll=scroll)
+        else:
+            return self._post('inventory', 'search', flt, count=count, offset=offset )
