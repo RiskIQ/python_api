@@ -13,6 +13,9 @@ PY2 = (sys.version_info[0] == 2)
 PY3 = (sys.version_info[0] == 3)
 if PY2:
     import httplib
+    str_type = eval('basestring')
+else:
+    str_type = str
 
 import requests
 
@@ -59,13 +62,13 @@ def date_range(days=1, start=None, end=None):
         start = format_date(datetime.now() - timedelta(days=days-1), day=True)
     elif isinstance(start, datetime):
         start = format_date(start)
-    elif isinstance(start, basestring):
+    elif isinstance(start, str_type):
         start = start.replace('today', today())
     if end is None:
         end = format_date(datetime.now())
     elif isinstance(end, datetime):
         end = format_date(end)
-    elif isinstance(end, basestring):
+    elif isinstance(end, str_type):
         end = end.replace('today', today())
     return start, end
 
@@ -635,7 +638,7 @@ class Client(object):
         """
         # Check to see if entries is a list of urls via the old API call.
         # We need to check this for backwards compatibility.
-        if len(entries) > 0 and isinstance(entries[0], basestring):
+        if len(entries) > 0 and isinstance(entries[0], str_type):
             return self.__submit_landing_page_urls(entries, **kwargs)
         # It's new style, so build it from the list of dictionaries.
         data = {'entry': [
