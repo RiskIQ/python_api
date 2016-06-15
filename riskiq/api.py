@@ -848,17 +848,16 @@ class Client(object):
 
     def post_inventory_search(self, query_string, filter):
         """
-	Search the inventory based on a query and filters
+        Search the inventory based on a query and filters
 
-	:param query
-	:param filters
-	:return inventory search results
-	"""
+        :param query
+        :param filters
+        :return inventory search results
+        """
 
-	# filter = {'field':'assetType', 'value':'WEB_SITE', 'type':'EQ'}
-	nested_filters_list = [filter]
-	filter_dict = {'filters' : nested_filters_list }
-	filters_list = [filter_dict]
-	data = {'query':query_string,'filters':filters_list}
+        nested_filters_list = [filter]
+        filter_dict = {'filters': nested_filters_list}
+        filters_list = [filter_dict]
+        data = {'query': query_string, 'filters': filters_list}
 
-	return self._post('inventory', 'search', data)
+        return self._post('inventory', 'search', data)
