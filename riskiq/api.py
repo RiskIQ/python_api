@@ -31,6 +31,7 @@ INVENTORY_ASSET_TYPES = ['ALL', 'WEB_SITE', 'NAME_SERVER', 'MAIL_SERVER',
                          'HOST', 'DOMAIN', 'IP_BLOCK', 'ASN', 'SSL_CERT',
                          'CONTACT']
 
+
 def today():
     """
     Generates a date string for today.
@@ -884,25 +885,41 @@ class Client(object):
         Retrieve a single inventory item by its assetID
 
         :param asset_id: assetID for the item to retreive
-        :return inventory item data
+        :return: inventory item data
         """
         # actual_url = 'inventory/' + asset_id
         return self._get('inventory', asset_id, '')
 
-    def post_inventory_search(self, query_string, filter):
+    def post_inventory_search(self, query=None, filter=None, filters=None):
         """
         Search the inventory based on a query and filters
 
-        :param query
-        :param filters
-        :return inventory search results
+        This one is a bit complex since the input to the HTTP endpoint is.
+        https://sf.riskiq.net/crawlview/api/docs/controllers/InventoryController.html#search
+        If you pass filter, you request {'filters': [{'filters: [filter]}]}
+        If you pass filters, you request {'filters': [{'filters': filters}]}
+        If filters is a list of lists, you separate those out at the top level
+        list.
+
+        :param query: optional query string
+        :param filter: either a dict which uses a single filter,
+                       or list of filters
+        :param filters: for passing in multiple filters
+        :return: inventory search results
         """
-
-        nested_filters_list = [filter]
-        filter_dict = {'filters': nested_filters_list}
-        filters_list = [filter_dict]
-        data = {'query': query_string, 'filters': filters_list}
-
+        filters_list = []
+        data = {'filters': filters_list}
+        if filter:
+            filters_list += [{'filters': [filter]}]
+        elif filters and isinstance(filters[0], (list, tuple)):
+            for filter_group in filters:
+                filters_list += [{'filters': filter_group}]
+        elif filters and isinstance(filters[0], dict):
+            filters_list += [{'filters': filters}]
+        else:
+            return None
+        if query is not None:
+            data['query'] = query
         return self._post('inventory', 'search', data)
 
     def get_v2_events(self, days=1, start=None, end=None, count=50, offset=0):
