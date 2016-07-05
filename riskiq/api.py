@@ -907,17 +907,16 @@ class Client(object):
         :param filters: for passing in multiple filters
         :return: inventory search results
         """
-        filters_list = []
-        data = {'filters': filters_list}
         if filter:
-            filters_list += [{'filters': [filter]}]
+            filters_list = [{'filters': [filter]}]
         elif filters and isinstance(filters[0], (list, tuple)):
-            for filter_group in filters:
-                filters_list += [{'filters': filter_group}]
+            filters_list = [{'filters': filter_group}
+                            for filter_group in filters]
         elif filters and isinstance(filters[0], dict):
-            filters_list += [{'filters': filters}]
+            filters_list = [{'filters': filters}]
         else:
             return None
+        data = {'filters': filters_list}
         if query is not None:
             data['query'] = query
         return self._post('inventory', 'search', data)
