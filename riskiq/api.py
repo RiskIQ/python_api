@@ -117,11 +117,20 @@ class FilterOperation:
 
 
 class SearchFilter(object):
-    '''class to create riskiq api filter searches
-    acceptable operations are | (or) and & (and)
+    '''
+    SearchFilter is used in event and inventory searches.
+    Acceptable operations are | (or) and & (and).
 
-    operations must be formatted as a product of sums,
-    meaning all or's must happen before any and's
+    Operations must be formatted as a product of sums, meaning all or's must
+    happen before any and's, example:
+
+    Valid:
+    ::
+        (a | b) & (c | d | e)
+
+    Invalid:
+    ::
+        (a & b) | (c & d)
 
     example usage:
     ::
@@ -139,6 +148,7 @@ class SearchFilter(object):
         # (a or b) and (c or d)
         ab_and_cd = (a | b) & (c | d)
     '''
+
     def __init__(self, field=None, op=None, value=None, **kwargs):
         '''
         Creates a filter to be used for an event search.
