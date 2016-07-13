@@ -116,6 +116,55 @@ class FilterOperation:
     LessThanOrEqual = 'LTE'
 
 
+class FilterObject(object):
+    '''class to create riskiq api filter searches
+    acceptable operations are | (or) and & (and)
+
+    operations must be formatted as a product of sums,
+    meaning all or's must happen before any and's
+    example usage:
+    a = FilterObject(field="value")
+    b = FilterObject(field="another value")
+    a | b #a or b
+    a & b #a and b
+
+    (c & (a | b)) # c as well as a or b
+    (a | b) & (c | d)
+    '''
+    def __init__(self, **kwargs):
+        self._filterized = kwargs.get('_filterized')
+        if 'filters' in kwargs:
+            self.filters = kwargs['filters']
+        else:
+            self.filters = [kwargs]
+
+    def __str__(self):
+        return json.dumps(self.asdict())
+
+    def __or__(self, other_filter):
+        if not (self._filterized or other_filter._filterized):
+            new_filters = self.filters + other_filter.filters
+            return FilterObject(_filterized=False, filters=new_filters)
+        raise SyntaxError("AND operators must be at the top level")
+
+    def __and__(self, other_filter):
+        new_filters = self._filterize() + other_filter._filterize()
+        return FilterObject(_filterized=True, filters=new_filters)
+
+    def asdict(self):
+        '''return a working riskiq filter as a dictionary'''
+        if not self._filterized:
+            return {'filters' : self._filterize()}
+        return {'filters' : self.filters}
+
+    def _filterize(self):
+        if self._filterized:
+            return self.filters
+        return [{'filters' : self.filters}]
+
+
+
+
 class Client(object):
     """
     RiskIQ API Client
