@@ -116,15 +116,15 @@ class FilterOperation:
     LessThanOrEqual = 'LTE'
 
 
-class FilterObject(object):
+class SearchFilter(object):
     '''class to create riskiq api filter searches
     acceptable operations are | (or) and & (and)
 
     operations must be formatted as a product of sums,
     meaning all or's must happen before any and's
     example usage:
-    a = FilterObject(field="value")
-    b = FilterObject(field="another value")
+    a = SearchFilter(field="value")
+    b = SearchFilter(field="another value")
     a | b #a or b
     a & b #a and b
 
@@ -158,12 +158,12 @@ class FilterObject(object):
     def __or__(self, other_filter):
         if not (self._wrapped_sum or other_filter._wrapped_sum):
             new_filters = self._filters + other_filter._filters
-            return FilterObject(_wrapped_sum=False, _filters=new_filters)
+            return SearchFilter(_wrapped_sum=False, _filters=new_filters)
         raise SyntaxError("AND operators must be at the top level")
 
     def __and__(self, other_filter):
         new_filters = self._filterize() + other_filter._filterize()
-        return FilterObject(_wrapped_sum=True, _filters=new_filters)
+        return SearchFilter(_wrapped_sum=True, _filters=new_filters)
 
     def asdict(self):
         '''return a working riskiq filter as a dictionary'''
