@@ -162,16 +162,16 @@ class SearchFilter(object):
         raise SyntaxError("AND operators must be at the top level")
 
     def __and__(self, other_filter):
-        new_filters = self._filterize() + other_filter._filterize()
+        new_filters = self._wrap_filters() + other_filter._wrap_filters()
         return SearchFilter(_wrapped_sum=True, _filters=new_filters)
 
     def asdict(self):
         '''return a working riskiq filter as a dictionary'''
         if self._wrapped_sum:
             return {'filters': self._filters}
-        return {'filters': self._filterize()}
+        return {'filters': self._wrap_filters()}
 
-    def _filterize(self):
+    def _wrap_filters(self):
         if self._wrapped_sum:
             return self._filters
         return [{'filters': self._filters}]
