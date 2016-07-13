@@ -122,14 +122,22 @@ class SearchFilter(object):
 
     operations must be formatted as a product of sums,
     meaning all or's must happen before any and's
-    example usage:
-    a = SearchFilter(field="value")
-    b = SearchFilter(field="another value")
-    a | b #a or b
-    a & b #a and b
 
-    (c & (a | b)) # c as well as a or b
-    (a | b) & (c | d)
+    example usage:
+    ::
+
+        a = SearchFilter(field="value", op=FilterOperation.Contains,
+                         value="value")
+        b = SearchFilter(field="another", op=FilterOperation.Equals,
+                         value="value")
+        # a matches, or b matches
+        a_or_b = a | b
+        # a and b both match
+        a_and_b = a & b
+        # c as well as (a or b)
+        c_and_ab = (c & (a | b))
+        # (a or b) and (c or d)
+        ab_and_cd = (a | b) & (c | d)
     '''
     def __init__(self, field=None, op=None, value=None, **kwargs):
         '''
