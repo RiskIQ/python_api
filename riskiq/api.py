@@ -131,12 +131,26 @@ class FilterObject(object):
     (c & (a | b)) # c as well as a or b
     (a | b) & (c | d)
     '''
-    def __init__(self, **kwargs):
+    def __init__(self, field=None, op=None, value=None, **kwargs):
+        '''
+        Creates a filter to be used for an event search.
+
+        See:
+        https://sf.riskiq.net/crawlview/api/docs/controllers/EventController.html#listSearchFields
+
+        :param field: a field to filter against, eg. createdAt
+        :param op: a comparison operator,
+                   eg. GTE or FilterOperation.GreaterThanOrEqual
+        :param value: a value to use, eg. a date for a createdAt filter.
+        :return: a new filter
+        '''
         self._wrapped_sum = kwargs.get('_wrapped_sum')
         if '_filters' in kwargs:
             self._filters = kwargs['_filters']
+        elif field is None or op is None:
+            raise ValueError('Must specify a field, op and value')
         else:
-            self._filters = [kwargs]
+            self._filters = [{'field': field, 'op': op, 'value': value}]
 
     def __str__(self):
         return json.dumps(self.asdict())
