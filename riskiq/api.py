@@ -132,37 +132,35 @@ class FilterObject(object):
     (a | b) & (c | d)
     '''
     def __init__(self, **kwargs):
-        self._filterized = kwargs.get('_filterized')
-        if 'filters' in kwargs:
-            self.filters = kwargs['filters']
+        self._wrapped_sum = kwargs.get('_wrapped_sum')
+        if '_filters' in kwargs:
+            self._filters = kwargs['_filters']
         else:
-            self.filters = [kwargs]
+            self._filters = [kwargs]
 
     def __str__(self):
         return json.dumps(self.asdict())
 
     def __or__(self, other_filter):
-        if not (self._filterized or other_filter._filterized):
-            new_filters = self.filters + other_filter.filters
-            return FilterObject(_filterized=False, filters=new_filters)
+        if not (self._wrapped_sum or other_filter._wrapped_sum):
+            new_filters = self._filters + other_filter._filters
+            return FilterObject(_wrapped_sum=False, _filters=new_filters)
         raise SyntaxError("AND operators must be at the top level")
 
     def __and__(self, other_filter):
         new_filters = self._filterize() + other_filter._filterize()
-        return FilterObject(_filterized=True, filters=new_filters)
+        return FilterObject(_wrapped_sum=True, _filters=new_filters)
 
     def asdict(self):
         '''return a working riskiq filter as a dictionary'''
-        if not self._filterized:
-            return {'filters' : self._filterize()}
-        return {'filters' : self.filters}
+        if self._wrapped_sum:
+            return {'filters': self._filters}
+        return {'filters': self._filterize()}
 
     def _filterize(self):
-        if self._filterized:
-            return self.filters
-        return [{'filters' : self.filters}]
-
-
+        if self._wrapped_sum:
+            return self._filters
+        return [{'filters': self._filters}]
 
 
 class Client(object):
