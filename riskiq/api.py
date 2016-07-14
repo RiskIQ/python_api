@@ -168,7 +168,7 @@ class SearchFilter(object):
         elif field is None or op is None:
             raise ValueError('Must specify a field, op and value')
         else:
-            self._filters = [{'field': field, 'op': op, 'value': value}]
+            self._filters = [{'field': field, 'type': op, 'value': value}]
 
     def __str__(self):
         return json.dumps(self.asdict())
@@ -290,6 +290,8 @@ class Client(object):
         :return: response deserialized from JSON
         """
         if response.status_code == 204:
+            return None
+        if not response.text.strip() and response.status_code == 200:
             return None
         try:
             return response.json()
@@ -1002,41 +1004,42 @@ class Client(object):
 
     def get_v2_events(self, days=1, start=None, end=None, count=50, offset=0):
         """
-        Get inventory items for workspace.  Can behave in one of 3 ways:
-
-        1. Provided filter. If a filter (dict) is provided, this dict will be
-           sent to the Inventory endpoint unaltered.
-
-        2. Date range. If start and/or end dates are provided, a filter will be
+        Get inventory items for workspace.
+        Date range. If start and/or end dates are provided, a filter will be
         constructed for Inventory items created or updated within that period.
-        3. Asset types. A list of asset types can be provided which will be
-           used to query assets of that type. Available asset types are:
-           ['ALL', 'WEB_SITE', 'NAME_SERVER', 'MAIL_SERVER', 'HOST', 'DOMAIN',
-            'IP_BLOCK', 'ASN', 'SSL_CERT', 'CONTACT']
 
-        :param domain: Domain to query
-        :param email: email address to query
-        :param name_server: name server to query
-        :param max_results: max results to return, default 100
+        :param offset: offset, default 0
+        :param count: max results, default 50
         :return: list of domain dictionaries
         """
         start, end = date_range(days, start, end)
-        event_filter = {
-            "query": "optional",
-            "filters": [
-                {
-                    "filters": [
-                        {
-                            "field": "createdAt",
-                            "value": start,
-                            "type": "GTE",
-                        }
-                    ]
-                }
-            ]
-        }
-        return self._post('event', 'search', event_filter, count=count,
-                          offset=offset)
+        event_filter = SearchFilter(field="createdAt", value=start, op="GTE")
+        return self.get_events(event_filter.asdict(), count=count, offset=offset)
+
+    def get_events(self, event_filter, count=50, offset=0):
+        '''
+        Get inventory items for workspace
+        Provide a filter and get inventory items for that filter
+
+        :param offset: offset, default 0
+        :param count: max results, default 50
+        :return: list of domain dictionaries
+        '''
+        return self._post('event', 'search', event_filter,count=count,
+                         offset=offset)
+
+
+    def update_events(self, event_list, **kwargs):
+        '''
+        :param event_list: list of event ids to update
+        :kwarg reviewCode:
+        :kwarg tags:
+        :kwarg note:
+        '''
+
+        kwargs['ids'] = event_list
+        self._post('event', 'update', kwargs)
+
 
     def search_inventory(self, filter=None, start=None, end=None,
                          asset_types=None, offset=None, count=None,
@@ -1079,3 +1082,4 @@ class Client(object):
         else:
             return self._post('inventory', 'search', flt, count=count,
                               offset=offset)
+
