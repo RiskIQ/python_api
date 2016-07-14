@@ -168,7 +168,7 @@ class SearchFilter(object):
         elif field is None or op is None:
             raise ValueError('Must specify a field, op and value')
         else:
-            self._filters = [{'field': field, 'op': op, 'value': value}]
+            self._filters = [{'field': field, 'type': op, 'value': value}]
 
     def __str__(self):
         return json.dumps(self.asdict())
