@@ -60,7 +60,8 @@ def date_range(days=1, start=None, end=None):
     """
     Generate a start date and an end date based off of how many days.
 
-    :param days: How many days to include from today(for generating 30 day time windows, etc.)
+    :param days: How many days to include from today(for generating 30 day
+            time windows, etc.)
     :param start: Override start date.
     :param end: Override end date
     :return: (start, end) tuple of strings in acceptable date format
@@ -308,7 +309,8 @@ class Client(object):
 
         :param endpoint: Endpoint
         :param action: Endpoint Action
-        :param url_args: Additional endpoints(for endpoints that take part of the url as option)
+        :param url_args: Additional endpoints(for endpoints that take part of
+            the url as option)
         :param url_params: Parameters to pass to url, typically query string
         :return: response deserialized from JSON
         """
@@ -318,7 +320,8 @@ class Client(object):
             del url_params['timeout']
         else:
             timeout = Client.TIMEOUT
-        kwargs = {'auth': self.auth, 'headers': self.headers, 'params': url_params,
+        kwargs = {'auth': self.auth, 'headers': self.headers,
+                  'params': url_params,
                   'timeout': timeout, 'verify': True}
         if self.proxies:
             kwargs['proxies'] = self.proxies
@@ -331,14 +334,15 @@ class Client(object):
 
         :param endpoint: Endpoint
         :param action: Endpoint Action
-        :param url_args: Additional endpoints(for endpoints that take part of the url as option)
+        :param url_args: Additional endpoints(for endpoints that take part of
+            the url as option)
         :param url_params: Parameters to pass to url, typically query string
         :return: response deserialized from JSON
         """
         api_url = self._endpoint(endpoint, action, *url_args)
         data = json.dumps(data)
-        kwargs = {'auth': self.auth, 'headers': self.headers, 'params': url_params,
-                  'verify': True, 'data': data}
+        kwargs = {'auth': self.auth, 'headers': self.headers,
+                  'params': url_params, 'verify': True, 'data': data}
         if self.proxies:
             kwargs['proxies'] = self.proxies
         response = requests.post(api_url, **kwargs)
@@ -348,7 +352,8 @@ class Client(object):
         """
         Return the affiliate campaign summary report for the given date range.
 
-        :param days: How many days to include from today(for generating 30 day time windows, etc.)
+        :param days: How many days to include from today(for generating 30 day
+            time windows, etc.)
         :param start: Override start date.
         :param end: Override end date
         :return: data containing the number of results and the objects
@@ -398,9 +403,11 @@ class Client(object):
         """
         Return the affiliate campaign summary report for the given date range.
 
-        :param known_profile: Bool, only return incidents that match a known profile
+        :param known_profile: Bool, only return incidents that match a known
+            profile
         :param max_results: maximum number of results to return
-        :param days: How many days to include from today(for generating 30 day time windows, etc.)
+        :param days: How many days to include from today(for generating 30 day
+            time windows, etc.)
         :param start: Override start date.
         :param end: Override end date
         :return: data containing the number of results and the objects
@@ -423,7 +430,8 @@ class Client(object):
 
         :param virus_total_only: Bool, only include those flagged by VT
         :param client_workspace_only: Bool, only include those found in crawls
-        :param days: How many days to include from today(for generating 30 day time windows, etc.)
+        :param days: How many days to include from today(for generating 30 day
+            time windows, etc.)
         :param start: Override start date.
         :param end: Override end date
         :return: data containing the number of results and the objects
@@ -498,7 +506,8 @@ class Client(object):
         :param all_workspace_crawls:False by default, filtered to crawls that
             are either landing pages, site scanning, or matching a brand
             classifier
-        :param days: How many days to include from today(for generating 30 day time windows, etc.)
+        :param days: How many days to include from today(for generating 30 day
+            time windows, etc.)
         :param start: Override start date.
         :param end: Override end date
         :return: Blacklist list
@@ -521,7 +530,8 @@ class Client(object):
 
         :param blacklist_filter: None, or one of
             'blackhole', 'sakura', 'exploitKit'
-        :param days: How many days to include from today(for generating 30 day time windows, etc.)
+        :param days: How many days to include from today(for generating 30 day
+            time windows, etc.)
         :param start: Override start date.
         :param end: Override end date
         :return: all blacklisted resources
@@ -567,7 +577,8 @@ class Client(object):
         """
         Query for all PE format binaries on webpages used for exploitation
 
-        :param days: How many days to include from today(for generating 30 day time windows, etc.)
+        :param days: How many days to include from today(for generating 30 day
+            time windows, etc.)
         :param start: Override start date.
         :param end: Override end date
         :return: all binaries
@@ -584,7 +595,8 @@ class Client(object):
         """
         Query for the crawl volume daily summary report for the date range
 
-        :param days: How many days to include from today(for generating 30 day time windows, etc.)
+        :param days: How many days to include from today(for generating 30 day
+            time windows, etc.)
         :param start: Override start date.
         :param end: Override end date
         :return: crawl volume daily summary
