@@ -292,6 +292,8 @@ class Client(object):
         """
         if response.status_code == 204:
             return None
+        if not response.text.strip() and response.status_code == 200:
+            return None
         try:
             return response.json()
         except ValueError as e:
