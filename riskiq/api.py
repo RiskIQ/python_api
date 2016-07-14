@@ -1005,7 +1005,7 @@ class Client(object):
     def get_v2_events(self, days=1, start=None, end=None, count=50, offset=0):
         """
         Get inventory items for workspace.
-        Date range. If start and/or end dates are provided, a filter will be
+        If start and/or end dates are provided, a filter will be
         constructed for Inventory items created or updated within that period.
 
         :param offset: offset, default 0
@@ -1021,6 +1021,7 @@ class Client(object):
         Get inventory items for workspace
         Provide a filter and get inventory items for that filter
 
+        :param event_filter: a valid riskiq filter
         :param offset: offset, default 0
         :param count: max results, default 50
         :return: list of domain dictionaries
