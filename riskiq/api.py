@@ -1043,7 +1043,7 @@ class Client(object):
         return self._post('event', 'search', event_filter, count=count,
                           offset=offset)
 
-    def Post_event_update(self, ids, reviewCode=None, eventPriority=None,
+    def post_event_update(self, ids, reviewCode=None, eventPriority=None,
                           owner=None, country=None, tags=None, note=None):
         '''
         :param ids: a list of ids to update
