@@ -69,7 +69,7 @@ def date_range(days=1, start=None, end=None):
     if not any([days, start, end]):
         return None, None
     if start is None:
-        start = format_date(datetime.now() - timedelta(days=days-1), day=True)
+        start = format_date(datetime.now() - timedelta(days=days - 1), day=True)
     elif isinstance(start, datetime):
         start = format_date(start)
     elif isinstance(start, str_type):
