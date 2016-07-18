@@ -1017,9 +1017,16 @@ class Client(object):
         """
 
         start, end = date_range(days, start, end)
-        event_filter = (SearchFilter(field="createdAt", value=start, op="GTE") &
-                        SearchFilter(field="createdAt", value=end, op="LT"))
-        print event_filter.asdict()
+        # If days/start/end are set to None in function call these will be None.
+        # Return all data before the time of the call.
+        if start is None and end is None:
+            end = format_date(datetime.now())
+            event_filter = SearchFilter(field="createdAt", value=end, op="LT")
+        else:
+            event_filter = (
+                SearchFilter(field="createdAt", value=start, op="GTE") &
+                SearchFilter(field="createdAt", value=end, op="LT")
+            )
         return self.post_event_search(event_filter.asdict(), count=count,
                                       offset=offset)
 
