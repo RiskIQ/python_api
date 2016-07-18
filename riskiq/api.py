@@ -1048,11 +1048,17 @@ class Client(object):
         '''
         :param ids: a list of ids to update
         :param reviewCode: maps to status
-        :param eventPriority:
-        :param owner:
-        :param country:
-        :param tags:
-        :param note:
+        :param eventPriority: Event Priority to update events with
+               i.e. Critical, Major, Medium, Minor, Trivial
+        :param owner: Owner to update events with by username
+        :param country: Review code to update events with code or full name
+                        i.e. either "cn" or "China"
+        :param tags: Tag to update events with by tag option.
+                     Eventually we will convert over to the ways assets do
+                     tagging; so we will not have to guess at the option.
+                     If you'd like to bemore specific for now, "category:option"
+                     will be handled.
+        :param note: Add a message to this event.
         '''
 
         data['ids'] = ids
