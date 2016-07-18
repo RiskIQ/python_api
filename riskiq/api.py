@@ -1016,41 +1016,77 @@ class Client(object):
 
     def get_v2_events(self, days=1, start=None, end=None, count=50, offset=0):
         """
-        Get inventory items for workspace.  Can behave in one of 3 ways:
-
-        1. Provided filter. If a filter (dict) is provided, this dict will be
-           sent to the Inventory endpoint unaltered.
-
-        2. Date range. If start and/or end dates are provided, a filter will be
+        Get inventory items for workspace.
+        If start and/or end dates are provided, a filter will be
         constructed for Inventory items created or updated within that period.
-        3. Asset types. A list of asset types can be provided which will be
-           used to query assets of that type. Available asset types are:
-           ['ALL', 'WEB_SITE', 'NAME_SERVER', 'MAIL_SERVER', 'HOST', 'DOMAIN',
-            'IP_BLOCK', 'ASN', 'SSL_CERT', 'CONTACT']
 
-        :param domain: Domain to query
-        :param email: email address to query
-        :param name_server: name server to query
-        :param max_results: max results to return, default 100
+        :param start: the starting date for the event search
+        :param days: distance back to search, default 1
+        :param end: unused param, left in for legacy code
+        :param offset: offset, default 0
+        :param count: max results, default 50
         :return: list of domain dictionaries
         """
+
         start, end = date_range(days, start, end)
-        event_filter = {
-            "query": "optional",
-            "filters": [
-                {
-                    "filters": [
-                        {
-                            "field": "createdAt",
-                            "value": start,
-                            "type": "GTE",
-                        }
-                    ]
-                }
-            ]
-        }
+        # If days/start/end are set to None in function call these will be None.
+        # Return all data before the time of the call.
+        if start is None and end is None:
+            end = format_date(datetime.now())
+            event_filter = SearchFilter(field="createdAt", value=end, op="LT")
+        else:
+            event_filter = (
+                SearchFilter(field="createdAt", value=start, op="GTE") &
+                SearchFilter(field="createdAt", value=end, op="LT")
+            )
+        return self.post_event_search(event_filter.asdict(), count=count,
+                                      offset=offset)
+
+    def post_event_search(self, event_filter, count=50, offset=0):
+        '''
+        Get inventory items for workspace
+        Provide a filter and get inventory items for that filter
+
+        :param event_filter: a valid riskiq filter
+        :param offset: offset, default 0
+        :param count: number of results returned, default 50
+        :return: list of domain dictionaries
+        '''
         return self._post('event', 'search', event_filter, count=count,
                           offset=offset)
+
+    def post_event_update(self, ids, reviewCode=None, eventPriority=None,
+                          owner=None, country=None, tags=None, note=None):
+        '''
+        :param ids: a list of ids to update
+        :param reviewCode: maps to status
+        :param eventPriority: Event Priority to update events with
+               i.e. Critical, Major, Medium, Minor, Trivial
+        :param owner: Owner to update events with by username
+        :param country: Review code to update events with code or full name
+                        i.e. either "cn" or "China"
+        :param tags: Tag to update events with by tag option.
+                     Eventually we will convert over to the ways assets do
+                     tagging; so we will not have to guess at the option.
+                     If you'd like to bemore specific for now, "category:option"
+                     will be handled.
+        :param note: Add a message to this event.
+        '''
+        data = {}
+        data['ids'] = ids
+        if reviewCode is not None:
+            data['reviewCode'] = reviewCode
+        if eventPriority is not None:
+            data['eventPriority'] = eventPriority
+        if owner is not None:
+            data['owner'] = owner
+        if country is not None:
+            data['country'] = country
+        if tags is not None:
+            data['tags'] = tags
+        if note is not None:
+            data['note'] = note
+        self._post('event', 'update', data)
 
     def search_inventory(self, filter=None, start=None, end=None,
                          asset_types=None, offset=None, count=None,
