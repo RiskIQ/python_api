@@ -1009,7 +1009,7 @@ class Client(object):
         constructed for Inventory items created or updated within that period.
 
         :param start: the starting date for the event search
-        :param days: distance back to search -1 by default
+        :param days: distance back to search, default 1
         :param end: unused param, left in for legacy code
         :param offset: offset, default 0
         :param count: max results, default 50
