@@ -1060,19 +1060,19 @@ class Client(object):
                      will be handled.
         :param note: Add a message to this event.
         '''
-
+        data = {}
         data['ids'] = ids
-        if reviewCode != None:
+        if reviewCode is not None:
             data['reviewCode'] = reviewCode
-        if eventPriority != None:
+        if eventPriority is not None:
             data['eventPriority'] = eventPriority
-        if owner != None:
+        if owner is not None:
             data['owner'] = owner
-        if country != None:
+        if country is not None:
             data['country'] = country
-        if tags != None:
+        if tags is not None:
             data['tags'] = tags
-        if note != None:
+        if note is not None:
             data['note'] = note
         self._post('event', 'update', data)
 
