@@ -1008,39 +1008,60 @@ class Client(object):
         If start and/or end dates are provided, a filter will be
         constructed for Inventory items created or updated within that period.
 
+        :param start: the starting date for the event search
+        :param days: distance back to search -1 by default
+        :param end: unused param, left in for legacy code
         :param offset: offset, default 0
         :param count: max results, default 50
         :return: list of domain dictionaries
         """
-        start, end = date_range(days, start, end)
-        event_filter = SearchFilter(field="createdAt", value=start, op="GTE")
-        return self.get_events(event_filter.asdict(), count=count, offset=offset)
 
-    def get_events(self, event_filter, count=50, offset=0):
+        start, end = date_range(days, start, end)
+        event_filter = (SearchFilter(field="createdAt", value=start, op="GTE") &
+                        SearchFilter(field="createdAt", value=end, op="LT"))
+        print event_filter.asdict()
+        return self.post_event_search(event_filter.asdict(), count=count,
+                                      offset=offset)
+
+    def post_event_search(self, event_filter, count=50, offset=0):
         '''
         Get inventory items for workspace
         Provide a filter and get inventory items for that filter
 
         :param event_filter: a valid riskiq filter
         :param offset: offset, default 0
-        :param count: max results, default 50
+        :param count: number of results returned, default 50
         :return: list of domain dictionaries
         '''
-        return self._post('event', 'search', event_filter,count=count,
-                         offset=offset)
+        return self._post('event', 'search', event_filter, count=count,
+                          offset=offset)
 
-
-    def update_events(self, event_list, **kwargs):
+    def Post_event_update(self, ids, reviewCode=None, eventPriority=None,
+                          owner=None, country=None, tags=None, note=None):
         '''
-        :param event_list: list of event ids to update
-        :kwarg reviewCode:
-        :kwarg tags:
-        :kwarg note:
+        :param ids: a list of ids to update
+        :param reviewCode: maps to status
+        :param eventPriority:
+        :param owner:
+        :param country:
+        :param tags:
+        :param note:
         '''
 
-        kwargs['ids'] = event_list
-        self._post('event', 'update', kwargs)
-
+        data['ids'] = ids
+        if reviewCode != None:
+            data['reviewCode'] = reviewCode
+        if eventPriority != None:
+            data['eventPriority'] = eventPriority
+        if owner != None:
+            data['owner'] = owner
+        if country != None:
+            data['country'] = country
+        if tags != None:
+            data['tags'] = tags
+        if note != None:
+            data['note'] = note
+        self._post('event', 'update', data)
 
     def search_inventory(self, filter=None, start=None, end=None,
                          asset_types=None, offset=None, count=None,
@@ -1083,4 +1104,3 @@ class Client(object):
         else:
             return self._post('inventory', 'search', flt, count=count,
                               offset=offset)
-
