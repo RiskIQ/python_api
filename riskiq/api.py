@@ -1030,7 +1030,7 @@ class Client(object):
     def post_event_update(self, ids, reviewCode=None, eventPriority=None,
                           owner=None, country=None, tags=None, note=None):
         '''
-        Update an event.
+        Update a list of events.
 
         :param ids: a list of ids to update
         :param reviewCode: maps to status
