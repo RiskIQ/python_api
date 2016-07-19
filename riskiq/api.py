@@ -1010,8 +1010,7 @@ class Client(object):
         else:
             return None
         data = {'filters': filters_list}
-        if query is not None:
-            data['query'] = query
+        set_if(data, 'query', query)
         return self._post('inventory', 'search', data)
 
     def post_event_search(self, event_filter, count=50, offset=0):
