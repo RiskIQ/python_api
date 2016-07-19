@@ -1014,34 +1014,6 @@ class Client(object):
             data['query'] = query
         return self._post('inventory', 'search', data)
 
-    def get_v2_events(self, days=1, start=None, end=None, count=50, offset=0):
-        """
-        Get inventory items for workspace.
-        If start and/or end dates are provided, a filter will be
-        constructed for Inventory items created or updated within that period.
-
-        :param start: the starting date for the event search
-        :param days: distance back to search, default 1
-        :param end: unused param, left in for legacy code
-        :param offset: offset, default 0
-        :param count: max results, default 50
-        :return: list of domain dictionaries
-        """
-
-        start, end = date_range(days, start, end)
-        # If days/start/end are set to None in function call these will be None.
-        # Return all data before the time of the call.
-        if start is None and end is None:
-            end = format_date(datetime.now())
-            event_filter = SearchFilter(field="createdAt", value=end, op="LT")
-        else:
-            event_filter = (
-                SearchFilter(field="createdAt", value=start, op="GTE") &
-                SearchFilter(field="createdAt", value=end, op="LT")
-            )
-        return self.post_event_search(event_filter.asdict(), count=count,
-                                      offset=offset)
-
     def post_event_search(self, event_filter, count=50, offset=0):
         '''
         Get inventory items for workspace
@@ -1129,3 +1101,31 @@ class Client(object):
         else:
             return self._post('inventory', 'search', flt, count=count,
                               offset=offset)
+
+    def search_events(self, days=1, start=None, end=None, count=50, offset=0):
+        """
+        Search events within time range.
+        If start and/or end dates are provided, a filter will be
+        constructed for Inventory items created or updated within that period.
+
+        :param start: the starting date for the event search
+        :param days: distance back to search, default 1
+        :param end: unused param, left in for legacy code
+        :param offset: offset, default 0
+        :param count: max results, default 50
+        :return: list of domain dictionaries
+        """
+
+        start, end = date_range(days, start, end)
+        # If days/start/end are set to None in function call these will be None.
+        # Return all data before the time of the call.
+        if start is None and end is None:
+            end = format_date(datetime.now())
+            event_filter = SearchFilter(field="createdAt", value=end, op="LT")
+        else:
+            event_filter = (
+                SearchFilter(field="createdAt", value=start, op="GTE") &
+                SearchFilter(field="createdAt", value=end, op="LT")
+            )
+        return self.post_event_search(event_filter.asdict(), count=count,
+                                      offset=offset)
