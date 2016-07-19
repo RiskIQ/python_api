@@ -1048,16 +1048,10 @@ class Client(object):
         '''
         data = {}
         data['ids'] = ids
-        if reviewCode is not None:
-            data['reviewCode'] = reviewCode
-        if eventPriority is not None:
-            data['eventPriority'] = eventPriority
-        if owner is not None:
-            data['owner'] = owner
-        if country is not None:
-            data['country'] = country
-        if tags is not None:
-            data['tags'] = tags
-        if note is not None:
-            data['note'] = note
+        set_if(data, 'reviewCode', reviewCode)
+        set_if(data, 'eventPriority', eventPriority)
+        set_if(data, 'owner', owner)
+        set_if(data, 'country', country)
+        set_if(data, 'tags', tags)
+        set_if(data, 'note', note)
         self._post('event', 'update', data)
