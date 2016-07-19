@@ -1016,8 +1016,8 @@ class Client(object):
 
     def post_event_search(self, event_filter, count=50, offset=0):
         '''
-        Get inventory items for workspace
-        Provide a filter and get inventory items for that filter
+        Perform event search based on a filter. See SearchFilter for help on
+        creating an event filter.
 
         :param event_filter: a valid riskiq filter
         :param offset: offset, default 0
@@ -1030,6 +1030,8 @@ class Client(object):
     def post_event_update(self, ids, reviewCode=None, eventPriority=None,
                           owner=None, country=None, tags=None, note=None):
         '''
+        Update an event.
+
         :param ids: a list of ids to update
         :param reviewCode: maps to status
         :param eventPriority: Event Priority to update events with
@@ -1059,73 +1061,3 @@ class Client(object):
         if note is not None:
             data['note'] = note
         self._post('event', 'update', data)
-
-    def search_inventory(self, filter=None, start=None, end=None,
-                         asset_types=None, offset=None, count=None,
-                         scroll=None):
-        if asset_types is None:
-            asset_types = ['ALL']
-        flt = {}
-        if filter:
-            flt = filter
-        elif start or end:
-            start = start.strftime(TIME_FORMAT_ISO)
-            end = end.strftime(TIME_FORMAT_ISO)
-
-            flt = {"filters": [{
-                "filters": [
-                    {
-                        "field": "firstSeen",
-                        "value": start + "," + end,
-                        "type": FilterOperation.Between,
-                    },
-                    {
-                        "field": "lastChanged",
-                        "value": start + "," + end,
-                        "type": FilterOperation.Between,
-                    }
-                ]
-            }]}
-
-        if 'ALL' not in asset_types:
-            flt['filters'].append({
-                "filters": [{
-                    "field": "assetType",
-                    "type": FilterOperation.In,
-                    "value": ",".join(asset_types),
-                }]
-            })
-
-        if scroll is not None:
-            return self._post('inventory', 'search', flt, scroll=scroll)
-        else:
-            return self._post('inventory', 'search', flt, count=count,
-                              offset=offset)
-
-    def search_events(self, days=1, start=None, end=None, count=50, offset=0):
-        """
-        Search events within time range.
-        If start and/or end dates are provided, a filter will be
-        constructed for Inventory items created or updated within that period.
-
-        :param start: the starting date for the event search
-        :param days: distance back to search, default 1
-        :param end: unused param, left in for legacy code
-        :param offset: offset, default 0
-        :param count: max results, default 50
-        :return: list of domain dictionaries
-        """
-
-        start, end = date_range(days, start, end)
-        # If days/start/end are set to None in function call these will be None.
-        # Return all data before the time of the call.
-        if start is None and end is None:
-            end = format_date(datetime.now())
-            event_filter = SearchFilter(field="createdAt", value=end, op="LT")
-        else:
-            event_filter = (
-                SearchFilter(field="createdAt", value=start, op="GTE") &
-                SearchFilter(field="createdAt", value=end, op="LT")
-            )
-        return self.post_event_search(event_filter.asdict(), count=count,
-                                      offset=offset)
