@@ -961,7 +961,7 @@ class Client(object):
         :param history: Whether to include historical whois records.
         :return: list of whois record dictionaries
         """
-        return self._get('whois', '%s' % (domain), history=history)
+        return self._get('whois', domain, history=history)
 
     def post_whois(self, domain=None, email=None, name_server=None, raw=None,
                    max_results=100):
