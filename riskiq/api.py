@@ -3,7 +3,7 @@
 RiskIQ API
 """
 __author__ = 'RiskIQ Research'
-__version__ = '0.4.9'
+__version__ = '0.4.10'
 
 import json
 import sys
@@ -952,6 +952,16 @@ class Client(object):
         """
         start, end = date_range(days, start, end)
         return self._get('zlist', 'urls', start=start, end=end)
+
+    def get_whois(self, domain, history=None):
+        """
+        Return the whois record for a domain.
+
+        :param domain: Domain to query
+        :param history: Whether to include historical whois records.
+        :return: list of whois record dictionaries
+        """
+        return self._get('whois', '%s' % (domain), history=history)
 
     def post_whois(self, domain=None, email=None, name_server=None, raw=None,
                    max_results=100):

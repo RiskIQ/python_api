@@ -103,6 +103,8 @@ Version History
 Versions before 0.2.7 have been mostly base implementation and bug fixes.
 We do not recommend using anything less than 0.2.7.
 
+:0.4.10:
+    Added support for whois history lookups in API.
 :0.4.9:
     Added support for bulk blacklist lookups in API.
 :0.4.8:
