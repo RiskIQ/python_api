@@ -330,6 +330,31 @@ class Client(object):
         response = requests.get(api_url, **kwargs)
         return self._json(response)
 
+    def _get_raw(self, endpoint, action, *url_args, **url_params):
+        """
+        Request API Endpoint - for GET methods that don't return JSON
+
+        :param endpoint: Endpoint
+        :param action: Endpoint Action
+        :param url_args: Additional endpoints(for endpoints that take part of
+            the url as option)
+        :param url_params: Parameters to pass to url, typically query string
+        :return: raw response text
+        """
+        api_url = self._endpoint(endpoint, action, *url_args)
+        if 'timeout' in url_params:
+            timeout = url_params['timeout']
+            del url_params['timeout']
+        else:
+            timeout = Client.TIMEOUT
+        kwargs = {'auth': self.auth, 'headers': self.headers,
+                  'params': url_params,
+                  'timeout': timeout, 'verify': True}
+        if self.proxies:
+            kwargs['proxies'] = self.proxies
+        response = requests.get(api_url, **kwargs)
+        return response.text
+
     def _post(self, endpoint, action, data, *url_args, **url_params):
         """
         Submit to API Endpoint - for POST methods.
@@ -859,7 +884,7 @@ class Client(object):
         :param page_guid: page GUID
         :return: requested page
         """
-        return self._get('page', '%s/%s' % (crawl_guid, page_guid))
+        return self._get_raw('page', '%s/%s' % (crawl_guid, page_guid))
 
     def get_page_dom(self, crawl_guid, page_guid):
         """
@@ -869,7 +894,7 @@ class Client(object):
         :param page_guid: page GUID
         :return: requested page
         """
-        return self._get('page', '%s/%s/dom' % (crawl_guid, page_guid))
+        return self._get_raw('page', '%s/%s/dom' % (crawl_guid, page_guid))
 
     def get_page_response(self, crawl_guid, page_guid):
         """
