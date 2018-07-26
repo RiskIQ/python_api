@@ -25,14 +25,14 @@ def get_data(client, cmd, rrtype=None, hostname=None, ip=None):
     data = None
     if cmd == 'name':
         if ip is not None:
-            data = client.get_dns_ptr_by_ip(ip, rrtype=rrtype,maxresults=500)
+            data = client.get_dns_ptr_by_ip(ip, rrtype=rrtype, maxresults=500)
         elif hostname is not None:
             data = client.get_dns_data_by_name(hostname, rrtype=rrtype)
         else:
             raise ValueError('No IP or hostname')
     elif cmd == 'data':
         if ip is not None:
-            data = client.get_dns_data_by_ip(ip, rrtype=rrtype,maxresults=500)
+            data = client.get_dns_data_by_ip(ip, rrtype=rrtype, maxresults=500)
         elif hostname is not None:
             data = client.get_dns_data_by_data(hostname, rrtype=rrtype)
         else:
