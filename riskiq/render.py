@@ -2,6 +2,12 @@ import os
 
 from jinja2 import Template, Environment, PackageLoader
 
+
+try:
+    UNICODE_EXISTS = bool(type(unicode))
+except NameError:
+    unicode = lambda s: str(s,'UTF-8')
+
 def renderer(data, template_file, custom_template=None,
         verbose=False, oneline=False):
     """
@@ -17,4 +23,4 @@ def renderer(data, template_file, custom_template=None,
         template_file += '_oneline'
     env = Environment(loader=PackageLoader('riskiq', 'templates'))
     template = env.get_template(template_file)
-    return template.render(data=data, verbose=verbose).encode('utf-8').strip()
+    return unicode(template.render(data=data, verbose=verbose).encode('utf-8').strip())
