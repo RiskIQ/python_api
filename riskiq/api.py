@@ -1035,10 +1035,10 @@ class Client(object):
         :param filters: for passing in multiple filters
         :return: inventory search results
         """
-        if filter:
-            filters_list = [{'filters': [filter]}]
-        elif filter and isinstance(filter[0], dict):
+        if filter and isinstance(filter, list):
             filters_list = [{'filters': filter}]
+        elif filter:
+            filters_list = [{'filters': [filter]}]
         elif filters and isinstance(filters[0], (list, tuple)):
             filters_list = [{'filters': filter_group}
                             for filter_group in filters]
@@ -1047,8 +1047,8 @@ class Client(object):
         else:
             return None
         data = {'filters': filters_list}
-        print(data)
         set_if(data, 'query', query)
+
         return self._post('inventory', 'search', data)
 
     def post_event_search(self, event_filter, count=50, offset=0):
