@@ -1037,6 +1037,8 @@ class Client(object):
         """
         if filter:
             filters_list = [{'filters': [filter]}]
+        elif filter and isinstance(filter[0], dict):
+            filters_list = [{'filters': filter}]
         elif filters and isinstance(filters[0], (list, tuple)):
             filters_list = [{'filters': filter_group}
                             for filter_group in filters]
@@ -1045,6 +1047,7 @@ class Client(object):
         else:
             return None
         data = {'filters': filters_list}
+        print(data)
         set_if(data, 'query', query)
         return self._post('inventory', 'search', data)
 
